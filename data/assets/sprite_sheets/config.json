@@ -1,0 +1,69 @@
+{
+	"next_id": 8,
+	"sprite_sheets": {
+		"giant_door": {
+			"id": 0,
+			"rows": 0,
+			"columns": 0,
+			"tile_width": 0,
+			"tile_height": 0,
+			"scale": -1
+		},
+		"objects": {
+			"id": 1,
+			"rows": 4,
+			"columns": 4,
+			"tile_width": 16,
+			"tile_height": 16,
+			"scale": 0
+		},
+		"small_animatable": {
+			"id": 2,
+			"rows": 0,
+			"columns": 0,
+			"tile_width": 0,
+			"tile_height": 0,
+			"scale": -1
+		},
+		"statues": {
+			"id": 3,
+			"rows": 0,
+			"columns": 0,
+			"tile_width": 0,
+			"tile_height": 0,
+			"scale": -1
+		},
+		"tiles": {
+			"id": 4,
+			"rows": 2,
+			"columns": 2,
+			"tile_width": 16,
+			"tile_height": 16,
+			"scale": 0
+		},
+		"tile_set": {
+			"id": 5,
+			"rows": 0,
+			"columns": 0,
+			"tile_width": 0,
+			"tile_height": 0,
+			"scale": -1
+		},
+		"tile_set_button": {
+			"id": 6,
+			"rows": 0,
+			"columns": 0,
+			"tile_width": 0,
+			"tile_height": 0,
+			"scale": -1
+		},
+		"walls": {
+			"id": 7,
+			"rows": 1,
+			"columns": 1,
+			"tile_width": 16,
+			"tile_height": 24,
+			"scale": 0
+		}
+	}
+}
