@@ -54,7 +54,7 @@ class Editor:
 
 class EditingScreen(ControlledScreen):
 	def __init__(self, room: Room, editor_state: EditorState):
-		super().__init__()
+		super().__init__(keep_in=(0, 0, room.n_cols * TILE_SIZE, room.n_rows * TILE_SIZE))
 
 		self._room = room
 		self._editor_state = editor_state

@@ -18,7 +18,7 @@ class EditorActionBatch:
 		self.actions.append(action)
 
 	def execute(self):
-		for action in self.actions[::-1]:
+		for action in self.actions:
 			action.execute()
 
 	def undo(self):

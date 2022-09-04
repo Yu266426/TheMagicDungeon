@@ -24,6 +24,7 @@ class EditorState:
 
 		self.action_index = -1
 		self.editor_actions: list[EditorAction | EditorActionBatch] = []
+		self.max_action_length = 20
 
 	def add_action(self, action: EditorAction | EditorActionBatch):
 		if self.action_index != len(self.editor_actions) - 1:
@@ -32,6 +33,10 @@ class EditorState:
 
 		self.editor_actions.append(action)
 		self.action_index += 1
+
+		if self.max_action_length < len(self.editor_actions):
+			self.editor_actions.pop(0)
+			self.action_index -= 1
 
 	def undo_action(self):
 		if 0 <= self.action_index:

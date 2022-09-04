@@ -20,15 +20,27 @@ class ControlledScreen:
 
 	def _handle_bounds(self):
 		if self.keep_in is not None:
-			if self.keep_in[1] < self._camera.target.y:
-				self._camera.target.y = self.keep_in[1]
-			if self._camera.target.y + SCREEN_HEIGHT < self.keep_in[3]:
-				self._camera.target.y = self.keep_in[3] - SCREEN_HEIGHT
+			if self.keep_in[2] - self.keep_in[0] < SCREEN_WIDTH:
+				if self.keep_in[0] < self._camera.target.x:
+					self._camera.target.x = self.keep_in[0]
+				if self._camera.target.x + SCREEN_WIDTH < self.keep_in[2]:
+					self._camera.target.x = self.keep_in[2] - SCREEN_WIDTH
+			else:
+				if self._camera.target.x < self.keep_in[0] - 20:
+					self._camera.target.x = self.keep_in[0] - 20
+				if self.keep_in[2] < self._camera.target.x + SCREEN_WIDTH + 20:
+					self._camera.target.x = self.keep_in[2] - SCREEN_WIDTH + 20
 
-			if self.keep_in[0] < self._camera.target.x:
-				self._camera.target.x = self.keep_in[0]
-			if self._camera.target.x + SCREEN_WIDTH < self.keep_in[2]:
-				self._camera.target.x = self.keep_in[2] - SCREEN_WIDTH
+			if self.keep_in[3] - self.keep_in[1] < SCREEN_HEIGHT:
+				if self.keep_in[1] < self._camera.target.y:
+					self._camera.target.y = self.keep_in[1]
+				if self._camera.target.y + SCREEN_HEIGHT < self.keep_in[3]:
+					self._camera.target.y = self.keep_in[3] - SCREEN_HEIGHT
+			else:
+				if self._camera.target.y < self.keep_in[1] - 20:
+					self._camera.target.y = self.keep_in[1] - 20
+				if self.keep_in[3] < self._camera.target.y + SCREEN_HEIGHT + 20:
+					self._camera.target.y = self.keep_in[3] - SCREEN_HEIGHT + 20
 
 	def _mouse_update(self):
 		self._mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
