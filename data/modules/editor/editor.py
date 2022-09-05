@@ -6,8 +6,10 @@ from data.modules.base.level import Room
 from data.modules.base.resources import ResourceManager, ResourceTypes
 from data.modules.base.utils import get_tile_pos, abs_tuple
 from data.modules.editor.editor_state import EditorState, EditorModes
-from data.modules.editor.editor_tool import EditorTool, TileDrawTool
+from data.modules.editor.editor_tool import EditorTool, TileDrawTool, ObjectDrawTool
 from data.modules.graphics.sprite_sheet import SpriteSheet
+from data.modules.objects.cube import SmallCube
+from data.modules.objects.object import AnimatableObject, GameObject
 from data.modules.ui.element import Frame, Button, TextSelector
 from data.modules.ui.screen import ControlledScreen, UIScreen
 from data.modules.ui.text import Text
@@ -20,14 +22,16 @@ class Editor:
 		self._editor_state = EditorState(4)
 
 		self._editing_screen = EditingScreen(self._room, self._editor_state)
-		self._selection_screen = SelectionScreen(self._editor_state)
+		self._selection_screen = TileSelectionScreen(self._editor_state, [4, 7])
+		self._object_selection_screen = ObjectsSelectionScreen(self._editor_state)
 
 	def update(self, delta: float):
 		if self._editor_state.mode == EditorModes.TileEditing or self._editor_state.mode == EditorModes.ObjectEditing:
 			self._editing_screen.update(delta)
-
-		elif self._editor_state.mode == EditorModes.TileSelecting:
+		if self._editor_state.mode == EditorModes.TileSelecting:
 			self._selection_screen.update(delta)
+		elif self._editor_state.mode == EditorModes.ObjectSelecting:
+			self._object_selection_screen.update(delta)
 
 		# Switch to selection screen
 		if InputManager.keys_down[pygame.K_SPACE]:
@@ -37,6 +41,8 @@ class Editor:
 		if InputManager.keys_up[pygame.K_SPACE]:
 			if self._editor_state.mode == EditorModes.TileSelecting:
 				self._editor_state.mode = EditorModes.TileEditing
+
+				self._selection_screen.current_screen.update_state()
 
 		# Save
 		if InputManager.mods == pygame.KMOD_LCTRL and InputManager.keys_down[pygame.K_s]:
@@ -51,29 +57,35 @@ class Editor:
 		elif self._editor_state.mode == EditorModes.TileSelecting:
 			self._selection_screen.draw(display)
 
+		elif self._editor_state.mode == EditorModes.ObjectSelecting:
+			self._object_selection_screen.draw(display)
+
 
 class EditingScreen(ControlledScreen):
 	def __init__(self, room: Room, editor_state: EditorState):
 		super().__init__(keep_in=(0, 0, room.n_cols * TILE_SIZE, room.n_rows * TILE_SIZE))
-
 		self._room = room
 		self._editor_state = editor_state
 
-		self._layer_text = Text((SCREEN_WIDTH - 10, 7), "arial", 60, (200, 200, 200), text="1", use_sys=True)
-
 		self._tiled_mouse_pos = (0, 0)
 
-		self._tool: EditorTool = TileDrawTool(self._room, self._editor_state)
+		# Editor tools
+		self._tile_draw_tool = TileDrawTool(self._room, self._editor_state)
+		self._object_draw_tool = ObjectDrawTool(self._room, self._editor_state)
+		self._tool: EditorTool = self._tile_draw_tool
 
-		self._ui_screen = UIScreen()
-		frame = self._ui_screen.add_frame(Frame((20, 20), (260, 80)))
+		# UI
+		self._layer_text = Text((SCREEN_WIDTH - 10, 7), "arial", 60, (200, 200, 200), text="1", use_sys=True)
 
+		self.prev_selection_index = 0
 		self.mode_selection = TextSelector((0, 0), (260, 60), [
 			"Tile",
 			"Object"
 		])
 
-		frame.add_element(
+		self._ui_screen = UIScreen()
+		self.selector_frame = self._ui_screen.add_frame(Frame((10, 10), (260, 60)))
+		self.selector_frame.add_element(
 			self.mode_selection
 		)
 
@@ -88,14 +100,30 @@ class EditingScreen(ControlledScreen):
 		self._ui_screen.update(delta)
 
 		# Mode switcher
-		if self.mode_selection.index == 0:
-			self._editor_state.mode = EditorModes.TileEditing
-		if self.mode_selection.index == 1:
-			self._editor_state.mode = EditorModes.ObjectEditing
+		if self.prev_selection_index != self.mode_selection.index:
+			if self.mode_selection.index == 0:
+				self._editor_state.mode = EditorModes.TileEditing
+
+				# Ensure correct tool
+				if self._tool is self._object_draw_tool:
+					self._tool = self._tile_draw_tool
+			if self.mode_selection.index == 1:
+				self._editor_state.mode = EditorModes.ObjectEditing
+
+				# Ensure correct tool
+				if self._tool is self._tile_draw_tool:
+					self._tool = self._object_draw_tool
+
+			self.prev_selection_index = self.mode_selection.index
 
 		# Tool
 		if not self._ui_screen.on_ui():
 			self._tool.update(self._tiled_mouse_pos)
+
+			if InputManager.mouse_pressed[0] or InputManager.mouse_pressed[2]:
+				self.selector_frame.active = False
+			else:
+				self.selector_frame.active = True
 
 		if InputManager.keys_down[pygame.K_z]:
 			if InputManager.mods == pygame.KMOD_LCTRL:
@@ -133,23 +161,24 @@ class EditingScreen(ControlledScreen):
 		self._ui_screen.draw(display)
 
 
-class SelectionScreen:
-	def __init__(self, editor_state: EditorState):
-		self.editor_state = editor_state
+class TileSelectionScreen:
+	def __init__(self, editor_state: EditorState, sheet_ids: list[int]):
+		self.editor_state: EditorState = editor_state
 
-		self.screens = (
-			SpriteSheetScreen(self.editor_state, 4),
-			SpriteSheetScreen(self.editor_state, 7),
-		)
+		self.screens: list[SpriteSheetScreen] = []
+		for sheet_id in sheet_ids:
+			self.screens.append(SpriteSheetScreen(self.editor_state, sheet_id))
 
-		self.current_screen = self.screens[0]
+		self.current_screen: SpriteSheetScreen = self.screens[0]
 
 		self.ui_screen: UIScreen = UIScreen()
-		self.button_frame = self.ui_screen.add_frame(
-			Frame((0, SCREEN_HEIGHT - 86), (SCREEN_WIDTH, 90))
-			.add_element(Button((3, 3), 0, self.switch_screen, 0))
-			.add_element(Button((3, 0), 0, self.switch_screen, 1), align_with_previous=(False, True), add_on_to_previous=(True, False))
-		)
+		self.button_frame = self.ui_screen.add_frame(Frame((0, SCREEN_HEIGHT - 86), (SCREEN_WIDTH, 90)))
+
+		if len(sheet_ids) > 0:
+			self.button_frame.add_element(Button((3, 3), 0, self.switch_screen, 0))
+
+			for loop in range(1, len(sheet_ids)):
+				self.button_frame.add_element(Button((3, 0), 0, self.switch_screen, loop), align_with_previous=(False, True), add_on_to_previous=(True, False))
 
 	def switch_screen(self, new_screen_id: int):
 		"""
@@ -209,7 +238,12 @@ class SpriteSheetScreen(ControlledScreen):
 
 		return ids
 
-	def _update_state(self):
+	def update_state(self):
+		selected_topleft, selected_bottomright = abs_tuple(self.selected_topleft, self.selected_bottomright)
+
+		self.selected_topleft = selected_topleft
+		self.selected_bottomright = selected_bottomright
+
 		self.editor_state.selected_topleft = self.selected_topleft
 		self.editor_state.selected_bottomright = self.selected_bottomright
 
@@ -218,7 +252,7 @@ class SpriteSheetScreen(ControlledScreen):
 	def _get_mouse_pos(self):
 		self._tiled_mouse_pos = get_tile_pos(self._world_mouse_pos, (self.sprite_sheet.tile_width, self.sprite_sheet.tile_height))
 
-	def update(self, delta):
+	def update(self, delta: float):
 		self._mouse_update()
 		self._get_mouse_pos()
 
@@ -234,12 +268,7 @@ class SpriteSheetScreen(ControlledScreen):
 				self.selected_bottomright = self._tiled_mouse_pos
 
 		if InputManager.mouse_up[0]:
-			selected_topleft, selected_bottomright = abs_tuple(self.selected_topleft, self.selected_bottomright)
-
-			self.selected_topleft = selected_topleft
-			self.selected_bottomright = selected_bottomright
-
-			self._update_state()
+			self.update_state()
 
 		self._keyboard_control(delta)
 		self._mouse_control()
@@ -258,3 +287,60 @@ class SpriteSheetScreen(ControlledScreen):
 				self.sprite_sheet.tile_height * (selected_bottomright[1] - selected_topleft[1] + 1)
 			), width=2
 		)
+
+
+class ObjectsSelectionScreen:
+	def __init__(self, editor_state: EditorState):
+		self._editor_state: EditorState = editor_state
+
+		self.screens: list[ObjectSelectionScreen] = [
+			ObjectSelectionScreen(self._editor_state, [SmallCube])
+		]
+
+		self.current_screen: ObjectSelectionScreen = self.screens[0]
+		self.switch_screen(0)
+
+		self.ui_screen: UIScreen = UIScreen()
+		self.button_frame = self.ui_screen.add_frame(
+			Frame((0, SCREEN_HEIGHT - 86), (SCREEN_WIDTH, 90)).
+			add_element(Button((3, 3), 0, self.switch_screen, 0))
+		)
+
+	def switch_screen(self, new_screen_id: int):
+		"""
+		Callback for button press
+		:param new_screen_id: Screen index to switch to
+		:return: None
+		"""
+
+		self.current_screen = self.screens[new_screen_id]
+		self._editor_state.current_object_type = type(self.current_screen.objects[self.current_screen.selected_object_index])
+
+	def update(self, delta: float):
+		if not self.ui_screen.on_ui():
+			self.current_screen.update(delta)
+
+		self.ui_screen.update(delta)
+
+	def draw(self, display: pygame.Surface):
+		self.current_screen.draw(display)
+
+		self.ui_screen.draw(display)
+
+
+class ObjectSelectionScreen(ControlledScreen):
+	def __init__(self, editor_state: EditorState, object_types: list):
+		super().__init__()
+
+		self.selected_object_index = 0
+
+		self.objects: list[GameObject | AnimatableObject] = []
+		for index, object_type in enumerate(object_types):
+			self.objects.append(object_type((0, index * TILE_SIZE)))
+
+	def update(self, delta: float):
+		pass
+
+	def draw(self, display: pygame.Surface):
+		for game_object in self.objects:
+			game_object.draw(display, self._camera)

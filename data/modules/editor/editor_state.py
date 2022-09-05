@@ -14,6 +14,7 @@ class EditorState:
 	def __init__(self, sprite_sheet_id: int):
 		self.mode = EditorModes.TileEditing
 
+		# Tile mode
 		self.level = 0
 
 		self.sprite_sheet_id = sprite_sheet_id
@@ -25,6 +26,9 @@ class EditorState:
 		self.action_index = -1
 		self.editor_actions: list[EditorAction | EditorActionBatch] = []
 		self.max_action_length = 20
+
+		# Object mode
+		self.current_object_type = None
 
 	def add_action(self, action: EditorAction | EditorActionBatch):
 		if self.action_index != len(self.editor_actions) - 1:

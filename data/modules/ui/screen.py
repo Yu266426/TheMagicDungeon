@@ -28,7 +28,7 @@ class ControlledScreen:
 			else:
 				if self._camera.target.x < self.keep_in[0] - 20:
 					self._camera.target.x = self.keep_in[0] - 20
-				if self.keep_in[2] < self._camera.target.x + SCREEN_WIDTH + 20:
+				if self.keep_in[2] + 20 < self._camera.target.x + SCREEN_WIDTH:
 					self._camera.target.x = self.keep_in[2] - SCREEN_WIDTH + 20
 
 			if self.keep_in[3] - self.keep_in[1] < SCREEN_HEIGHT:
@@ -39,7 +39,7 @@ class ControlledScreen:
 			else:
 				if self._camera.target.y < self.keep_in[1] - 20:
 					self._camera.target.y = self.keep_in[1] - 20
-				if self.keep_in[3] < self._camera.target.y + SCREEN_HEIGHT + 20:
+				if self.keep_in[3] + 20 < self._camera.target.y + SCREEN_HEIGHT:
 					self._camera.target.y = self.keep_in[3] - SCREEN_HEIGHT + 20
 
 	def _mouse_update(self):
@@ -76,8 +76,9 @@ class UIScreen:
 
 	def on_ui(self) -> bool:
 		for frame in self._frames:
-			if frame.rect.collidepoint(*pygame.mouse.get_pos()):
-				return True
+			if frame.active:
+				if frame.rect.collidepoint(*pygame.mouse.get_pos()):
+					return True
 
 		return False
 

@@ -30,6 +30,8 @@ class Frame(UIElement):
 
 		self.elements: list[UIElement] = []
 
+		self.active = True
+
 	def add_element(self, element: UIElement, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> "Frame":
 		# Align
 		if align_with_previous[0]:
@@ -68,15 +70,17 @@ class Frame(UIElement):
 		return self
 
 	def update(self, delta: float):
-		for element in self.elements:
-			element.update(delta)
+		if self.active:
+			for element in self.elements:
+				element.update(delta)
 
 	def draw(self, display: pygame.Surface):
-		if self.bg is not None:
-			display.blit(self.bg, self.rect)
+		if self.active:
+			if self.bg is not None:
+				display.blit(self.bg, self.rect)
 
-		for element in self.elements:
-			element.draw(display)
+			for element in self.elements:
+				element.draw(display)
 
 
 class Button(UIElement):

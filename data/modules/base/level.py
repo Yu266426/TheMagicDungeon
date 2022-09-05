@@ -7,6 +7,7 @@ from data.modules.base.camera import Camera
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE
 from data.modules.base.files import LEVEL_DIR
 from data.modules.base.utils import get_tile_pos, generate_level_list
+from data.modules.objects.object import GameObject, AnimatableObject
 from data.modules.objects.tile import Tile
 
 
@@ -19,6 +20,7 @@ class Room:
 
 		# level[back, same, front]
 		self.tiles: list[list[list[Tile | None]]] = []
+		self.objects: list[GameObject | AnimatableObject] = []
 
 		# New level
 		self.save_path = os.path.join(LEVEL_DIR, f"{name}.json")
@@ -83,6 +85,25 @@ class Room:
 		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
 			self.tiles[level][pos[1]][pos[0]] = None
 
+	def get_object(self, pos: tuple, with_hitbox: bool = False):
+		if not with_hitbox:
+			for game_object in self.objects:
+				if game_object.rect.collidepoint(pos[0], pos[1]):
+					return game_object
+		else:
+			for game_object in self.objects:
+				if game_object.hitbox.collidepoint(pos[0], pos[1]):
+					return game_object
+
+		return None
+
+	def add_object(self, game_object: GameObject | AnimatableObject):
+		self.objects.append(game_object)
+
+	def remove_object(self, game_object: GameObject | AnimatableObject):
+		if game_object is not None:
+			self.objects.remove(game_object)
+
 	def draw_tile(self, level: int, row: int, col: int, display: pygame.Surface, camera: Camera):
 		if 0 <= row < self.n_cols and 0 <= col < self.n_rows:
 			if self.tiles[level][row][col] is not None:
@@ -99,3 +120,7 @@ class Room:
 			for row in range(top_left[1], bottom_right[1]):
 				for col in range(top_left[0], bottom_right[0]):
 					self.draw_tile(level, row, col, display, camera)
+
+		print(len(self.objects))
+		for game_object in self.objects:
+			game_object.draw(display, camera)

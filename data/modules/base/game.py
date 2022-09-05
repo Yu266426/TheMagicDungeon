@@ -44,14 +44,14 @@ class Game:
 					InputManager.keys_up[event.key] = True
 
 			elif event.type == pygame.MOUSEBUTTONDOWN:
-				button = event.button
+				button = event.button - 1
 				if button <= 2:
-					InputManager.mouse_down[event.button - 1] = True
+					InputManager.mouse_down[button] = True
 
 			elif event.type == pygame.MOUSEBUTTONUP:
-				button = event.button
+				button = event.button - 1
 				if button <= 2:
-					InputManager.mouse_up[event.button - 1] = True
+					InputManager.mouse_up[button] = True
 
 	@classmethod
 	def update(cls):

@@ -24,7 +24,7 @@ class SpriteSheet:
 
 	def _load_image(self, row, col):
 		rect = pygame.Rect(col * self.tile_width, row * self.tile_height, self.tile_width, self.tile_height)
-		image = pygame.Surface(size=rect.size).convert_alpha()
+		image = pygame.Surface(size=rect.size, flags=pygame.SRCALPHA).convert_alpha()
 		image.blit(self.image, (0, 0), rect)
 
 		self._images.append(image)
@@ -34,7 +34,7 @@ class SpriteSheet:
 			for col in range(self.n_cols):
 				self._load_image(row, col)
 
-	def get_image(self, index: int):
+	def get_image(self, index: int) -> pygame.Surface:
 		return self._images[index]
 
 	def draw_sheet(self, display: pygame.Surface, camera: Camera):

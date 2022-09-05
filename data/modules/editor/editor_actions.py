@@ -1,4 +1,5 @@
 from data.modules.base.level import Room
+from data.modules.objects.object import GameObject
 from data.modules.objects.tile import Tile
 
 
@@ -63,3 +64,29 @@ class RemoveTileAction(EditorAction):
 
 	def undo(self):
 		self._room.add_tile(self._level, (self._col, self._row), self._prev_tile)
+
+
+class PlaceObjectAction(EditorAction):
+	def __init__(self, room: Room, game_object: GameObject):
+		self._room = room
+
+		self.game_object = game_object
+
+	def execute(self):
+		self._room.add_object(self.game_object)
+
+	def undo(self):
+		self._room.remove_object(self.game_object)
+
+
+class RemoveObjectAction(EditorAction):
+	def __init__(self, room: Room, game_object: GameObject):
+		self._room = room
+
+		self.game_object = game_object
+
+	def execute(self):
+		self._room.remove_object(self.game_object)
+
+	def undo(self):
+		self._room.add_object(self.game_object)
