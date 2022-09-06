@@ -108,6 +108,8 @@ class ObjectDrawTool(EditorTool):
 
 		self.current_mouse_pos: tuple | None = None
 
+		self.current_batch: EditorActionBatch | None = None
+
 	def update(self, mouse_pos: tuple[int, int]):
 		if InputManager.mouse_pressed[0]:
 			x_pos = mouse_pos[0] * TILE_SIZE
@@ -117,7 +119,10 @@ class ObjectDrawTool(EditorTool):
 				action = PlaceObjectAction(self._room, self._editor_state.current_object_type((x_pos, y_pos)))
 				action.execute()
 
-				self._editor_state.add_action(action)
+				if self.current_batch is None:
+					self.current_batch = EditorActionBatch()
+
+				self.current_batch.add_action(action)
 
 		if InputManager.mouse_pressed[2]:
 			x_pos = mouse_pos[0] * TILE_SIZE
@@ -127,7 +132,15 @@ class ObjectDrawTool(EditorTool):
 				action = RemoveObjectAction(self._room, self._room.get_object((x_pos, y_pos)))
 				action.execute()
 
-				self._editor_state.add_action(action)
+				if self.current_batch is None:
+					self.current_batch = EditorActionBatch()
+
+				self.current_batch.add_action(action)
+
+		if InputManager.mouse_up[0] or InputManager.mouse_up[2]:
+			if self.current_batch is not None:
+				self._editor_state.add_action(self.current_batch)
+				self.current_batch = None
 
 	def draw(self, display: pygame.Surface, camera: Camera, mouse_pos: tuple):
 		pygame.draw.rect(
@@ -139,3 +152,10 @@ class ObjectDrawTool(EditorTool):
 				TILE_SIZE
 			), width=2
 		)
+
+		# Draw selected object
+		if self._editor_state.current_object_type is not None:
+			x_pos = mouse_pos[0] * TILE_SIZE
+			y_pos = mouse_pos[1] * TILE_SIZE
+
+			self._editor_state.current_object_type((x_pos, y_pos)).draw(display, camera, flag=pygame.BLEND_ADD)

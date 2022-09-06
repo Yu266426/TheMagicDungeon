@@ -37,5 +37,5 @@ class Animation:
 			else:
 				self.frame = 0
 
-	def draw(self, display: pygame.Surface, camera: Camera):
-		display.blit(self.images[int(self.frame)], self.pos - camera.target)
+	def draw(self, display: pygame.Surface, camera: Camera, flag=0):
+		display.blit(self.images[int(self.frame)], self.pos - camera.target, special_flags=flag)

@@ -7,6 +7,8 @@ from data.modules.base.resources import ResourceManager
 
 
 class Game:
+	pygame.init()
+
 	is_running: bool = True
 
 	window: pygame.Surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))

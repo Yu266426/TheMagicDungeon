@@ -7,7 +7,8 @@ from data.modules.base.camera import Camera
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE
 from data.modules.base.files import LEVEL_DIR
 from data.modules.base.utils import get_tile_pos, generate_level_list
-from data.modules.objects.object import GameObject, AnimatableObject
+from data.modules.objects.game_object import GameObject, AnimatableObject
+from data.modules.objects.objects import object_types
 from data.modules.objects.tile import Tile
 
 
@@ -45,11 +46,17 @@ class Room:
 				col = tile["pos"][1]
 				self.tiles[level][row][col] = Tile(tile["image_info"][0], tile["image_info"][1], ((col + self.pos[0]) * TILE_SIZE, ((row + self.pos[1]) + 1) * TILE_SIZE))
 
+		for game_object in room_data["objects"]:
+			object_type = game_object["type"]
+			pos = game_object["pos"]
+			self.objects.append(object_types[object_type](pos))
+
 	def save(self):
 		data = {
 			"rows": self.n_rows,
 			"cols": self.n_cols,
-			"tiles": [[], [], []]
+			"tiles": [[], [], []],
+			"objects": []
 		}
 
 		for level, level_data in enumerate(self.tiles):
@@ -61,6 +68,12 @@ class Room:
 							"image_info": [tile.sprite_sheet_id, tile.image_index],
 						}
 						data["tiles"][level].append(tile_data)
+
+		for game_object in self.objects:
+			data["objects"].append({
+				"type": type(game_object).__name__,
+				"pos": [int(game_object.pos.x), int(game_object.pos.y)]
+			})
 
 		with open(self.save_path, "w") as file:
 			file.write(json.dumps(data))
@@ -121,6 +134,5 @@ class Room:
 				for col in range(top_left[0], bottom_right[0]):
 					self.draw_tile(level, row, col, display, camera)
 
-		print(len(self.objects))
 		for game_object in self.objects:
 			game_object.draw(display, camera)

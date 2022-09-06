@@ -20,8 +20,8 @@ class GameObject:
 	def update(self, delta: float):
 		pass
 
-	def draw(self, display: pygame.Surface, camera: Camera):
-		display.blit(self.image, self.pos - camera.target)
+	def draw(self, display: pygame.Surface, camera: Camera, flag=0):
+		display.blit(self.image, self.pos - camera.target, special_flags=flag)
 
 
 class AnimatableObject(Animation):
