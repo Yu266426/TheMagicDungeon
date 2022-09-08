@@ -2,7 +2,7 @@ import pygame
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH
 from data.modules.base.inputs import InputManager
-from data.modules.base.level import Room
+from data.modules.base.room import Room
 from data.modules.base.utils import get_tile_pos
 from data.modules.editor.editor_state import EditorState, EditorModes
 from data.modules.editor.editor_tool import EditorTool, TileDrawTool, ObjectDrawTool
@@ -15,7 +15,7 @@ from data.modules.ui.text import Text
 
 class Editor:
 	def __init__(self):
-		self._room = Room("test2", n_rows=20, n_cols=20)
+		self._room = Room("test", n_rows=20, n_cols=20)
 
 		self._editor_state = EditorState(4)
 

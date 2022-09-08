@@ -1,4 +1,4 @@
-from data.modules.base.level import Room
+from data.modules.base.room import Room
 from data.modules.objects.game_object import GameObject
 from data.modules.objects.tile import Tile
 

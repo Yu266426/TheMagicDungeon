@@ -1,138 +1,112 @@
-import json
 import os
+import random
+from collections import deque
 
 import pygame
 
 from data.modules.base.camera import Camera
-from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE
+from data.modules.base.constants import TILE_SIZE
 from data.modules.base.files import LEVEL_DIR
-from data.modules.base.utils import get_tile_pos, generate_level_list
-from data.modules.objects.game_object import GameObject, AnimatableObject
-from data.modules.objects.objects import object_types
-from data.modules.objects.tile import Tile
+from data.modules.base.room import Room
 
 
-class Room:
-	def __init__(self, name: str, n_rows: int = 10, n_cols: int = 10, pos: tuple = (0, 0)):
-		self.n_rows = n_rows
-		self.n_cols = n_cols
+class Level:
+	def __init__(self):
+		self.rooms: dict[int, dict[int, Room]] = {}
+		self.connections: dict[tuple[int, int], list[tuple[int, int]]] = {}
 
-		self.pos = pos
+		self.room_size = 30
+		self.generate_level()
 
-		# level[back, same, front]
-		self.tiles: list[list[list[Tile | None]]] = []
-		self.objects: list[GameObject | AnimatableObject] = []
+	def generate_level(self, depth=3):
+		# Directions for generation
+		directions = [
+			(1, 0),
+			(-1, 0),
+			(0, 1),
+			(0, -1)
+		]
 
-		# New level
-		self.save_path = os.path.join(LEVEL_DIR, f"{name}.json")
-		if not os.path.isfile(self.save_path):
-			self.tiles = generate_level_list(3, self.n_rows, self.n_cols)
+		# All the rooms available
+		room_names = []
+		for _, _, file_names in os.walk(LEVEL_DIR):
+			for file_name in file_names:
+				room_names.append(file_name[:-5])
 
-		else:
-			self.load()
+		# Room generation
+		room_queue: deque[tuple[Room, tuple[int, int], int]] = deque()
+		start_room = self.add_room((0, 0), (0, 0), "test")
 
-	def load(self):
-		with open(self.save_path) as file:
-			room_data: dict = json.load(file)
+		# Start in all directions
+		for direction in directions:
+			new_room = self.add_room(direction, direction, random.choice(room_names))
+			room_queue.append((new_room, direction, 1))
+			self.add_connection((0, 0), direction)
 
-		self.n_rows = room_data["rows"]
-		self.n_cols = room_data["cols"]
+		end_rooms = []
 
-		self.tiles = generate_level_list(3, self.n_rows, self.n_cols)
+		while len(room_queue) > 0:
+			# Get room info, and move to end of queue
+			room_info = room_queue.popleft()
+			room = room_info[0]
+			room_pos = room_info[1]
+			room_depth = room_info[2]
 
-		for level, tiles in enumerate(room_data["tiles"]):
-			for tile in tiles:
-				row = tile["pos"][0]
-				col = tile["pos"][1]
-				self.tiles[level][row][col] = Tile(tile["image_info"][0], tile["image_info"][1], ((col + self.pos[0]) * TILE_SIZE, ((row + self.pos[1]) + 1) * TILE_SIZE))
+			if room_depth < depth:
+				# Get available directions
+				available_directions = []
+				for direction in directions:
+					if self.get_room((room_pos[0] + direction[0], room_pos[1] + direction[1])) is None:
+						available_directions.append(direction)
 
-		for game_object in room_data["objects"]:
-			object_type = game_object["type"]
-			pos = game_object["pos"]
-			self.objects.append(object_types[object_type](pos))
+				# If direction available
+				if len(available_directions) != 0:
+					# Have a chance to spread
+					if random.random() < 0.7:
+						room_queue.append(room_info)
 
-	def save(self):
-		data = {
-			"rows": self.n_rows,
-			"cols": self.n_cols,
-			"tiles": [[], [], []],
-			"objects": []
-		}
+						# Spread in all directions
+						direction = random.choice(available_directions)
 
-		for level, level_data in enumerate(self.tiles):
-			for row, row_data in enumerate(level_data):
-				for col, tile in enumerate(row_data):
-					if tile is not None:
-						tile_data = {
-							"pos": [row, col],
-							"image_info": [tile.sprite_sheet_id, tile.image_index],
-						}
-						data["tiles"][level].append(tile_data)
+						new_pos = room_pos[0] + direction[0], room_pos[1] + direction[1]
+						if self.get_room(new_pos) is None:
+							new_room = self.add_room(new_pos, direction, random.choice(room_names))
 
-		for game_object in self.objects:
-			data["objects"].append({
-				"type": type(game_object).__name__,
-				"pos": [int(game_object.pos.x), int(game_object.pos.y)]
-			})
+							self.add_connection(room_pos, new_pos)
 
-		with open(self.save_path, "w") as file:
-			file.write(json.dumps(data))
+							room_queue.append((new_room, new_pos, room_depth + 1))
+					else:
+						end_rooms.append(room)
 
-		print("Level saved")
+	def add_connection(self, start: tuple[int, int], end: tuple[int, int]):
+		if start not in self.connections:
+			self.connections[start] = []
+		self.connections[start].append(end)
 
-	def get_tile(self, level: int, pos: tuple[int, int]):
-		pos = pos[0] - self.pos[0], pos[1] - self.pos[1]
+	def add_room(self, pos: tuple[int, int], direction: tuple[int, int], room_name: str):
+		if pos[0] not in self.rooms:
+			self.rooms[pos[0]] = {}
 
-		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
-			return self.tiles[level][pos[1]][pos[0]]
+		room = Room(room_name, offset=(pos[0] + self.room_size * direction[0], pos[1] + self.room_size + direction[1]))
+		self.rooms[pos[0]][pos[1]] = room
+		return room
 
-	def add_tile(self, level: int, pos: tuple[int, int], tile: Tile):
-		pos = pos[0] - self.pos[0], pos[1] - self.pos[1]
-
-		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
-			self.tiles[level][pos[1]][pos[0]] = tile
-
-	def remove_tile(self, level: int, pos: tuple[int, int]):
-		pos = pos[0] - self.pos[0], pos[1] - self.pos[1]
-
-		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
-			self.tiles[level][pos[1]][pos[0]] = None
-
-	def get_object(self, pos: tuple, with_hitbox: bool = False):
-		if not with_hitbox:
-			for game_object in self.objects:
-				if game_object.rect.collidepoint(pos[0], pos[1]):
-					return game_object
-		else:
-			for game_object in self.objects:
-				if game_object.hitbox.collidepoint(pos[0], pos[1]):
-					return game_object
-
+	def get_room(self, pos: tuple[int, int]):
+		if pos[0] in self.rooms and pos[1] in self.rooms[pos[0]]:
+			return self.rooms[pos[0]][pos[1]]
 		return None
 
-	def add_object(self, game_object: GameObject | AnimatableObject):
-		self.objects.append(game_object)
-
-	def remove_object(self, game_object: GameObject | AnimatableObject):
-		if game_object is not None:
-			self.objects.remove(game_object)
-
-	def draw_tile(self, level: int, row: int, col: int, display: pygame.Surface, camera: Camera):
-		if 0 <= row < self.n_cols and 0 <= col < self.n_rows:
-			if self.tiles[level][row][col] is not None:
-				self.tiles[level][row][col].draw(display, camera)
-
 	def draw(self, display: pygame.Surface, camera: Camera):
-		top_left: tuple[int, int] = get_tile_pos((camera.target.x, camera.target.y), (TILE_SIZE, TILE_SIZE))
-		bottom_right: tuple[int, int] = get_tile_pos((camera.target.x + SCREEN_WIDTH, camera.target.y + SCREEN_HEIGHT), (TILE_SIZE, TILE_SIZE))
+		for row, row_info in self.rooms.items():
+			for col, col_info in row_info.items():
+				pygame.draw.rect(display, "white", pygame.Rect(row * 100 - camera.target.x, col * 100 - camera.target.y, 80, 80))
 
-		top_left = top_left[0] - self.pos[0], top_left[1] - self.pos[1]
-		bottom_right = bottom_right[0] - self.pos[0] + 1, bottom_right[1] - self.pos[1] + 2
+		pygame.draw.rect(display, "yellow", pygame.Rect(*-camera.target, 80, 80))
 
-		for level in range(len(self.tiles)):
-			for row in range(top_left[1], bottom_right[1]):
-				for col in range(top_left[0], bottom_right[0]):
-					self.draw_tile(level, row, col, display, camera)
-
-		for game_object in self.objects:
-			game_object.draw(display, camera)
+		for start, ends in self.connections.items():
+			for end in ends:
+				pygame.draw.line(
+					display, "green", (start[0] * 100 - camera.target.x + 40, start[1] * 100 - camera.target.y + 40),
+					(end[0] * 100 - camera.target.x + 40, end[1] * 100 - camera.target.y + 40),
+					width=5
+				)

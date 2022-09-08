@@ -4,6 +4,7 @@ from data.modules.base.constants import SCREEN_HEIGHT, SCREEN_WIDTH, GameStates
 from data.modules.editor.editor import Editor
 from data.modules.base.inputs import InputManager
 from data.modules.base.resources import ResourceManager
+from data.modules.game.game_scene import GameScene
 
 
 class Game:
@@ -11,20 +12,18 @@ class Game:
 
 	is_running: bool = True
 
+	flags = pygame.SCALED | pygame.FULLSCREEN
 	window: pygame.Surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 	clock: pygame.time.Clock = pygame.time.Clock()
 
 	game_state = GameStates.LOADING
 
 	editor = None
+	game = None
 
 	@classmethod
 	def change_state(cls, new_state: GameStates, *args):
-		if new_state == GameStates.EDITOR:
-			if cls.editor is None:
-				cls.editor = Editor()
-
-			cls.game_state = new_state
+		cls.game_state = new_state
 
 	@classmethod
 	def handle_events(cls):
@@ -64,7 +63,13 @@ class Game:
 
 		if cls.game_state == GameStates.LOADING:
 			if ResourceManager.load_update():
-				cls.change_state(GameStates.EDITOR)
+				cls.editor = Editor()
+				cls.game = GameScene()
+
+				cls.change_state(GameStates.GAME)
+
+		elif cls.game_state == GameStates.GAME:
+			cls.game.update(delta)
 
 		elif cls.game_state == GameStates.EDITOR:
 			cls.editor.update(delta)
@@ -73,6 +78,9 @@ class Game:
 	def draw(cls):
 		if cls.game_state == GameStates.LOADING:
 			cls.window.fill((0, 0, 0))
+
+		elif cls.game_state == GameStates.GAME:
+			cls.game.draw(cls.window)
 
 		elif cls.game_state == GameStates.EDITOR:
 			cls.editor.draw(cls.window)

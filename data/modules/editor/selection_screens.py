@@ -232,8 +232,8 @@ class ObjectSelectionScreen(ControlledScreen):
 		pygame.draw.rect(
 			display, (255, 255, 255),
 			pygame.Rect(
-				(self.selected_object_index % self.n_cols) * self.object_size[0],
-				(self.selected_object_index // self.n_cols) * self.object_size[1],
+				(self.selected_object_index % self.n_cols) * self.object_size[0] - self._camera.target.x,
+				(self.selected_object_index // self.n_cols) * self.object_size[1] - self._camera.target.y,
 				self.object_size[0], self.object_size[1]
 			),
 			width=2

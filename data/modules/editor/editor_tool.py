@@ -3,7 +3,7 @@ import pygame
 from data.modules.base.camera import Camera
 from data.modules.base.constants import TILE_SIZE
 from data.modules.base.inputs import InputManager
-from data.modules.base.level import Room
+from data.modules.base.room import Room
 from data.modules.editor.editor_actions import PlaceTileAction, RemoveTileAction, EditorActionBatch, PlaceObjectAction, RemoveObjectAction
 from data.modules.editor.editor_state import EditorState
 from data.modules.objects.tile import Tile
