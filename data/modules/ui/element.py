@@ -84,8 +84,8 @@ class Frame(UIElement):
 
 
 class Button(UIElement):
-	def __init__(self, pos: tuple, image_id: int, callback, *callback_args, size: tuple | None = None, center: str = "l"):
-		self.image: pygame.Surface = ResourceManager.get_resource(ResourceTypes.IMAGE, image_id)
+	def __init__(self, pos: tuple, image_name: str, callback, *callback_args, size: tuple | None = None, center: str = "l"):
+		self.image: pygame.Surface = ResourceManager.get_resource(ResourceTypes.IMAGE, image_name)
 
 		if size is not None:
 			if size[0] is None:
@@ -159,8 +159,8 @@ class TextSelector(Frame):
 		self.index = 0
 		self.current_option = self.options[self.index]
 
-		self.add_element(Button((0, 0), 0, self.change_option, -1, size=(None, self.rect.height)))
-		self.add_element(Button((self.rect.width, 0), 0, self.change_option, 1, size=(None, self.rect.height), center="r"))
+		self.add_element(Button((0, 0), "tile_set_button", self.change_option, -1, size=(None, self.rect.height)))
+		self.add_element(Button((self.rect.width, 0), "tile_set_button", self.change_option, 1, size=(None, self.rect.height), center="r"))
 
 		self.text = TextElement((self.rect.width / 2, self.rect.height * 0.3 / 2), self.rect.height * 0.7, "arial", (255, 255, 255), self.current_option, centered=True)
 		self.add_element(self.text)

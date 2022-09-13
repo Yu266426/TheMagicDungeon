@@ -1,1 +1,7 @@
-{"next_id": 1, "images": {"tile_set_button": {"id": 0, "scale": 5}}}
+{
+	"images": {
+		"tile_set_button": {
+			"scale": 5
+		}
+	}
+}

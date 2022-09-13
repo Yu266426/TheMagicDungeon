@@ -40,7 +40,7 @@ class TileDrawTool(EditorTool):
 
 					if self.current_place_tile != mouse_pos:
 						action = PlaceTileAction(self._room, self._editor_state.level, tile_y, tile_x, Tile(
-							self._editor_state.sprite_sheet_id,
+							self._editor_state.sprite_sheet_name,
 							image_id,
 							(tile_x * TILE_SIZE, (tile_y + 1) * TILE_SIZE)
 						))
@@ -96,7 +96,7 @@ class TileDrawTool(EditorTool):
 					tile_y = mouse_pos[1] + row - self._editor_state.selected_topleft[1]
 
 					Tile(
-						self._editor_state.sprite_sheet_id,
+						self._editor_state.sprite_sheet_name,
 						image_id,
 						(tile_x * TILE_SIZE, (tile_y + 1) * TILE_SIZE)
 					).draw(display, camera, flag=pygame.BLEND_ADD)

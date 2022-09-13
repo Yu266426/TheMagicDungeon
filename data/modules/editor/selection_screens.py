@@ -15,23 +15,23 @@ from data.modules.ui.screen import UIScreen, ControlledScreen
 
 
 class TileSelectionScreen:
-	def __init__(self, editor_state: EditorState, sheet_ids: list[int]):
+	def __init__(self, editor_state: EditorState, sheet_names: list[str]):
 		self.editor_state: EditorState = editor_state
 
 		self.screens: list[SpriteSheetScreen] = []
-		for sheet_id in sheet_ids:
-			self.screens.append(SpriteSheetScreen(self.editor_state, sheet_id))
+		for sheet_name in sheet_names:
+			self.screens.append(SpriteSheetScreen(self.editor_state, sheet_name))
 
 		self.current_screen: SpriteSheetScreen = self.screens[0]
 
 		self.ui_screen: UIScreen = UIScreen()
 		self.button_frame = self.ui_screen.add_frame(Frame((0, SCREEN_HEIGHT - 86), (SCREEN_WIDTH, 90)))
 
-		if len(sheet_ids) > 0:
-			self.button_frame.add_element(Button((3, 3), 0, self.switch_screen, 0))
+		if len(sheet_names) > 0:
+			self.button_frame.add_element(Button((3, 3), "tile_set_button", self.switch_screen, 0))
 
-			for loop in range(1, len(sheet_ids)):
-				self.button_frame.add_element(Button((3, 0), 0, self.switch_screen, loop), align_with_previous=(False, True), add_on_to_previous=(True, False))
+			for loop in range(1, len(sheet_names)):
+				self.button_frame.add_element(Button((3, 0), "tile_set_button", self.switch_screen, loop), align_with_previous=(False, True), add_on_to_previous=(True, False))
 
 	def switch_screen(self, new_screen_id: int):
 		"""
@@ -42,7 +42,7 @@ class TileSelectionScreen:
 
 		self.current_screen = self.screens[new_screen_id]
 		if isinstance(self.screens[new_screen_id], SpriteSheetScreen):
-			self.editor_state.sprite_sheet_id = self.current_screen.sprite_sheet_id
+			self.editor_state.sprite_sheet_name = self.current_screen.sprite_sheet_name
 			self.editor_state.selected_topleft = self.current_screen.selected_topleft
 			self.editor_state.selected_bottomright = self.current_screen.selected_bottomright
 
@@ -65,12 +65,12 @@ class SpriteSheetScreen(ControlledScreen):
 	Generic screen for selecting images from sprite_sheet
 	"""
 
-	def __init__(self, editor_state: EditorState, sprite_sheet_id: int):
+	def __init__(self, editor_state: EditorState, sprite_sheet_name: str):
 
 		self.editor_state = editor_state
 
-		self.sprite_sheet_id: int = sprite_sheet_id
-		self.sprite_sheet: SpriteSheet = ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, sprite_sheet_id)
+		self.sprite_sheet_name: str = sprite_sheet_name
+		self.sprite_sheet: SpriteSheet = ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, sprite_sheet_name)
 
 		super().__init__(keep_in=(0, 0, *self.sprite_sheet.image.get_size()))
 
@@ -155,7 +155,7 @@ class ObjectsSelectionScreen:
 		self.ui_screen: UIScreen = UIScreen()
 		self.button_frame = self.ui_screen.add_frame(
 			Frame((0, SCREEN_HEIGHT - 86), (SCREEN_WIDTH, 90)).
-			add_element(Button((3, 3), 0, self.switch_screen, 0))
+			add_element(Button((3, 3), "tile_set_button", self.switch_screen, 0))
 		)
 
 	def switch_screen(self, new_screen_id: int):

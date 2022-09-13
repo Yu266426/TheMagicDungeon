@@ -7,7 +7,6 @@ from data.modules.base.constants import TILE_SCALE
 class SpriteSheet:
 	def __init__(self, resource_info: tuple, data: dict):
 		# Data info
-		self.id: int = data["id"]
 		self.n_rows: int = data["rows"]
 		self.n_cols: int = data["columns"]
 		self.scale: int = data["scale"] if data["scale"] != 0 else TILE_SCALE
@@ -22,6 +21,8 @@ class SpriteSheet:
 		self._images: list = []
 
 		self._load_sprite_sheet()
+
+		self.length = len(self._images)
 
 	def _load_image(self, row, col):
 		rect = pygame.Rect(col * self.tile_width, row * self.tile_height, self.tile_width, self.tile_height)

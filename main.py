@@ -1,12 +1,9 @@
-import pygame
-
-from data.modules.base.game import Game
-from data.modules.base.resources import ResourceManager
+from data.modules.base.app import App
 
 if __name__ == '__main__':
-	ResourceManager.init_load()
-
-	while Game.is_running:
-		Game.handle_events()
-		Game.update()
-		Game.draw()
+	app = App()
+	while app.is_running:
+		app.handle_events()
+		app.update()
+		app.draw()
+		app.switch_state()

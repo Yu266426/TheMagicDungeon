@@ -36,8 +36,6 @@ class ResourceManager:
 		sprite_sheet_name = file_name[:-4]
 		if sprite_sheet_name not in data["sprite_sheets"]:
 			sprite_sheet_data = {
-				"id": data["next_id"],
-
 				"rows": 0,
 				"columns": 0,
 				"tile_width": 0,
@@ -45,7 +43,6 @@ class ResourceManager:
 				"scale": -1
 			}
 
-			data["next_id"] += 1
 			data["sprite_sheets"][sprite_sheet_name] = sprite_sheet_data
 
 			with open(config_path, "w") as file:
@@ -66,12 +63,9 @@ class ResourceManager:
 		image_name = file_name[:-4]
 		if image_name not in data["images"]:
 			image_data = {
-				"id": data["next_id"],
-
 				"scale": 1
 			}
 
-			data["next_id"] += 1
 			data["images"][image_name] = image_data
 
 			with open(config_path, "w") as file:
@@ -84,7 +78,7 @@ class ResourceManager:
 		sprite_sheet_config_path = os.path.join(SPRITE_SHEET_DIR, "config.json")
 		if not os.path.isfile(sprite_sheet_config_path):
 			with open(sprite_sheet_config_path, "x") as sprite_sheet_config_file:
-				sprite_sheet_data = {"next_id": 0, "sprite_sheets": {}}
+				sprite_sheet_data = {"sprite_sheets": {}}
 				sprite_sheet_config_file.write(json.dumps(sprite_sheet_data))
 
 		# Walk through sprite_sheets dir, appending all pngs for loading
@@ -100,7 +94,7 @@ class ResourceManager:
 		image_config_path = os.path.join(IMAGE_DIR, "config.json")
 		if not os.path.isfile(image_config_path):
 			with open(image_config_path, "x") as image_config_file:
-				image_config_data = {"next_id": 0, "images": {}}
+				image_config_data = {"images": {}}
 				image_config_file.write(json.dumps(image_config_data))
 
 		for dir_path, _, file_names in os.walk(IMAGE_DIR):
@@ -128,7 +122,7 @@ class ResourceManager:
 					resource_info = cls.__resources_to_load.popleft()
 					print(f"Loading: {resource_info[2]}")
 
-					# If resource is a sprite sheet
+					# * If resource is a sprite sheet
 					if resource_info[0] == ResourceTypes.SPRITE_SHEET:
 						# Ensure the key is present
 						if ResourceTypes.SPRITE_SHEET not in cls.__loaded_resources:
@@ -141,13 +135,11 @@ class ResourceManager:
 
 						# Makes sure the config is initialized
 						if data["scale"] != -1:
-							sprite_sheet_id = data["id"]
-
-							cls.__loaded_resources[ResourceTypes.SPRITE_SHEET][sprite_sheet_id] = SpriteSheet(resource_info, data)
+							cls.__loaded_resources[ResourceTypes.SPRITE_SHEET][resource_info[1]] = SpriteSheet(resource_info, data)
 						else:
 							print(f"WARNING: Skipping {resource_info[2]}, uninitialized config")
 
-					# If resource is an image
+					# * If resource is an image
 					if resource_info[0] == ResourceTypes.IMAGE:
 						if ResourceTypes.IMAGE not in cls.__loaded_resources:
 							cls.__loaded_resources[ResourceTypes.IMAGE] = {}
@@ -156,15 +148,14 @@ class ResourceManager:
 							data = json.load(config)
 							data = data["images"][resource_info[1]]
 
-						image_id = data["id"]
 						scale = data["scale"]
 
 						image = pygame.image.load(resource_info[2]).convert_alpha()
 						image = pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
-						cls.__loaded_resources[ResourceTypes.IMAGE][image_id] = image
+						cls.__loaded_resources[ResourceTypes.IMAGE][resource_info[1]] = image
 
 			return False
 
 	@classmethod
-	def get_resource(cls, type: ResourceTypes, resource_id) -> SpriteSheet | pygame.Surface:
-		return cls.__loaded_resources[type][resource_id]
+	def get_resource(cls, type: ResourceTypes, resource_name) -> SpriteSheet | pygame.Surface:
+		return cls.__loaded_resources[type][resource_name]

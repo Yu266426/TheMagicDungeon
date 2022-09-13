@@ -1,11 +1,13 @@
 import json
 import os
+import random
 
 import pygame
 
 from data.modules.base.camera import Camera
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE
 from data.modules.base.files import LEVEL_DIR
+from data.modules.base.resources import ResourceManager, ResourceTypes
 from data.modules.base.utils import get_tile_pos, generate_level_list
 from data.modules.objects.game_object import GameObject, AnimatableObject
 from data.modules.objects.objects import object_types
@@ -13,11 +15,11 @@ from data.modules.objects.tile import Tile
 
 
 class Room:
-	def __init__(self, name: str, n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0)):
+	def __init__(self, name: str, n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0), connections=(False, False, False, False), random_floor=True):
 		self.n_rows = n_rows
 		self.n_cols = n_cols
 
-		self.offset = offset
+		self.offset = int(offset[0]), int(offset[1])
 
 		# level[back, same, front]
 		self.tiles: list[list[list[Tile | None]]] = []
@@ -28,8 +30,49 @@ class Room:
 		if not os.path.isfile(self.save_path):
 			self.tiles = generate_level_list(3, self.n_rows, self.n_cols)
 
+			if random_floor:
+				self.generate_floor()
+			self.generate_walls(connections)
 		else:
 			self.load()
+
+			if random_floor:
+				self.generate_floor()
+			self.generate_walls(connections)
+
+	def generate_walls(self, connections, gap_size: int = 3):
+		"""
+		Generates walls with gaps
+
+		:param connections: Up, Down, Left, Right
+		:param gap_size: Size of gap
+		"""
+
+		# TODO: Add gaps
+		wall_sheet = ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, "walls")
+
+		x_mid_point = self.n_cols / 2
+		y_mid_point = self.n_rows / 2
+
+		# Top and bottom
+		for col in range(self.n_cols):
+			self.tiles[1][0][col] = Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1]))
+			self.tiles[1][self.n_rows - 1][col] = Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1]))
+
+		# Left and Right
+		for row in range(self.n_rows):
+			self.tiles[1][row][0] = Tile("walls", random.randrange(0, wall_sheet.length), (self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
+			self.tiles[1][row][self.n_cols - 1] = Tile("walls", random.randrange(0, wall_sheet.length), ((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
+
+	def generate_floor(self):
+		tiles_sheet = ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, "tiles")
+		for row in range(self.n_rows):
+			for col in range(self.n_cols):
+				self.tiles[0][row][col] = Tile(
+					"tiles",
+					random.randrange(0, tiles_sheet.length),
+					(col * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
+				)
 
 	def load(self):
 		with open(self.save_path) as file:
@@ -49,7 +92,7 @@ class Room:
 		for game_object in room_data["objects"]:
 			object_type = game_object["type"]
 			pos = game_object["pos"]
-			self.objects.append(object_types[object_type](pos))
+			self.objects.append(object_types[object_type]((pos[0] + self.offset[0], pos[1] + self.offset[1])))
 
 	def save(self):
 		data = {
@@ -65,7 +108,7 @@ class Room:
 					if tile is not None:
 						tile_data = {
 							"pos": [row, col],
-							"image_info": [tile.sprite_sheet_id, tile.image_index],
+							"image_info": [tile.sprite_sheet_name, tile.image_index],
 						}
 						data["tiles"][level].append(tile_data)
 
@@ -87,14 +130,10 @@ class Room:
 			return self.tiles[level][pos[1]][pos[0]]
 
 	def add_tile(self, level: int, pos: tuple[int, int], tile: Tile):
-		pos = pos[0] - self.offset[0], pos[1] - self.offset[1]
-
 		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
 			self.tiles[level][pos[1]][pos[0]] = tile
 
 	def remove_tile(self, level: int, pos: tuple[int, int]):
-		pos = pos[0] - self.offset[0], pos[1] - self.offset[1]
-
 		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
 			self.tiles[level][pos[1]][pos[0]] = None
 
@@ -123,11 +162,11 @@ class Room:
 				self.tiles[level][row][col].draw(display, camera)
 
 	def draw(self, display: pygame.Surface, camera: Camera):
-		top_left: tuple[int, int] = get_tile_pos((camera.target.x, camera.target.y), (TILE_SIZE, TILE_SIZE))
-		bottom_right: tuple[int, int] = get_tile_pos((camera.target.x + SCREEN_WIDTH, camera.target.y + SCREEN_HEIGHT), (TILE_SIZE, TILE_SIZE))
+		top_left: tuple[int, int] = get_tile_pos((camera.target.x - self.offset[0], camera.target.y - self.offset[1]), (TILE_SIZE, TILE_SIZE))
+		bottom_right: tuple[int, int] = get_tile_pos((camera.target.x + SCREEN_WIDTH - self.offset[0], camera.target.y + SCREEN_HEIGHT - self.offset[1]), (TILE_SIZE, TILE_SIZE))
 
-		top_left = top_left[0] - self.offset[0], top_left[1] - self.offset[1]
-		bottom_right = bottom_right[0] - self.offset[0] + 1, bottom_right[1] - self.offset[1] + 2
+		top_left = top_left[0], top_left[1]
+		bottom_right = bottom_right[0] + 1, bottom_right[1] + 2
 
 		for level in range(len(self.tiles)):
 			for row in range(top_left[1], bottom_right[1]):

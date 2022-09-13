@@ -7,20 +7,21 @@ from data.modules.base.utils import get_tile_pos
 from data.modules.editor.editor_state import EditorState, EditorModes
 from data.modules.editor.editor_tool import EditorTool, TileDrawTool, ObjectDrawTool
 from data.modules.editor.selection_screens import TileSelectionScreen, ObjectsSelectionScreen
+from data.modules.game_states.game_state import GameState
 from data.modules.objects.game_object import AnimatableObject
 from data.modules.ui.element import Frame, Button, TextSelector
 from data.modules.ui.screen import ControlledScreen, UIScreen
 from data.modules.ui.text import Text
 
 
-class Editor:
+class Editor(GameState):
 	def __init__(self):
-		self._room = Room("test", n_rows=20, n_cols=20)
+		self._room = Room("test", n_rows=7, n_cols=7)
 
-		self._editor_state = EditorState(4)
+		self._editor_state = EditorState("tiles")
 
 		self._editing_screen = EditingScreen(self._room, self._editor_state)
-		self._selection_screen = TileSelectionScreen(self._editor_state, [4, 7])
+		self._selection_screen = TileSelectionScreen(self._editor_state, ["tiles", "walls"])
 		self._object_selection_screen = ObjectsSelectionScreen(self._editor_state)
 
 		# Mode switcher
@@ -37,12 +38,15 @@ class Editor:
 		)
 
 		self.button_frame = self._ui_screen.add_frame(Frame((10, SCREEN_HEIGHT - 80), (SCREEN_WIDTH - 20, 70)))
-		self.button_frame.add_element(Button((0, 0), 0, self.reset_object_animations, size=(None, 70)))
+		self.button_frame.add_element(Button((0, 0), "tile_set_button", self.reset_object_animations, size=(None, 70)))
 
 	def reset_object_animations(self):
 		for game_object in self._room.objects:
 			if issubclass(type(game_object), AnimatableObject):
 				game_object.frame = 0
+
+	def next_state(self):
+		return self
 
 	def update(self, delta: float):
 		self._ui_screen.update(delta)
@@ -112,8 +116,9 @@ class Editor:
 				self._editor_state.mode = EditorModes.ObjectEditing
 
 		# Save
-		if InputManager.mods == pygame.KMOD_LCTRL and InputManager.keys_down[pygame.K_s]:
-			self._room.save()
+		if InputManager.mods == pygame.KMOD_LCTRL or InputManager.mods == pygame.KMOD_LCTRL + pygame.KMOD_NUM:
+			if InputManager.keys_down[pygame.K_s]:
+				self._room.save()
 
 		# Animate objects
 		for game_object in self._room.objects:
@@ -167,9 +172,9 @@ class EditingScreen(ControlledScreen):
 			self.tool.update(self._tiled_mouse_pos)
 
 		if InputManager.keys_down[pygame.K_z]:
-			if InputManager.mods == pygame.KMOD_LCTRL:
+			if InputManager.mods == pygame.KMOD_LCTRL or InputManager.mods == pygame.KMOD_LCTRL + pygame.KMOD_NUM:
 				self._editor_state.undo_action()
-			if InputManager.mods == pygame.KMOD_LCTRL + pygame.KMOD_LSHIFT:
+			if InputManager.mods == pygame.KMOD_LCTRL + pygame.KMOD_LSHIFT or InputManager.mods == pygame.KMOD_LCTRL + pygame.KMOD_LSHIFT + pygame.KMOD_NUM:
 				self._editor_state.redo_action()
 
 		# Change draw level

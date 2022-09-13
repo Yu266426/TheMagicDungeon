@@ -25,8 +25,8 @@ class GameObject:
 
 
 class AnimatableObject(Animation):
-	def __init__(self, pos: tuple, sprite_sheet_id: int, anim_start_index: int, length: int, looping: bool = True, custom_hitbox: pygame.Rect | None = None):
-		super().__init__(pos, sprite_sheet_id, anim_start_index, length, looping)
+	def __init__(self, pos: tuple, sprite_sheet_name: str, anim_start_index: int, length: int, looping: bool = True, custom_hitbox: pygame.Rect | None = None):
+		super().__init__(pos, sprite_sheet_name, anim_start_index, length, looping)
 		self.rect = self.images[0].get_rect(midbottom=self.pos).copy()
 
 		if custom_hitbox is None:

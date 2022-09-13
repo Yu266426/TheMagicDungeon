@@ -5,10 +5,10 @@ from data.modules.base.resources import ResourceManager, ResourceTypes
 
 
 class Animation:
-	def __init__(self, pos: tuple, sprite_sheet_id: int, anim_start_index: int, length: int, looping=True):
+	def __init__(self, pos: tuple, sprite_sheet_name: str, anim_start_index: int, length: int, looping=True):
 		self.pos = pygame.Vector2(pos)
 
-		self.sprite_sheet_id = sprite_sheet_id
+		self.sprite_sheet_id = sprite_sheet_name
 		self.anim_start_index = anim_start_index
 		self.length = length
 
