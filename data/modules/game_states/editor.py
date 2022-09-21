@@ -16,7 +16,8 @@ from data.modules.ui.text import Text
 
 class Editor(GameState):
 	def __init__(self):
-		self._room = Room("test", n_rows=7, n_cols=7)
+		# self._room = Room("test", n_rows=7, n_cols=7)
+		self._room = Room("test2", n_rows=20, n_cols=20, random_floor=False)
 
 		self._editor_state = EditorState("tiles")
 
@@ -116,7 +117,7 @@ class Editor(GameState):
 				self._editor_state.mode = EditorModes.ObjectEditing
 
 		# Save
-		if InputManager.mods == pygame.KMOD_LCTRL or InputManager.mods == pygame.KMOD_LCTRL + pygame.KMOD_NUM:
+		if InputManager.mods & pygame.KMOD_LCTRL:
 			if InputManager.keys_down[pygame.K_s]:
 				self._room.save()
 
@@ -157,6 +158,8 @@ class EditingScreen(ControlledScreen):
 		self.tool: EditorTool = self.tile_draw_tool
 
 		# UI
+		self.on_ui = False
+
 		self._layer_text = Text((SCREEN_WIDTH - 10, 7), "arial", 60, (200, 200, 200), text="1", use_sys=True)
 
 	def _get_mouse_pos(self):
@@ -166,15 +169,16 @@ class EditingScreen(ControlledScreen):
 	def update(self, delta: float, on_ui: bool):
 		self._mouse_update()
 		self._get_mouse_pos()
+		self.on_ui = on_ui
 
 		# Tool
 		if not on_ui:
 			self.tool.update(self._tiled_mouse_pos)
 
 		if InputManager.keys_down[pygame.K_z]:
-			if InputManager.mods == pygame.KMOD_LCTRL or InputManager.mods == pygame.KMOD_LCTRL + pygame.KMOD_NUM:
+			if InputManager.mods & pygame.KMOD_LCTRL and not InputManager.mods & pygame.KMOD_SHIFT:
 				self._editor_state.undo_action()
-			if InputManager.mods == pygame.KMOD_LCTRL + pygame.KMOD_LSHIFT or InputManager.mods == pygame.KMOD_LCTRL + pygame.KMOD_LSHIFT + pygame.KMOD_NUM:
+			if InputManager.mods & pygame.KMOD_LCTRL and InputManager.mods & pygame.KMOD_SHIFT:
 				self._editor_state.redo_action()
 
 		# Change draw level
@@ -202,5 +206,8 @@ class EditingScreen(ControlledScreen):
 		)
 
 		self._room.draw(display, self._camera)
-		self.tool.draw(display, self._camera, self._tiled_mouse_pos)
+
+		if not self.on_ui:
+			self.tool.draw(display, self._camera, self._tiled_mouse_pos)
+
 		self._layer_text.draw(display, draw_from="r")

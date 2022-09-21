@@ -10,6 +10,7 @@ class App:
 		pygame.init()
 
 		self.is_running: bool = True
+		self.target_fps = 60
 
 		self.flags = pygame.SCALED | pygame.FULLSCREEN
 		self.window: pygame.Surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -47,11 +48,9 @@ class App:
 
 	def update(self):
 		self.clock.tick()
-		delta = self.clock.get_time() / 1000
-
 		pygame.display.set_caption(f"{round(self.clock.get_fps())}")
 
-		self.game_state.update(delta)
+		self.game_state.update(self.clock.get_time() / 1000)
 
 	def draw(self):
 		self.game_state.draw(self.window)

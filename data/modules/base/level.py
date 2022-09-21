@@ -14,12 +14,19 @@ from data.modules.base.utils import get_tile_pos
 class Level:
 	def __init__(self):
 		self.rooms: dict[int, dict[int, Room]] = {}
-		self.connections: dict[tuple[int, int], list[tuple[int, int]]] = {}
+		self.connections = {}
 
 		self.room_size = 7
-		self.generate_level(5)
+		self.connections = self.generate_level(3)
 
+	# TODO: Redo generation to be over multiple frames
 	def generate_level(self, depth=3):
+		def add_connection(start: tuple[int, int], end: tuple[int, int]):
+			if start not in connections:
+				connections[start] = []
+
+			connections[start].append(end)
+
 		# Directions for generation
 		directions = [
 			(1, 0),
@@ -35,29 +42,30 @@ class Level:
 				room_names.append(file_name[:-5])
 
 		# Room generation
-		room_queue: deque[tuple[Room, tuple[int, int], int]] = deque()
-		self.add_room((0, 0), (0, 0), "test")  # Start Room
+		generated_rooms: set[tuple[int, int]] = set()
+		connections: dict[tuple[int, int], list[tuple[int, int]]] = {}  # Start, list[end]
+		end_rooms: list[tuple[int, int]] = []
+
+		room_queue: deque[tuple[tuple[int, int], int]] = deque()  # Position, depth
 
 		# Start in all directions
 		for direction in directions:
-			new_room = self.add_room(direction, direction, random.choice(room_names))
-			room_queue.append((new_room, direction, 1))
-			self.add_connection((0, 0), direction)
-
-		end_rooms = []
+			generated_rooms.add(direction)
+			room_queue.append((direction, 1))
+			add_connection((0, 0), direction)
 
 		while len(room_queue) > 0:
 			# Get room info, and move to end of queue
 			room_info = room_queue.popleft()
-			room = room_info[0]
-			room_pos = room_info[1]
-			room_depth = room_info[2]
+			room_pos = room_info[0]
+			room_depth = room_info[1]
 
 			if room_depth < depth:
 				# Get available directions
 				available_directions = []
 				for direction in directions:
-					if self.get_room((room_pos[0] + direction[0], room_pos[1] + direction[1])) is None:
+					new_pos = (room_pos[0] + direction[0], room_pos[1] + direction[1])
+					if new_pos not in generated_rooms:
 						available_directions.append(direction)
 
 				# If direction available
@@ -69,21 +77,26 @@ class Level:
 
 						new_pos = room_pos[0] + direction[0], room_pos[1] + direction[1]
 						if self.get_room(new_pos) is None:
-							new_room = self.add_room(new_pos, direction, random.choice(room_names))
-							self.add_connection(room_pos, new_pos)
-							room_queue.append((new_room, new_pos, room_depth + 1))
+							generated_rooms.add(new_pos)
+							add_connection(room_pos, new_pos)
+							room_queue.append((new_pos, room_depth + 1))
 
 						room_queue.append(room_info)  # Current room still active, move to end of queue
 					else:
 						# This room is the final room in its branch
-						end_rooms.append(room)
+						end_rooms.append(room_pos)
 
-	def add_connection(self, start: tuple[int, int], end: tuple[int, int]):
-		if start not in self.connections:
-			self.connections[start] = []
-		self.connections[start].append(end)
+		# Finalize generation
+		# Start room
+		self.add_room((0, 0), "test")
 
-	def add_room(self, pos: tuple[int, int], direction: tuple[int, int], room_name: str):
+		# TODO: Finish
+		for room_pos in generated_rooms:
+			self.add_room(room_pos, random.choice(room_names))
+
+		return connections
+
+	def add_room(self, pos: tuple[int, int], room_name: str):
 		if pos[1] not in self.rooms:
 			self.rooms[pos[1]] = {}
 
@@ -108,16 +121,17 @@ class Level:
 				if row in self.rooms and col in self.rooms[row]:
 					self.rooms[row][col].draw(display, camera)
 
-# for row, row_info in self.rooms.items():
-# 	for col, col_info in row_info.items():
-# 		pygame.draw.rect(display, "white", pygame.Rect(row * 100 - camera.target.x, col * 100 - camera.target.y, 80, 80))
-#
-# pygame.draw.rect(display, "yellow", pygame.Rect(*-camera.target, 80, 80))
-#
-# for start, ends in self.connections.items():
-# 	for end in ends:
-# 		pygame.draw.line(
-# 			display, "green", (start[0] * 100 - camera.target.x + 40, start[1] * 100 - camera.target.y + 40),
-# 			(end[0] * 100 - camera.target.x + 40, end[1] * 100 - camera.target.y + 40),
-# 			width=5
-# 		)
+		# Generation Map
+		for row, row_data in self.rooms.items():
+			for col, room in row_data.items():
+				pygame.draw.rect(display, "white", pygame.Rect(col * 100 - camera.target.x, row * 100 - camera.target.y, 80, 80))
+
+		pygame.draw.rect(display, "yellow", pygame.Rect(*-camera.target, 80, 80))
+
+		for start, ends in self.connections.items():
+			for end in ends:
+				pygame.draw.line(
+					display, "green", (start[0] * 100 - camera.target.x + 40, start[1] * 100 - camera.target.y + 40),
+					(end[0] * 100 - camera.target.x + 40, end[1] * 100 - camera.target.y + 40),
+					width=5
+				)

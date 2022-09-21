@@ -13,14 +13,17 @@ class Game(GameState):
 
 		self.camera = Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
 
+		self.x_input = InputManager.keys_pressed[pygame.K_d] - InputManager.keys_pressed[pygame.K_a]
+		self.y_input = InputManager.keys_pressed[pygame.K_s] - InputManager.keys_pressed[pygame.K_w]
+
 	def next_state(self):
 		return self
 
 	def update(self, delta: float):
-		x_input = InputManager.keys_pressed[pygame.K_d] - InputManager.keys_pressed[pygame.K_a]
-		y_input = InputManager.keys_pressed[pygame.K_s] - InputManager.keys_pressed[pygame.K_w]
+		self.x_input = InputManager.keys_pressed[pygame.K_d] - InputManager.keys_pressed[pygame.K_a]
+		self.y_input = InputManager.keys_pressed[pygame.K_s] - InputManager.keys_pressed[pygame.K_w]
 
-		self.camera.set_target(self.camera.target + pygame.Vector2(x_input, y_input) * 600 * delta)
+		self.camera.set_target(self.camera.target + pygame.Vector2(self.x_input, self.y_input) * 600 * delta)
 
 		if InputManager.keys_down[pygame.K_SPACE]:
 			self.level = Level()

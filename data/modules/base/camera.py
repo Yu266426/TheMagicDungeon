@@ -2,8 +2,11 @@ import pygame
 
 
 class Camera:
-	def __init__(self, pos: tuple[int | float, int | float] = (0, 0)):
+	def __init__(self, pos: tuple[int | float, int | float] | pygame.Vector2 = (0, 0)):
 		self.target = pygame.Vector2(pos)
+
+	def move_copy(self, movement: tuple[float, float]) -> "Camera":
+		return Camera(self.target + pygame.Vector2(movement))
 
 	def set_target(self, target: pygame.Vector2):
 		self.target = target.copy()

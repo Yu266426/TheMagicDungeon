@@ -13,6 +13,7 @@ class Loading(GameState):
 	def next_state(self):
 		if self.should_switch:
 			from data.modules.game_states.game import Game
+			from data.modules.game_states.editor import Editor
 			return Game()
 		return self
 
