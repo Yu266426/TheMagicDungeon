@@ -5,7 +5,11 @@ def get_tile_pos(pos: tuple | pygame.Vector2, tile_size: tuple[int | float, int 
 	return round((pos[0] / tile_size[0]) - 0.5), round((pos[1] / tile_size[1]) - 0.5)
 
 
-def generate_level_list(levels: int, n_rows: int, n_cols: int, fill_data=None):
+def get_1d_pos(pos: int | float, tile_size: int | float):
+	return round((pos / tile_size) - 0.5)
+
+
+def generate_3d_list(levels: int, n_rows: int, n_cols: int, fill_data=None):
 	data = []
 
 	for _ in range(levels):
@@ -18,6 +22,17 @@ def generate_level_list(levels: int, n_rows: int, n_cols: int, fill_data=None):
 
 		data.append(rows)
 
+	return data
+
+
+def generate_2d_list(n_rows: int, n_cols: int, fill: bool = False):
+	data = []
+	for _ in range(n_rows):
+		col = []
+		if fill:
+			for __ in range(n_cols):
+				col.append(None)
+		data.append(col)
 	return data
 
 

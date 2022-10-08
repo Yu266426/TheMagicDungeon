@@ -9,23 +9,42 @@ from data.modules.base.constants import TILE_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH
 from data.modules.base.files import LEVEL_DIR
 from data.modules.base.room import Room
 from data.modules.base.utils import get_tile_pos
+from data.modules.entities.entity_manager import EntityManager
 
 
 class Level:
-	def __init__(self):
+	def __init__(self, entities: EntityManager):
+		self.entities = entities
+
 		self.rooms: dict[int, dict[int, Room]] = {}
 		self.connections = {}
 
-		self.room_size = 7
-		self.connections = self.generate_level(3)
+		self.room_size = 8
+		self.generate_level(20)
 
 	# TODO: Redo generation to be over multiple frames
 	def generate_level(self, depth=3):
 		def add_connection(start: tuple[int, int], end: tuple[int, int]):
 			if start not in connections:
 				connections[start] = []
-
 			connections[start].append(end)
+
+			if end not in connections:
+				connections[end] = []
+			connections[end].append(start)
+
+		def get_connections(pos: tuple[int, int]):
+			top, bottom, left, right = False, False, False, False
+			for connection in connections[pos]:
+				if connection[0] == pos[0] and connection[1] == pos[1] - 1:
+					top = True
+				elif connection[0] == pos[0] and connection[1] == pos[1] + 1:
+					bottom = True
+				elif connection[0] == pos[0] - 1 and connection[1] == pos[1]:
+					left = True
+				elif connection[0] == pos[0] + 1 and connection[1] == pos[1]:
+					right = True
+			return top, bottom, left, right
 
 		# Directions for generation
 		directions = [
@@ -88,19 +107,17 @@ class Level:
 
 		# Finalize generation
 		# Start room
-		self.add_room((0, 0), "test")
+		self.add_room((0, 0), "test", get_connections((0, 0)))
 
-		# TODO: Finish
+		# TODO: Add hallways when needed
 		for room_pos in generated_rooms:
-			self.add_room(room_pos, random.choice(room_names))
+			self.add_room(room_pos, random.choice(room_names), get_connections(room_pos))
 
-		return connections
-
-	def add_room(self, pos: tuple[int, int], room_name: str):
+	def add_room(self, pos: tuple[int, int], room_name: str, connections: tuple[bool, bool, bool, bool]):
 		if pos[1] not in self.rooms:
 			self.rooms[pos[1]] = {}
 
-		room = Room(room_name, offset=(pos[0] * self.room_size * TILE_SIZE, pos[1] * self.room_size * TILE_SIZE))
+		room = Room(room_name, offset=(pos[0] * self.room_size * TILE_SIZE, pos[1] * self.room_size * TILE_SIZE), connections=connections)
 		self.rooms[pos[1]][pos[0]] = room
 		return room
 
@@ -109,6 +126,12 @@ class Level:
 			return self.rooms[pos[1]][pos[0]]
 		return None
 
+	def get_tile(self, pos: pygame.Vector2 | tuple[float, float]):
+		room_pos = get_tile_pos(pos, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
+		room = self.get_room(room_pos)
+		if room is not None:
+			return room.get_tile(1, get_tile_pos(pos, (TILE_SIZE, TILE_SIZE)))
+
 	def draw(self, display: pygame.Surface, camera: Camera):
 		top_left = get_tile_pos(camera.target, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
 		bottom_right = get_tile_pos(camera.target + pygame.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
@@ -116,22 +139,12 @@ class Level:
 		top_left = top_left[0], top_left[1]
 		bottom_right = bottom_right[0] + 2, bottom_right[1] + 2
 
+		# TODO: Revise to draw room tiles, instead of entire room
 		for row in range(top_left[1], bottom_right[1]):
 			for col in range(top_left[0], bottom_right[0]):
 				if row in self.rooms and col in self.rooms[row]:
-					self.rooms[row][col].draw(display, camera)
+					entities = self.entities.get_entities(col * self.room_size, row * self.room_size, size=(self.room_size, self.room_size))
+					self.rooms[row][col].draw(display, camera, entities)
 
-		# Generation Map
-		for row, row_data in self.rooms.items():
-			for col, room in row_data.items():
-				pygame.draw.rect(display, "white", pygame.Rect(col * 100 - camera.target.x, row * 100 - camera.target.y, 80, 80))
-
-		pygame.draw.rect(display, "yellow", pygame.Rect(*-camera.target, 80, 80))
-
-		for start, ends in self.connections.items():
-			for end in ends:
-				pygame.draw.line(
-					display, "green", (start[0] * 100 - camera.target.x + 40, start[1] * 100 - camera.target.y + 40),
-					(end[0] * 100 - camera.target.x + 40, end[1] * 100 - camera.target.y + 40),
-					width=5
-				)
+		# room_pos = get_tile_pos(pygame.mouse.get_pos() + camera.target, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
+		# print(room_pos, self.entities.get_entities(room_pos[0] * self.room_size, room_pos[1] * self.room_size, size=(self.room_size, self.room_size)))

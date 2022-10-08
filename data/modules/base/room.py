@@ -8,7 +8,7 @@ from data.modules.base.camera import Camera
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE
 from data.modules.base.files import LEVEL_DIR
 from data.modules.base.resources import ResourceManager, ResourceTypes
-from data.modules.base.utils import get_tile_pos, generate_level_list
+from data.modules.base.utils import get_tile_pos, generate_3d_list
 from data.modules.objects.game_object import GameObject, AnimatableObject
 from data.modules.objects.objects import object_types
 from data.modules.objects.tile import Tile
@@ -20,6 +20,7 @@ class Room:
 		self.n_cols = n_cols
 
 		self.offset = int(offset[0]), int(offset[1])
+		self.tile_offset = get_tile_pos(self.offset, (TILE_SIZE, TILE_SIZE))
 
 		# level[back, same, front]
 		self.tiles: list[list[list[Tile | None]]] = []
@@ -28,7 +29,9 @@ class Room:
 		# New level
 		self.save_path = os.path.join(LEVEL_DIR, f"{name}.json")
 		if not os.path.isfile(self.save_path):
-			self.tiles = generate_level_list(3, self.n_rows, self.n_cols)
+			print("Creating new room")
+
+			self.tiles = generate_3d_list(3, self.n_rows, self.n_cols)
 
 			if random_floor:
 				self.generate_floor()
@@ -40,29 +43,97 @@ class Room:
 				self.generate_floor()
 			self.generate_walls(connections)
 
-	def generate_walls(self, connections, gap_size: int = 3):
+	def generate_walls(self, connections, gap_radius: int = 1):
 		"""
 		Generates walls with gaps
 
 		:param connections: Up, Down, Left, Right
-		:param gap_size: Size of gap
+		:param gap_radius: Size of gap
 		"""
 
-		# TODO: Add gaps
 		wall_sheet = ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, "walls")
 
-		x_mid_point = self.n_cols / 2
-		y_mid_point = self.n_rows / 2
+		if self.n_cols % 2 == 0:
+			x_mid_point = self.n_cols // 2 - 1
 
-		# Top and bottom
-		for col in range(self.n_cols):
-			self.tiles[1][0][col] = Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1]))
-			self.tiles[1][self.n_rows - 1][col] = Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1]))
+			# Top and bottom
+			for col in range(self.n_cols):
+				if connections[0]:
+					if col < x_mid_point - gap_radius or col > x_mid_point + gap_radius + 1:
+						self.tiles[1][0][col] = Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1]))
+					else:
+						self.tiles[1][0][col] = None
+				else:
+					self.tiles[1][0][col] = Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1]))
 
-		# Left and Right
-		for row in range(self.n_rows):
-			self.tiles[1][row][0] = Tile("walls", random.randrange(0, wall_sheet.length), (self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
-			self.tiles[1][row][self.n_cols - 1] = Tile("walls", random.randrange(0, wall_sheet.length), ((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
+				if connections[1]:
+					if col < x_mid_point - gap_radius or col > x_mid_point + gap_radius + 1:
+						self.tiles[1][self.n_rows - 1][col] = Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1]))
+					else:
+						self.tiles[1][self.n_rows - 1][col] = None
+				else:
+					self.tiles[1][self.n_rows - 1][col] = Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1]))
+		else:
+			x_mid_point = self.n_cols // 2
+
+			# Top and bottom
+			for col in range(self.n_cols):
+				if connections[0]:
+					if col < x_mid_point - gap_radius or col > x_mid_point + gap_radius:
+						self.tiles[1][0][col] = Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1]))
+					else:
+						self.tiles[1][0][col] = None
+				else:
+					self.tiles[1][0][col] = Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1]))
+
+				if connections[1]:
+					if col < x_mid_point - gap_radius or col > x_mid_point + gap_radius:
+						self.tiles[1][self.n_rows - 1][col] = Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1]))
+					else:
+						self.tiles[1][self.n_rows - 1][col] = None
+				else:
+					self.tiles[1][self.n_rows - 1][col] = Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1]))
+
+		if self.n_rows % 2 == 0:
+			y_mid_point = self.n_rows // 2 - 1
+
+			# Left and Right
+			for row in range(self.n_rows):
+				if connections[2]:
+					if row < y_mid_point - gap_radius or row > y_mid_point + gap_radius + 1:
+						self.tiles[1][row][0] = Tile("walls", random.randrange(0, wall_sheet.length), (self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
+					else:
+						self.tiles[1][row][0] = None
+				else:
+					self.tiles[1][row][0] = Tile("walls", random.randrange(0, wall_sheet.length), (self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
+
+				if connections[3]:
+					if row < y_mid_point - gap_radius or row > y_mid_point + gap_radius + 1:
+						self.tiles[1][row][self.n_cols - 1] = Tile("walls", random.randrange(0, wall_sheet.length), ((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
+					else:
+						self.tiles[1][row][self.n_cols - 1] = None
+				else:
+					self.tiles[1][row][self.n_cols - 1] = Tile("walls", random.randrange(0, wall_sheet.length), ((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
+		else:
+			y_mid_point = self.n_rows // 2
+
+			# Left and Right
+			for row in range(self.n_rows):
+				if connections[2]:
+					if row < y_mid_point - gap_radius or row > y_mid_point + gap_radius:
+						self.tiles[1][row][0] = Tile("walls", random.randrange(0, wall_sheet.length), (self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
+					else:
+						self.tiles[1][row][0] = None
+				else:
+					self.tiles[1][row][0] = Tile("walls", random.randrange(0, wall_sheet.length), (self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
+
+				if connections[3]:
+					if row < y_mid_point - gap_radius or row > y_mid_point + gap_radius:
+						self.tiles[1][row][self.n_cols - 1] = Tile("walls", random.randrange(0, wall_sheet.length), ((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
+					else:
+						self.tiles[1][row][self.n_cols - 1] = None
+				else:
+					self.tiles[1][row][self.n_cols - 1] = Tile("walls", random.randrange(0, wall_sheet.length), ((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
 
 	def generate_floor(self):
 		tiles_sheet = ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, "tiles")
@@ -81,7 +152,7 @@ class Room:
 		self.n_rows = room_data["rows"]
 		self.n_cols = room_data["cols"]
 
-		self.tiles = generate_level_list(3, self.n_rows, self.n_cols)
+		self.tiles = generate_3d_list(3, self.n_rows, self.n_cols)
 
 		for level, tiles in enumerate(room_data["tiles"]):
 			for tile in tiles:
@@ -124,7 +195,7 @@ class Room:
 		print("Level saved")
 
 	def get_tile(self, level: int, pos: tuple[int, int]):
-		pos = pos[0] - self.offset[0], pos[1] - self.offset[1]
+		pos = pos[0] - self.tile_offset[0], pos[1] - self.tile_offset[1]
 
 		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
 			return self.tiles[level][pos[1]][pos[0]]
@@ -161,17 +232,29 @@ class Room:
 			if self.tiles[level][row][col] is not None:
 				self.tiles[level][row][col].draw(display, camera)
 
-	def draw(self, display: pygame.Surface, camera: Camera):
+	def draw(self, display: pygame.Surface, camera: Camera, entities: dict[int, dict]):
 		top_left: tuple[int, int] = get_tile_pos((camera.target.x - self.offset[0], camera.target.y - self.offset[1]), (TILE_SIZE, TILE_SIZE))
 		bottom_right: tuple[int, int] = get_tile_pos((camera.target.x + SCREEN_WIDTH - self.offset[0], camera.target.y + SCREEN_HEIGHT - self.offset[1]), (TILE_SIZE, TILE_SIZE))
 
+		y_offset = int(self.offset[1] // TILE_SIZE)
+
 		top_left = top_left[0], top_left[1]
 		bottom_right = bottom_right[0] + 1, bottom_right[1] + 2
+
+		if self.offset[0] // (self.n_cols * TILE_SIZE) == 0 and self.offset[1] // (self.n_rows * TILE_SIZE) == 0:
+			print(top_left, bottom_right, entities)
+		if self.offset[0] // (self.n_cols * TILE_SIZE) == 0 and self.offset[1] // (self.n_rows * TILE_SIZE) == 1:
+			print(top_left, bottom_right, entities)
 
 		for level in range(len(self.tiles)):
 			for row in range(top_left[1], bottom_right[1]):
 				for col in range(top_left[0], bottom_right[0]):
 					self.draw_tile(level, row, col, display, camera)
+
+				if level == 1:
+					if row + y_offset in entities:
+						for entity in entities[row + y_offset].values():
+							entity.draw(display, camera)
 
 		for game_object in self.objects:
 			game_object.draw(display, camera)

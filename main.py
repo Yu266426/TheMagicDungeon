@@ -1,5 +1,3 @@
-import pygame.time
-
 from data.modules.base.app import App
 
 if __name__ == '__main__':
@@ -9,4 +7,3 @@ if __name__ == '__main__':
 		app.update()
 		app.draw()
 		app.switch_state()
-

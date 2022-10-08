@@ -10,10 +10,11 @@ class App:
 		pygame.init()
 
 		self.is_running: bool = True
-		self.target_fps = 60
 
-		self.flags = pygame.SCALED | pygame.FULLSCREEN
-		self.window: pygame.Surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+		self.flags = pygame.SCALED
+		self.vsync = 1
+
+		self.window: pygame.Surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags=self.flags, vsync=self.vsync)
 		self.clock: pygame.time.Clock = pygame.time.Clock()
 
 		self.game_state = Loading()
