@@ -132,19 +132,27 @@ class Level:
 		if room is not None:
 			return room.get_tile(1, get_tile_pos(pos, (TILE_SIZE, TILE_SIZE)))
 
-	def draw(self, display: pygame.Surface, camera: Camera):
-		top_left = get_tile_pos(camera.target, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
-		bottom_right = get_tile_pos(camera.target + pygame.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
+	def draw_tile(self, level: int, pos: tuple[int, int], display: pygame.Surface, camera: Camera):
+		room_pos = get_tile_pos(pos, (self.room_size, self.room_size))
+		room = self.get_room(room_pos)
+		if room is not None:
+			room.draw_tile(level, pos[1], pos[0], display, camera, with_offset=True)
 
+	def draw(self, display: pygame.Surface, camera: Camera):
+		top_left = get_tile_pos(camera.target, (TILE_SIZE, TILE_SIZE))
+		bottom_right = get_tile_pos(camera.target + pygame.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), (TILE_SIZE, TILE_SIZE))
 		top_left = top_left[0], top_left[1]
 		bottom_right = bottom_right[0] + 2, bottom_right[1] + 2
 
-		# TODO: Revise to draw room tiles, instead of entire room
-		for row in range(top_left[1], bottom_right[1]):
-			for col in range(top_left[0], bottom_right[0]):
-				if row in self.rooms and col in self.rooms[row]:
-					entities = self.entities.get_entities(col * self.room_size, row * self.room_size, size=(self.room_size, self.room_size))
-					self.rooms[row][col].draw(display, camera, entities)
+		for level in range(0, 3):
+			for row in range(top_left[1], bottom_right[1]):
+				for col in range(top_left[0], bottom_right[0]):
+					self.draw_tile(level, (col, row), display, camera)
 
-		# room_pos = get_tile_pos(pygame.mouse.get_pos() + camera.target, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
-		# print(room_pos, self.entities.get_entities(room_pos[0] * self.room_size, room_pos[1] * self.room_size, size=(self.room_size, self.room_size)))
+				if level == 1:
+					entities = self.entities.get_entities(row)
+					for entity in entities:
+						entity.draw(display, camera)
+
+# room_pos = get_tile_pos(pygame.mouse.get_pos() + camera.target, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
+# print(room_pos, self.entities.get_entities(room_pos[0] * self.room_size, room_pos[1] * self.room_size, size=(self.room_size, self.room_size)))

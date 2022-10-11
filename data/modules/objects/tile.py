@@ -13,4 +13,4 @@ class Tile:
 		self.rect: pygame.Rect = self.image.get_rect(bottomleft=pos)
 
 	def draw(self, display: pygame.Surface, camera: Camera, flag: int = 0):
-		display.blit(self.image, (self.rect.topleft - camera.target, self.rect.size), special_flags=flag)
+		display.blit(self.image, (camera.world_to_screen(self.rect.topleft), self.rect.size), special_flags=flag)

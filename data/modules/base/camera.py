@@ -17,3 +17,6 @@ class Camera:
 
 	def screen_to_world(self, pos: pygame.Vector2 | tuple):
 		return pygame.Vector2(pos[0] + self.target.x, pos[1] + self.target.y)
+
+	def world_to_screen(self, pos: pygame.Vector2 | tuple):
+		return pos[0] - self.target.x, pos[1] - self.target.y

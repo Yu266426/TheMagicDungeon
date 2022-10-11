@@ -227,7 +227,11 @@ class Room:
 		if game_object is not None:
 			self.objects.remove(game_object)
 
-	def draw_tile(self, level: int, row: int, col: int, display: pygame.Surface, camera: Camera):
+	def draw_tile(self, level: int, row: int, col: int, display: pygame.Surface, camera: Camera, with_offset: bool = False):
+		if with_offset:
+			col -= int(self.offset[0] / TILE_SIZE)
+			row -= int(self.offset[1] / TILE_SIZE)
+
 		if 0 <= row < self.n_cols and 0 <= col < self.n_rows:
 			if self.tiles[level][row][col] is not None:
 				self.tiles[level][row][col].draw(display, camera)
@@ -240,11 +244,6 @@ class Room:
 
 		top_left = top_left[0], top_left[1]
 		bottom_right = bottom_right[0] + 1, bottom_right[1] + 2
-
-		if self.offset[0] // (self.n_cols * TILE_SIZE) == 0 and self.offset[1] // (self.n_rows * TILE_SIZE) == 0:
-			print(top_left, bottom_right, entities)
-		if self.offset[0] // (self.n_cols * TILE_SIZE) == 0 and self.offset[1] // (self.n_rows * TILE_SIZE) == 1:
-			print(top_left, bottom_right, entities)
 
 		for level in range(len(self.tiles)):
 			for row in range(top_left[1], bottom_right[1]):
