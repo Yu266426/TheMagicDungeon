@@ -205,7 +205,7 @@ class EditingScreen(ControlledScreen):
 			), width=2
 		)
 
-		self._room.draw(display, self._camera)
+		self._room.draw(display, self._camera, {})
 
 		if not self.on_ui:
 			self.tool.draw(display, self._camera, self._tiled_mouse_pos)

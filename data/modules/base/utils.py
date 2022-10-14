@@ -2,7 +2,9 @@ import pygame
 
 
 def get_tile_pos(pos: tuple | pygame.Vector2, tile_size: tuple[int | float, int | float]):
-	return round((pos[0] / tile_size[0]) - 0.5), round((pos[1] / tile_size[1]) - 0.5)
+	# print(pos, tile_size)
+	# return round((pos[0] / tile_size[0]) - 0.5), round((pos[1] / tile_size[1]) - 0.5)
+	return int(pos[0] // tile_size[0]), int(pos[1] // tile_size[1])
 
 
 def get_1d_pos(pos: int | float, tile_size: int | float):

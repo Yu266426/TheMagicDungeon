@@ -135,6 +135,7 @@ class Level:
 	def draw_tile(self, level: int, pos: tuple[int, int], display: pygame.Surface, camera: Camera):
 		room_pos = get_tile_pos(pos, (self.room_size, self.room_size))
 		room = self.get_room(room_pos)
+
 		if room is not None:
 			room.draw_tile(level, pos[1], pos[0], display, camera, with_offset=True)
 

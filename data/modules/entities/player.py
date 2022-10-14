@@ -21,6 +21,9 @@ class Player(Entity):
 		if self.input.length() != 0:
 			self.input.normalize_ip()
 
+		if InputManager.mods & pygame.KMOD_SHIFT:
+			self.input *= 0.4
+
 	def update(self, delta: float):
 		self.get_inputs()
 
@@ -28,4 +31,3 @@ class Player(Entity):
 
 	def draw(self, display: pygame.Surface, camera: Camera):
 		display.blit(self.image, self.image.get_rect(midbottom=self.pos).topleft - camera.target)
-		pygame.draw.rect(display, "black", pygame.Rect(self.hitbox.topleft - camera.target, self.hitbox.size))

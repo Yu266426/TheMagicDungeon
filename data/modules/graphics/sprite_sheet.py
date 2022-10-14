@@ -2,6 +2,7 @@ import pygame
 
 from data.modules.base.camera import Camera
 from data.modules.base.constants import TILE_SCALE
+from data.modules.ui.text import Text
 
 
 class SpriteSheet:
@@ -41,3 +42,10 @@ class SpriteSheet:
 
 	def draw_sheet(self, display: pygame.Surface, camera: Camera):
 		display.blit(self.image, -camera.target)
+
+		# TODO: Fix
+		text = Text(-camera.target, "arial", 100, "white", use_sys=True)
+		text.draw(display)
+		for row in range(self.n_rows):
+			for col in range(self.n_cols):
+				text.draw(display, "l", True)

@@ -14,7 +14,7 @@ class Loading(GameState):
 		if self.should_switch:
 			from data.modules.game_states.game import Game
 			from data.modules.game_states.editor import Editor
-			return Game()
+			return Editor()
 		return self
 
 	def update(self, delta: float):

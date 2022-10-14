@@ -157,5 +157,5 @@ class ResourceManager:
 			return False
 
 	@classmethod
-	def get_resource(cls, type: ResourceTypes, resource_name) -> SpriteSheet | pygame.Surface:
-		return cls.__loaded_resources[type][resource_name]
+	def get_resource(cls, resource_type: ResourceTypes, resource_name) -> SpriteSheet | pygame.Surface:
+		return cls.__loaded_resources[resource_type][resource_name]
