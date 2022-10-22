@@ -141,7 +141,7 @@ class TextElement(UIElement):
 	def draw(self, display: pygame.Surface):
 		render_surface = pygame.Surface(self.text.rendered_text[1].size).convert_alpha()
 		render_surface.fill((0, 0, 0, 0))
-		self.text.draw(render_surface, pos_based=False)
+		self.text.draw(render_surface, pos=(0, 0))
 		self.rect.width = render_surface.get_width()
 
 		offset = 0

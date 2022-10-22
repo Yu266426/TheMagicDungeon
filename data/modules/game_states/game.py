@@ -1,5 +1,3 @@
-import random
-
 import pygame
 
 from data.modules.base.camera import Camera

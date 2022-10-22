@@ -29,7 +29,7 @@ class Text:
 
 			self.text_changed = False
 
-	def draw(self, display: pygame.Surface, draw_from: str = "l", pos_based=True) -> None:
+	def draw(self, display: pygame.Surface, draw_from: str = "l", pos=None) -> None:
 		"""
 		Draw the text object to given surface \n
 		l = left \n
@@ -38,11 +38,12 @@ class Text:
 
 		:param display: Surface to draw on
 		:param draw_from: Draw text from left, center, or right
+		:param pos: Draws from given pos if not None
 		:return: None
 		"""
 		self.render_text()
 
-		if pos_based:
+		if pos is None:
 			if draw_from == "l":
 				display.blit(self.rendered_text[0], self.pos)
 			elif draw_from == "c":
@@ -53,10 +54,10 @@ class Text:
 				raise ValueError(f"{draw_from} is not a valid position")
 		else:
 			if draw_from == "l":
-				display.blit(self.rendered_text[0], (0, 0))
+				display.blit(self.rendered_text[0], pos)
 			elif draw_from == "c":
-				display.blit(self.rendered_text[0], (-self.rendered_text[1].width / 2, 0))
+				display.blit(self.rendered_text[0], (-self.rendered_text[1].width / 2 + pos[0], pos[1]))
 			elif draw_from == "r":
-				display.blit(self.rendered_text[0], (-self.rendered_text[1].width, 0))
+				display.blit(self.rendered_text[0], (-self.rendered_text[1].width + pos[0], pos[1]))
 			else:
 				raise ValueError(f"{draw_from} is not a valid position")

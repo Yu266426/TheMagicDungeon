@@ -16,7 +16,7 @@ from data.modules.ui.text import Text
 
 class Editor(GameState):
 	def __init__(self):
-		self._room = Room("test", n_rows=8, n_cols=8)
+		self._room = Room("room2", n_rows=10, n_cols=10)
 		# self._room = Room("test2", n_rows=20, n_cols=20, random_floor=False)
 
 		self._editor_state = EditorState("tiles")

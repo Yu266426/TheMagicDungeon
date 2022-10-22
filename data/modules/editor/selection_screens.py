@@ -37,7 +37,6 @@ class TileSelectionScreen:
 		"""
 		Callback for button press
 		:param new_screen_id: Screen index to switch to
-		:return: None
 		"""
 
 		self.current_screen = self.screens[new_screen_id]
@@ -66,13 +65,12 @@ class SpriteSheetScreen(ControlledScreen):
 	"""
 
 	def __init__(self, editor_state: EditorState, sprite_sheet_name: str):
-
 		self.editor_state = editor_state
 
 		self.sprite_sheet_name: str = sprite_sheet_name
 		self.sprite_sheet: SpriteSheet = ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, sprite_sheet_name)
 
-		super().__init__(keep_in=(0, 0, *self.sprite_sheet.image.get_size()))
+		super().__init__(keep_in=(0, 0, self.sprite_sheet.n_cols * self.sprite_sheet.tile_width, self.sprite_sheet.n_rows * self.sprite_sheet.tile_height))
 
 		self.selected_topleft = (0, 0)
 		self.selected_bottomright = (0, 0)
@@ -162,7 +160,6 @@ class ObjectsSelectionScreen:
 		"""
 		Callback for button press
 		:param new_screen_id: Screen index to switch to
-		:return: None
 		"""
 
 		self.current_screen = self.screens[new_screen_id]

@@ -19,7 +19,7 @@ class Level:
 		self.rooms: dict[int, dict[int, Room]] = {}
 		self.connections = {}
 
-		self.room_size = 8
+		self.room_size = 10
 		self.generate_level(20)
 
 	# TODO: Redo generation to be over multiple frames
@@ -58,7 +58,9 @@ class Level:
 		room_names = []
 		for _, _, file_names in os.walk(LEVEL_DIR):
 			for file_name in file_names:
-				room_names.append(file_name[:-5])
+				name = file_name[:-5]
+				if name != "start":
+					room_names.append(name)
 
 		# Room generation
 		generated_rooms: set[tuple[int, int]] = set()
@@ -66,6 +68,9 @@ class Level:
 		end_rooms: list[tuple[int, int]] = []
 
 		room_queue: deque[tuple[tuple[int, int], int]] = deque()  # Position, depth
+
+		# Add start room
+		generated_rooms.add((0, 0))
 
 		# Start in all directions
 		for direction in directions:
@@ -106,12 +111,11 @@ class Level:
 						end_rooms.append(room_pos)
 
 		# Finalize generation
-		# Start room
-		self.add_room((0, 0), "test", get_connections((0, 0)))
-
 		# TODO: Add hallways when needed
 		for room_pos in generated_rooms:
-			self.add_room(room_pos, random.choice(room_names), get_connections(room_pos))
+			room_name = random.choice(room_names) if room_pos != (0, 0) else "start"
+
+			self.add_room(room_pos, room_name, get_connections(room_pos))
 
 	def add_room(self, pos: tuple[int, int], room_name: str, connections: tuple[bool, bool, bool, bool]):
 		if pos[1] not in self.rooms:
@@ -154,6 +158,3 @@ class Level:
 					entities = self.entities.get_entities(row)
 					for entity in entities:
 						entity.draw(display, camera)
-
-# room_pos = get_tile_pos(pygame.mouse.get_pos() + camera.target, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
-# print(room_pos, self.entities.get_entities(room_pos[0] * self.room_size, room_pos[1] * self.room_size, size=(self.room_size, self.room_size)))
