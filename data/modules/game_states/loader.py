@@ -15,7 +15,7 @@ class Loading(GameState):
 			from data.modules.game_states.game import Game
 			from data.modules.game_states.editor import Editor
 
-			to_game = True
+			to_game = False
 			if to_game:
 				return Game()
 			else:

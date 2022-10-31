@@ -3,10 +3,10 @@ import pygame
 
 class Camera:
 	def __init__(self, pos: tuple[int | float, int | float] | pygame.Vector2 = (0, 0)):
-		self.target = pygame.Vector2(pos)
+		self.target: pygame.Vector2 = pygame.Vector2(pos)
 
 	def set_target(self, target: pygame.Vector2):
-		self.target = target.copy()
+		self.target: pygame.Vector2 = target.copy()
 
 	def lerp_to_target(self, target: pygame.Vector2, amount: float):
 		amount = max(0.0, min(amount, 1.0))

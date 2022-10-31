@@ -3,7 +3,7 @@ import pygame
 from data.modules.base.constants import SCREEN_HEIGHT, TILE_SCALE, SCREEN_WIDTH
 from data.modules.base.inputs import InputManager
 from data.modules.base.resources import ResourceManager, ResourceTypes
-from data.modules.base.utils import abs_tuple, get_tile_pos
+from data.modules.base.utils import abs_tuple, get_tile_pos, draw_rect_outline
 from data.modules.editor.editor_state import EditorState
 from data.modules.graphics.sprite_sheet import SpriteSheet
 from data.modules.objects.chest import Chest
@@ -129,14 +129,11 @@ class SpriteSheetScreen(ControlledScreen):
 
 		selected_topleft, selected_bottomright = abs_tuple(self.selected_topleft, self.selected_bottomright)
 
-		pygame.draw.rect(
+		draw_rect_outline(
 			display, (255, 255, 255),
-			pygame.Rect(
-				selected_topleft[0] * self.sprite_sheet.tile_width - self._camera.target.x,
-				selected_topleft[1] * self.sprite_sheet.tile_height - self._camera.target.y,
-				self.sprite_sheet.tile_width * (selected_bottomright[0] - selected_topleft[0] + 1),
-				self.sprite_sheet.tile_height * (selected_bottomright[1] - selected_topleft[1] + 1)
-			), width=2
+			(selected_topleft[0] * self.sprite_sheet.tile_width - self._camera.target.x, selected_topleft[1] * self.sprite_sheet.tile_height - self._camera.target.y),
+			(self.sprite_sheet.tile_width * (selected_bottomright[0] - selected_topleft[0] + 1), self.sprite_sheet.tile_height * (selected_bottomright[1] - selected_topleft[1] + 1)),
+			2
 		)
 
 
@@ -226,12 +223,9 @@ class ObjectSelectionScreen(ControlledScreen):
 		for game_object in self.objects:
 			game_object.draw(display, self._camera)
 
-		pygame.draw.rect(
+		draw_rect_outline(
 			display, (255, 255, 255),
-			pygame.Rect(
-				(self.selected_object_index % self.n_cols) * self.object_size[0] - self._camera.target.x,
-				(self.selected_object_index // self.n_cols) * self.object_size[1] - self._camera.target.y,
-				self.object_size[0], self.object_size[1]
-			),
-			width=2
+			((self.selected_object_index % self.n_cols) * self.object_size[0] - self._camera.target.x, (self.selected_object_index // self.n_cols) * self.object_size[1] - self._camera.target.y),
+			self.object_size,
+			2
 		)
