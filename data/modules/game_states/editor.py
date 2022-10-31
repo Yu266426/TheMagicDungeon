@@ -4,9 +4,9 @@ from data.modules.base.constants import TILE_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH
 from data.modules.base.inputs import InputManager
 from data.modules.base.room import Room
 from data.modules.base.utils import get_tile_pos, draw_rect_outline
-from data.modules.editor.editor_state import EditorState, EditorModes
-from data.modules.editor.editor_tool import EditorTool, TileDrawTool, ObjectDrawTool
-from data.modules.editor.selection_screens import TileSelectionScreen, ObjectsSelectionScreen
+from data.modules.editor.shared_editor_state import SharedTileState, EditorModes
+from data.modules.editor.tools.editor_tool import EditorTool, TileDrawTool, ObjectDrawTool
+from data.modules.editor.screens.selection_screens import TileSelectionScreen, ObjectsSelectionScreen
 from data.modules.game_states.game_state import GameState
 from data.modules.objects.game_object import AnimatableObject
 from data.modules.ui.element import Frame, Button, TextSelector
@@ -19,10 +19,8 @@ class Editor(GameState):
 		self._room = Room("room2", n_rows=10, n_cols=10)
 		# self._room = Room("test2", n_rows=20, n_cols=20, random_floor=False)
 
-		self._editor_state = EditorState("tiles")
-
 		self._editing_screen = EditingScreen(self._room, self._editor_state)
-		self._selection_screen = TileSelectionScreen(self._editor_state, ["tiles", "walls"])
+		self._selection_screen = TileSelectionScreen(["tiles", "walls"])
 		self._object_selection_screen = ObjectsSelectionScreen(self._editor_state)
 
 		# Mode switcher
@@ -145,7 +143,7 @@ class Editor(GameState):
 
 
 class EditingScreen(ControlledScreen):
-	def __init__(self, room: Room, editor_state: EditorState):
+	def __init__(self, room: Room, editor_state: SharedTileState):
 		super().__init__(keep_in=(0, 0, room.n_cols * TILE_SIZE, room.n_rows * TILE_SIZE))
 		self._room = room
 		self._editor_state = editor_state

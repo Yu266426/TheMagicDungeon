@@ -1,0 +1,86 @@
+import pygame
+
+from data.modules.base.inputs import InputManager
+from data.modules.base.resources import ResourceTypes, ResourceManager
+from data.modules.base.utils import draw_rect_outline, abs_tuple, get_tile_pos
+from data.modules.editor.shared_editor_state import SharedTileState
+from data.modules.graphics.sprite_sheet import SpriteSheet
+from data.modules.ui.screen import ControlledScreen
+
+
+class SpriteSheetScreen(ControlledScreen):
+	"""
+	Generic screen for selecting images from sprite_sheet
+	"""
+
+	def __init__(self, editor_state: SharedTileState, sprite_sheet_name: str):
+		self.editor_state = editor_state
+
+		self.sprite_sheet_name: str = sprite_sheet_name
+		self.sprite_sheet: SpriteSheet = ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, sprite_sheet_name)
+
+		super().__init__(keep_in=(0, 0, self.sprite_sheet.n_cols * self.sprite_sheet.tile_width, self.sprite_sheet.n_rows * self.sprite_sheet.tile_height))
+
+		self.selected_topleft = (0, 0)
+		self.selected_bottomright = (0, 0)
+
+		self._tiled_mouse_pos = (0, 0)
+
+	def get_ids(self) -> dict[int, dict[int, int]]:
+		ids = {}
+
+		for row in range(self.selected_topleft[1], self.selected_bottomright[1] + 1):
+			for col in range(self.selected_topleft[0], self.selected_bottomright[0] + 1):
+				if row not in ids:
+					ids[row] = {}
+
+				ids[row][col] = row * self.sprite_sheet.n_cols + col
+
+		return ids
+
+	def update_state(self):
+		selected_topleft, selected_bottomright = abs_tuple(self.selected_topleft, self.selected_bottomright)
+
+		self.selected_topleft = selected_topleft
+		self.selected_bottomright = selected_bottomright
+
+		self.editor_state.selected_topleft = self.selected_topleft
+		self.editor_state.selected_bottomright = self.selected_bottomright
+
+		self.editor_state.ids = self.get_ids()
+
+	def _get_mouse_pos(self):
+		self._tiled_mouse_pos = get_tile_pos(self._world_mouse_pos, (self.sprite_sheet.tile_width, self.sprite_sheet.tile_height))
+
+	def update(self, delta: float):
+		self._mouse_update()
+		self._get_mouse_pos()
+
+		if InputManager.mouse_down[0]:
+			if (0 <= self._tiled_mouse_pos[0] < self.sprite_sheet.n_cols and
+					0 <= self._tiled_mouse_pos[1] < self.sprite_sheet.n_rows):
+				self.selected_topleft = self._tiled_mouse_pos
+				self.selected_bottomright = self._tiled_mouse_pos
+
+		if InputManager.mouse_pressed[0]:
+			if (0 <= self._tiled_mouse_pos[0] < self.sprite_sheet.n_cols and
+					0 <= self._tiled_mouse_pos[1] < self.sprite_sheet.n_rows):
+				self.selected_bottomright = self._tiled_mouse_pos
+
+		if InputManager.mouse_up[0]:
+			self.update_state()
+
+		self._keyboard_control(delta)
+		self._mouse_control()
+
+	def draw(self, display: pygame.Surface):
+		self.sprite_sheet.draw_sheet(display, self._camera)
+
+		selected_topleft, selected_bottomright = abs_tuple(self.selected_topleft, self.selected_bottomright)
+
+		draw_rect_outline(
+			display, (255, 255, 255),
+			(selected_topleft[0] * self.sprite_sheet.tile_width - self._camera.target.x, selected_topleft[1] * self.sprite_sheet.tile_height - self._camera.target.y),
+			(self.sprite_sheet.tile_width * (selected_bottomright[0] - selected_topleft[0] + 1), self.sprite_sheet.tile_height * (selected_bottomright[1] - selected_topleft[1] + 1)),
+			2
+		)
