@@ -11,3 +11,7 @@ class EditorState:
 	@abstractmethod
 	def draw(self, display: pygame.Surface):
 		pass
+
+	@abstractmethod
+	def next_state(self):
+		pass

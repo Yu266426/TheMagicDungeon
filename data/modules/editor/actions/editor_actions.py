@@ -28,7 +28,7 @@ class EditorActionBatch:
 
 
 class EditorActionQueue:
-	def __init__(self, max_actions: int):
+	def __init__(self, max_actions: int = 20):
 		self.action_index = -1
 		self.editor_actions: list[EditorAction | EditorActionBatch] = []
 		self.max_action_length = max_actions

@@ -5,7 +5,7 @@ from data.modules.base.constants import TILE_SIZE
 from data.modules.base.inputs import InputManager
 from data.modules.base.room import Room
 from data.modules.base.utils import draw_rect_outline
-from data.modules.editor.actions.editor_actions import EditorActionBatch
+from data.modules.editor.actions.editor_actions import EditorActionBatch, EditorActionQueue
 from data.modules.editor.actions.tile_actions import RemoveTileAction, PlaceTileAction
 from data.modules.editor.shared_editor_state import SharedTileState
 from data.modules.editor.tools.editor_tool import EditorTool
@@ -13,8 +13,8 @@ from data.modules.objects.tile import Tile
 
 
 class TileDrawTool(EditorTool):
-	def __init__(self, room: Room, editor_state: SharedTileState):
-		super().__init__(room, editor_state)
+	def __init__(self, room: Room, editor_state: SharedTileState, action_queue: EditorActionQueue):
+		super().__init__(room, editor_state, action_queue)
 
 		self.current_place_tile: tuple[int, int] | None = None
 		self.current_erase_tile: tuple[int, int] | None = None
@@ -70,7 +70,7 @@ class TileDrawTool(EditorTool):
 
 		if InputManager.mouse_up[0] or InputManager.mouse_up[2]:
 			if self.current_batch is not None:
-				self._editor_state.add_action(self.current_batch)
+				self._action_queue.add_action(self.current_batch)
 				self.current_batch = None
 
 	def draw(self, display: pygame.Surface, camera: Camera, mouse_pos: tuple):
