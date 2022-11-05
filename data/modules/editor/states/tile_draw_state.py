@@ -7,15 +7,14 @@ from data.modules.base.utils import get_tile_pos, draw_rect_outline
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.screens.tile_selection_screen import TileSelectionScreen
 from data.modules.editor.shared_editor_state import SharedTileState
-from data.modules.editor.states.editor_state import EditorState
 from data.modules.editor.tools.tile_tools import TileDrawTool
 from data.modules.ui.screen import ControlledScreen
 from data.modules.ui.text import Text
 
 
-class TileDrawState(EditorState, ControlledScreen):
+class TileDrawState(ControlledScreen):
 	def __init__(self, room: Room, action_queue: EditorActionQueue):
-		super().__init__()
+		super().__init__(keep_in=(0, 0, room.n_cols * TILE_SIZE, room.n_rows * TILE_SIZE))
 		self._room: Room = room
 		self._action_queue: EditorActionQueue = action_queue
 
@@ -47,24 +46,26 @@ class TileDrawState(EditorState, ControlledScreen):
 			self.shared_tile_state.level = 2
 			self._layer_text.set_text("3")
 
-	def update(self, delta: float):
+	def update(self, delta: float, on_ui: bool):
 		self._mouse_update()
 		self._get_mouse_pos()
 
-		self.tile_draw_tool.update(self._tiled_mouse_pos)
+		if not on_ui:
+			self.tile_draw_tool.update(self._tiled_mouse_pos)
 
 		self.update_draw_level()
 
 		self._keyboard_control(delta)
 		self._mouse_control()
 
-	def draw(self, display: pygame.Surface):
+	def draw(self, display: pygame.Surface, on_ui: bool):
 		# Room outline
 		draw_rect_outline(display, (255, 255, 0), -self._camera.target, (self._room.n_cols * TILE_SIZE, self._room.n_rows * TILE_SIZE), 2)
 
 		self._room.draw(display, self._camera, {})
 
-		self.tile_draw_tool.draw(display, self._camera, self._tiled_mouse_pos)
+		if not on_ui:
+			self.tile_draw_tool.draw(display, self._camera, self._tiled_mouse_pos)
 
 		self._layer_text.draw(display, draw_from="r")
 

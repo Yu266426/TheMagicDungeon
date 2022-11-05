@@ -52,71 +52,73 @@ class Editor(GameState):
 	def update(self, delta: float):
 		self._ui_screen.update(delta)
 
-		self.tile_draw_state.update(delta)
+		self.tile_draw_state.update(delta, self._ui_screen.on_ui())
 
-		# # Mode switcher
-		# if self.prev_selection_index != self.mode_selection.index:  # Only runs once
-		# 	if self.mode_selection.index == 0:  # Switch to Tile mode
-		# 		self._editor_state.mode = EditorModes.TileEditing
-		#
-		# 		# Ensure correct tool
-		# 		if self._editing_screen.tool is self._editing_screen.object_draw_tool:
-		# 			self._editing_screen.tool = self._editing_screen.tile_draw_tool
-		#
-		# 	elif self.mode_selection.index == 1:  # Switch to Object mode
-		# 		self._editor_state.mode = EditorModes.ObjectEditing
-		#
-		# 		# Ensure correct tool
-		# 		if self._editing_screen.tool is self._editing_screen.tile_draw_tool:
-		# 			self._editing_screen.tool = self._editing_screen.object_draw_tool
-		#
-		# 		# Setup state
-		# 		self._editor_state.current_object_type = self._object_selection_screen.get_selected()
-		#
-		# 	self.prev_selection_index = self.mode_selection.index
+		"""
+		# Mode switcher
+		if self.prev_selection_index != self.mode_selection.index:  # Only runs once
+			if self.mode_selection.index == 0:  # Switch to Tile mode
+				self._editor_state.mode = EditorModes.TileEditing
+
+				# Ensure correct tool
+				if self._editing_screen.tool is self._editing_screen.object_draw_tool:
+					self._editing_screen.tool = self._editing_screen.tile_draw_tool
+
+			elif self.mode_selection.index == 1:  # Switch to Object mode
+				self._editor_state.mode = EditorModes.ObjectEditing
+
+				# Ensure correct tool
+				if self._editing_screen.tool is self._editing_screen.tile_draw_tool:
+					self._editing_screen.tool = self._editing_screen.object_draw_tool
+
+				# Setup state
+				self._editor_state.current_object_type = self._object_selection_screen.get_selected()
+
+			self.prev_selection_index = self.mode_selection.index
 
 		# Hide mode switcher
 		# If drawing
-		# if InputManager.mouse_pressed[0] or InputManager.mouse_pressed[2]:
-		# 	if not self._ui_screen.on_ui():
-		# 		self.selector_frame.active = False
-		# 		self.button_panel.active = False
-		# else:
-		# 	self.selector_frame.active = True
-		# 	self.button_panel.active = True
-		#
-		# 	# If in selection mode
-		# 	if self._editor_state.mode == EditorModes.TileSelecting or self._editor_state.mode == EditorModes.ObjectSelecting:
-		# 		self.selector_frame.active = False
-		# 		self.button_panel.active = False
-		# 	else:
-		# 		self.selector_frame.active = True
-		# 		self.button_panel.active = True
-		#
-		# # Update screens
-		# if self._editor_state.mode == EditorModes.TileEditing or self._editor_state.mode == EditorModes.ObjectEditing:
-		# 	self._editing_screen.update(delta, self._ui_screen.on_ui())
-		# if self._editor_state.mode == EditorModes.TileSelecting:
-		# 	self._selection_screen.update(delta)
-		# elif self._editor_state.mode == EditorModes.ObjectSelecting:
-		# 	self._object_selection_screen.update(delta)
-		#
-		# # Switch to selection screen
-		# if InputManager.keys_down[pygame.K_SPACE]:
-		# 	if self._editor_state.mode == EditorModes.TileEditing:
-		# 		self._editor_state.mode = EditorModes.TileSelecting
-		#
-		# 	if self._editor_state.mode == EditorModes.ObjectEditing:
-		# 		self._editor_state.mode = EditorModes.ObjectSelecting
-		#
-		# if InputManager.keys_up[pygame.K_SPACE]:
-		# 	if self._editor_state.mode == EditorModes.TileSelecting:
-		# 		self._editor_state.mode = EditorModes.TileEditing
-		#
-		# 		self._selection_screen.current_screen.update_state()  # Ensure selection is consistent
-		#
-		# 	if self._editor_state.mode == EditorModes.ObjectSelecting:
-		# 		self._editor_state.mode = EditorModes.ObjectEditing
+		if InputManager.mouse_pressed[0] or InputManager.mouse_pressed[2]:
+			if not self._ui_screen.on_ui():
+				self.selector_frame.active = False
+				self.button_panel.active = False
+		else:
+			self.selector_frame.active = True
+			self.button_panel.active = True
+
+			# If in selection mode
+			if self._editor_state.mode == EditorModes.TileSelecting or self._editor_state.mode == EditorModes.ObjectSelecting:
+				self.selector_frame.active = False
+				self.button_panel.active = False
+			else:
+				self.selector_frame.active = True
+				self.button_panel.active = True
+
+		# Update screens
+		if self._editor_state.mode == EditorModes.TileEditing or self._editor_state.mode == EditorModes.ObjectEditing:
+			self._editing_screen.update(delta, self._ui_screen.on_ui())
+		if self._editor_state.mode == EditorModes.TileSelecting:
+			self._selection_screen.update(delta)
+		elif self._editor_state.mode == EditorModes.ObjectSelecting:
+			self._object_selection_screen.update(delta)
+
+		# Switch to selection screen
+		if InputManager.keys_down[pygame.K_SPACE]:
+			if self._editor_state.mode == EditorModes.TileEditing:
+				self._editor_state.mode = EditorModes.TileSelecting
+
+			if self._editor_state.mode == EditorModes.ObjectEditing:
+				self._editor_state.mode = EditorModes.ObjectSelecting
+
+		if InputManager.keys_up[pygame.K_SPACE]:
+			if self._editor_state.mode == EditorModes.TileSelecting:
+				self._editor_state.mode = EditorModes.TileEditing
+
+				self._selection_screen.current_screen.update_state()  # Ensure selection is consistent
+
+			if self._editor_state.mode == EditorModes.ObjectSelecting:
+				self._editor_state.mode = EditorModes.ObjectEditing
+		"""
 
 		# Save
 		if InputManager.mods & pygame.KMOD_LCTRL:
@@ -134,7 +136,7 @@ class Editor(GameState):
 	def draw(self, display: pygame.Surface):
 		display.fill((30, 30, 30))
 
-		self.tile_draw_state.draw(display)
+		self.tile_draw_state.draw(display, self._ui_screen.on_ui())
 
 		# if self._editor_state.mode == EditorModes.TileEditing or self._editor_state.mode == EditorModes.ObjectEditing:
 		# 	self._editing_screen.draw(display)
