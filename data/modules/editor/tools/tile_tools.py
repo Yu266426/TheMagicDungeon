@@ -73,6 +73,9 @@ class TileDrawTool(EditorTool):
 				self._action_queue.add_action(self.current_batch)
 				self.current_batch = None
 
+			self.current_place_tile = None
+			self.current_erase_tile = None
+
 	def draw(self, display: pygame.Surface, camera: Camera, mouse_pos: tuple):
 		# Tile outline rect
 		draw_rect_outline(
