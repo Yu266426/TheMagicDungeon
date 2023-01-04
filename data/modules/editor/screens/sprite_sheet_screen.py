@@ -3,7 +3,7 @@ import pygame
 from data.modules.base.inputs import InputManager
 from data.modules.base.resources import ResourceTypes, ResourceManager
 from data.modules.base.utils import draw_rect_outline, abs_tuple, get_tile_pos
-from data.modules.editor.shared_editor_state import SharedTileState
+from data.modules.editor.editor_selection_info import TileSelectionInfo
 from data.modules.graphics.sprite_sheet import SpriteSheet
 from data.modules.ui.screen import ControlledScreen
 
@@ -13,8 +13,8 @@ class SpriteSheetScreen(ControlledScreen):
 	Generic screen for selecting images from sprite_sheet
 	"""
 
-	def __init__(self, editor_state: SharedTileState, sprite_sheet_name: str):
-		self.editor_state = editor_state
+	def __init__(self, selection_info: TileSelectionInfo, sprite_sheet_name: str):
+		self.selection_info = selection_info
 
 		self.sprite_sheet_name: str = sprite_sheet_name
 		self.sprite_sheet: SpriteSheet = ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, sprite_sheet_name)
@@ -44,10 +44,10 @@ class SpriteSheetScreen(ControlledScreen):
 		self.selected_topleft = selected_topleft
 		self.selected_bottomright = selected_bottomright
 
-		self.editor_state.selected_topleft = self.selected_topleft
-		self.editor_state.selected_bottomright = self.selected_bottomright
+		self.selection_info.selected_topleft = self.selected_topleft
+		self.selection_info.selected_bottomright = self.selected_bottomright
 
-		self.editor_state.ids = self.get_ids()
+		self.selection_info.ids = self.get_ids()
 
 	def _get_mouse_pos(self):
 		self._tiled_mouse_pos = get_tile_pos(self._world_mouse_pos, (self.sprite_sheet.tile_width, self.sprite_sheet.tile_height))
@@ -73,13 +73,13 @@ class SpriteSheetScreen(ControlledScreen):
 		self._keyboard_control(delta)
 		self._mouse_control()
 
-	def draw(self, display: pygame.Surface):
-		self.sprite_sheet.draw_sheet(display, self._camera)
+	def draw(self, screen: pygame.Surface):
+		self.sprite_sheet.draw_sheet(screen, self._camera)
 
 		selected_topleft, selected_bottomright = abs_tuple(self.selected_topleft, self.selected_bottomright)
 
 		draw_rect_outline(
-			display, (255, 255, 255),
+			screen, (255, 255, 255),
 			(selected_topleft[0] * self.sprite_sheet.tile_width - self._camera.target.x, selected_topleft[1] * self.sprite_sheet.tile_height - self._camera.target.y),
 			(self.sprite_sheet.tile_width * (selected_bottomright[0] - selected_topleft[0] + 1), self.sprite_sheet.tile_height * (selected_bottomright[1] - selected_topleft[1] + 1)),
 			2

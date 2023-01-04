@@ -7,13 +7,13 @@ from data.modules.base.room import Room
 from data.modules.base.utils import draw_rect_outline
 from data.modules.editor.actions.editor_actions import EditorActionBatch
 from data.modules.editor.actions.object_actions import RemoveObjectAction, PlaceObjectAction
-from data.modules.editor.shared_editor_state import SharedTileState
+from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
 
 
 class ObjectDrawTool(EditorTool):
-	def __init__(self, room: Room, editor_state: SharedTileState):
-		super().__init__(room, editor_state)
+	def __init__(self, room: Room, shared_state: SharedEditorState):
+		super().__init__(room, shared_state)
 
 		self.current_mouse_pos: tuple | None = None
 
@@ -25,7 +25,7 @@ class ObjectDrawTool(EditorTool):
 			y_pos = mouse_pos[1] * TILE_SIZE
 
 			if self._room.get_object((x_pos, y_pos - 1)) is None:
-				action = PlaceObjectAction(self._room, self._editor_state.current_object_type((x_pos, y_pos)))
+				action = PlaceObjectAction(self._room, self._shared_state.current_object_type((x_pos, y_pos)))
 				action.execute()
 
 				if self.current_batch is None:
@@ -48,20 +48,20 @@ class ObjectDrawTool(EditorTool):
 
 		if InputManager.mouse_up[0] or InputManager.mouse_up[2]:
 			if self.current_batch is not None:
-				self._editor_state.add_action(self.current_batch)
+				self._shared_state.add_action(self.current_batch)
 				self.current_batch = None
 
-	def draw(self, display: pygame.Surface, camera: Camera, mouse_pos: tuple):
+	def draw(self, screen: pygame.Surface, camera: Camera, mouse_pos: tuple):
 		draw_rect_outline(
-			display, (255, 255, 255),
+			screen, (255, 255, 255),
 			(mouse_pos[0] * TILE_SIZE - camera.target.x, mouse_pos[1] * TILE_SIZE - camera.target.y),
 			(TILE_SIZE, TILE_SIZE),
 			2
 		)
 
 		# Draw selected object
-		if self._editor_state.current_object_type is not None:
+		if self._shared_state.current_object_type is not None:
 			x_pos = mouse_pos[0] * TILE_SIZE
 			y_pos = mouse_pos[1] * TILE_SIZE
 
-			self._editor_state.current_object_type((x_pos, y_pos)).draw(display, camera, flag=pygame.BLEND_ADD)
+			self._shared_state.current_object_type((x_pos, y_pos)).draw(screen, camera, flag=pygame.BLEND_ADD)

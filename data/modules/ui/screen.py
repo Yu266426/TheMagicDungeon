@@ -18,6 +18,10 @@ class ControlledScreen:
 
 		self.keep_in = keep_in
 
+	@property
+	def camera(self):
+		return self._camera
+
 	def _handle_bounds(self):
 		if self.keep_in is not None:
 			if self.keep_in[2] - self.keep_in[0] < SCREEN_WIDTH:
@@ -64,6 +68,15 @@ class ControlledScreen:
 			self._camera.set_target(self._camera.target + pygame.Vector2(x_input, y_input) * speed * delta)
 
 		self._handle_bounds()
+
+	def update(self, delta):
+		self._mouse_update()
+		self._keyboard_control(delta)
+		self._mouse_control()
+
+	@property
+	def world_mouse_pos(self):
+		return self._world_mouse_pos
 
 
 class UIScreen:

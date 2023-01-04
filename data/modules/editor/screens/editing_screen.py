@@ -4,7 +4,7 @@ from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH
 from data.modules.base.inputs import InputManager
 from data.modules.base.room import Room
 from data.modules.base.utils import get_tile_pos, draw_rect_outline
-from data.modules.editor.shared_editor_state import SharedTileState
+from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
 from data.modules.editor.tools.object_tools import ObjectDrawTool
 from data.modules.editor.tools.tile_tools import TileDrawTool
@@ -13,7 +13,7 @@ from data.modules.ui.text import Text
 
 
 class EditingScreen(ControlledScreen):
-	def __init__(self, room: Room, editor_state: SharedTileState):
+	def __init__(self, room: Room):
 		super().__init__(keep_in=(0, 0, room.n_cols * TILE_SIZE, room.n_rows * TILE_SIZE))
 		self._room = room
 		self._editor_state = editor_state

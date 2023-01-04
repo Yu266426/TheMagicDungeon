@@ -60,3 +60,10 @@ class App:
 
 	def switch_state(self):
 		self.game_state = self.game_state.next_state()
+
+	def run(self):
+		while self.is_running:
+			self.handle_events()
+			self.update()
+			self.draw()
+			self.switch_state()
