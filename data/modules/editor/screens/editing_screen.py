@@ -37,13 +37,13 @@ class EditingScreen(ControlledScreen):
 	def update_draw_level(self):
 		# Change draw level
 		if InputManager.keys_down[pygame.K_1]:
-			self._editor_state.level = 0
+			self._editor_state.layer = 0
 			self._layer_text.set_text("1")
 		elif InputManager.keys_down[pygame.K_2]:
-			self._editor_state.level = 1
+			self._editor_state.layer = 1
 			self._layer_text.set_text("2")
 		elif InputManager.keys_down[pygame.K_3]:
-			self._editor_state.level = 2
+			self._editor_state.layer = 2
 			self._layer_text.set_text("3")
 
 	def update(self, delta: float, on_ui: bool):

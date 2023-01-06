@@ -99,6 +99,6 @@ class UIScreen:
 		for frame in self._frames:
 			frame.update(delta)
 
-	def draw(self, display: pygame.Surface):
+	def draw(self, screen: pygame.Surface):
 		for frame in self._frames:
-			frame.draw(display)
+			frame.draw(screen)

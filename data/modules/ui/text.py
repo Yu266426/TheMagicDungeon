@@ -9,7 +9,6 @@ class Text:
 			self.font = pygame.freetype.Font(font_name, size)
 
 		self.text = text
-		self.text_changed = True
 
 		self.colour = colour
 
@@ -20,44 +19,28 @@ class Text:
 
 	def set_text(self, text: str):
 		self.text = text
-		self.text_changed = True
-
-	def render_text(self):
-		if self.text_changed:
-			self.rendered_text = self.font.render(self.text, self.colour)
-			self.rendered_text = self.rendered_text[0].convert_alpha(), self.rendered_text[1]
-
-			self.text_changed = False
-
-	def draw(self, display: pygame.Surface, draw_from: str = "l", pos=None) -> None:
-		"""
-		Draw the text object to given surface \n
-		l = left \n
-		c = center \n
-		r = right
-
-		:param display: Surface to draw on
-		:param draw_from: Draw text from left, center, or right
-		:param pos: Draws from given pos if not None
-		:return: None
-		"""
 		self.render_text()
 
+	def render_text(self):
+		self.rendered_text = self.font.render(self.text, self.colour)
+		self.rendered_text = self.rendered_text[0].convert_alpha(), self.rendered_text[1]
+
+	def draw(self, screen: pygame.Surface, draw_from: str = "l", pos=None) -> None:
 		if pos is None:
 			if draw_from == "l":
-				display.blit(self.rendered_text[0], self.pos)
+				screen.blit(self.rendered_text[0], self.pos)
 			elif draw_from == "c":
-				display.blit(self.rendered_text[0], (self.pos[0] - self.rendered_text[1].width / 2, self.pos[1]))
+				screen.blit(self.rendered_text[0], (self.pos[0] - self.rendered_text[1].width / 2, self.pos[1]))
 			elif draw_from == "r":
-				display.blit(self.rendered_text[0], (self.pos[0] - self.rendered_text[1].width, self.pos[1]))
+				screen.blit(self.rendered_text[0], (self.pos[0] - self.rendered_text[1].width, self.pos[1]))
 			else:
 				raise ValueError(f"{draw_from} is not a valid position")
 		else:
 			if draw_from == "l":
-				display.blit(self.rendered_text[0], pos)
+				screen.blit(self.rendered_text[0], pos)
 			elif draw_from == "c":
-				display.blit(self.rendered_text[0], (-self.rendered_text[1].width / 2 + pos[0], pos[1]))
+				screen.blit(self.rendered_text[0], (-self.rendered_text[1].width / 2 + pos[0], pos[1]))
 			elif draw_from == "r":
-				display.blit(self.rendered_text[0], (-self.rendered_text[1].width + pos[0], pos[1]))
+				screen.blit(self.rendered_text[0], (-self.rendered_text[1].width + pos[0], pos[1]))
 			else:
 				raise ValueError(f"{draw_from} is not a valid position")

@@ -32,6 +32,15 @@ class Editor(GameState):
 			EditorStates.TILE_SELECTION_STATE: TileSelectionState(self.room, self.shared_state, self.action_queue, self.tile_selection_info)
 		}
 
+		self.mode_selector = TextSelector((0, 0), (260, 60), [
+			"Tile",
+			"Object"
+		])
+
+		self.ui = UIScreen()
+		self.selector_frame = self.ui.add_frame(Frame((10, 10), (260, 60)))
+		self.selector_frame.add_element(self.mode_selector)
+
 	# self.room = Room("room2", n_rows=10, n_cols=10)
 	# # self._room = Room("test2", n_rows=20, n_cols=20, random_floor=False)
 	#
@@ -65,6 +74,7 @@ class Editor(GameState):
 				game_object.frame = 0
 
 	def update(self, delta: float):
+		self.ui.update(delta)
 		self.current_state = self.states[self.current_state].next_state()
 
 		self.states[self.current_state].update(delta)

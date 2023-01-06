@@ -35,9 +35,25 @@ class TileDrawState(EditorState):
 
 		self.tiled_mouse_pos = get_tile_pos(self.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
 
+		self.layer_text = Text((SCREEN_WIDTH - 10, 7), "arial", 60, (200, 200, 200), text="1", use_sys=True)
+
+	def update_draw_layer(self):
+		# Change draw layer
+		if InputManager.keys_down[pygame.K_1]:
+			self.tile_selection_info.layer = 0
+			self.layer_text.set_text("1")
+		elif InputManager.keys_down[pygame.K_2]:
+			self.tile_selection_info.layer = 1
+			self.layer_text.set_text("2")
+		elif InputManager.keys_down[pygame.K_3]:
+			self.tile_selection_info.layer = 2
+			self.layer_text.set_text("3")
+
 	def update(self, delta: float):
 		self.controlled_screen.update(delta)
 		self.tiled_mouse_pos = get_tile_pos(self.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
+
+		self.update_draw_layer()
 
 		if not self._shared_state.on_global_ui:
 			self.tools[self.current_tool].update(self.tiled_mouse_pos, self.tile_selection_info)
@@ -48,6 +64,8 @@ class TileDrawState(EditorState):
 
 		if not self._shared_state.on_global_ui:
 			self.tools[self.current_tool].draw(screen, self.controlled_screen.camera, self.tiled_mouse_pos, self.tile_selection_info)
+
+			self.layer_text.draw(screen, "r")
 
 	def next_state(self):
 		if InputManager.keys_pressed[pygame.K_SPACE]:

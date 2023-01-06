@@ -29,7 +29,7 @@ class TileDrawTool(EditorTool):
 				tile_y = mouse_pos[1] + row - selection_info.selected_topleft[1]
 
 				if self.current_place_tile != mouse_pos:
-					action = PlaceTileAction(self._room, selection_info.level, tile_y, tile_x, Tile(
+					action = PlaceTileAction(self._room, selection_info.layer, tile_y, tile_x, Tile(
 						selection_info.sprite_sheet_name,
 						image_id,
 						(tile_x * TILE_SIZE, (tile_y + 1) * TILE_SIZE)
@@ -50,7 +50,7 @@ class TileDrawTool(EditorTool):
 				tile_y = mouse_pos[1] + row
 
 				if self.current_erase_tile != mouse_pos:
-					action = RemoveTileAction(self._room, selection_info.level, tile_y, tile_x)
+					action = RemoveTileAction(self._room, selection_info.layer, tile_y, tile_x)
 					action.execute()
 
 					if self.current_batch is None:
