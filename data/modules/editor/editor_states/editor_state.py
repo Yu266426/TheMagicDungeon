@@ -11,6 +11,8 @@ from data.modules.editor.shared_editor_state import SharedEditorState
 class EditorStates(enum.Enum):
 	TILE_DRAW_STATE = enum.auto()
 	TILE_SELECTION_STATE = enum.auto()
+	OBJECT_DRAW_STATE = enum.auto()
+	OBJECT_SELECTION_STATE = enum.auto()
 
 
 class EditorState:
@@ -28,5 +30,5 @@ class EditorState:
 		pass
 
 	@abstractmethod
-	def next_state(self):
+	def next_state(self, mode_index: int):
 		pass

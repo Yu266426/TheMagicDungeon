@@ -156,7 +156,7 @@ class TextSelector(Frame):
 
 		self.options = options
 
-		self.index = 0
+		self.index: int = 0
 		self.current_option = self.options[self.index]
 
 		self.add_element(Button((0, 0), "left", self.change_option, -1, size=(None, self.rect.height)))

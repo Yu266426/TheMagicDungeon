@@ -1,15 +1,17 @@
+import math
+
 import pygame
 
 from data.modules.base.inputs import InputManager
 from data.modules.base.utils import draw_rect_outline, get_tile_pos
-from data.modules.editor.shared_editor_state import SharedTileState
+from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.objects.game_object import AnimatableObject, GameObject
 from data.modules.ui.screen import ControlledScreen
 
 
 class ObjectSelectionScreen(ControlledScreen):
-	def __init__(self, editor_state: SharedTileState, object_types: list, object_size: tuple, n_cols=1):
-		super().__init__()
+	def __init__(self, editor_state: SharedEditorState, object_types: list, object_size: tuple, n_cols=1):
+		super().__init__(keep_in=(0, 0, n_cols * object_size[0], math.ceil(len(object_types) / n_cols) * object_size[1]))
 
 		self._editor_state = editor_state
 

@@ -41,6 +41,8 @@ class TileSelectionState(EditorState):
 		self.tile_selection_info.ids = self.sprite_sheets[self.sprite_sheet_index].get_ids()
 
 	def update(self, delta: float):
+		self._shared_state.show_global_ui = False
+
 		self.ui.update(delta)
 
 		self.sprite_sheets[self.sprite_sheet_index].update(delta)
@@ -50,8 +52,11 @@ class TileSelectionState(EditorState):
 
 		self.sprite_sheets[self.sprite_sheet_index].draw(screen)
 
-	def next_state(self):
-		if InputManager.keys_pressed[pygame.K_SPACE]:
-			return EditorStates.TILE_SELECTION_STATE
-		else:
-			return EditorStates.TILE_DRAW_STATE
+	def next_state(self, mode_index: int):
+		if mode_index == 0:
+			if InputManager.keys_pressed[pygame.K_SPACE]:
+				return EditorStates.TILE_SELECTION_STATE
+			else:
+				return EditorStates.TILE_DRAW_STATE
+		elif mode_index == 1:
+			return EditorStates.OBJECT_DRAW_STATE
