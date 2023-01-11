@@ -69,17 +69,10 @@ class Editor(GameState):
 			if issubclass(type(game_object), AnimatableObject):
 				game_object.change_frame(delta * 2)
 
-	# self._ui_screen.update(delta)
-	#
-	# self.tile_draw_state.update(delta, self._ui_screen.on_ui())
-	#
-	# # Save
-	# if InputManager.mods & pygame.KMOD_LCTRL:
-	# 	if InputManager.keys_down[pygame.K_s]:
-	# 		self.room.save()
-
-	# if InputManager.keys_down[pygame.K_0]:
-	# 	self.reset_object_animations()
+		# Save
+		if InputManager.mods & pygame.KMOD_LCTRL:
+			if InputManager.keys_down[pygame.K_s]:
+				self.room.save()
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill((30, 30, 30))
