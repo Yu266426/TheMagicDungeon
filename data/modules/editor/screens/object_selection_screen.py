@@ -4,16 +4,16 @@ import pygame
 
 from data.modules.base.inputs import InputManager
 from data.modules.base.utils import draw_rect_outline, get_tile_pos
-from data.modules.editor.shared_editor_state import SharedEditorState
+from data.modules.editor.editor_selection_info import ObjectSelectionInfo
 from data.modules.objects.game_object import AnimatableObject, GameObject
 from data.modules.ui.screen import ControlledScreen
 
 
 class ObjectSelectionScreen(ControlledScreen):
-	def __init__(self, editor_state: SharedEditorState, object_types: list, object_size: tuple, n_cols=1):
+	def __init__(self, object_selection_info: ObjectSelectionInfo, object_types: list, object_size: tuple, n_cols=1):
 		super().__init__(keep_in=(0, 0, n_cols * object_size[0], math.ceil(len(object_types) / n_cols) * object_size[1]))
 
-		self._editor_state = editor_state
+		self.object_selection_info = object_selection_info
 
 		self.object_size = object_size
 		self.n_cols = n_cols
@@ -40,7 +40,7 @@ class ObjectSelectionScreen(ControlledScreen):
 				index = self._tiled_mouse_pos[1] * self.n_cols + self._tiled_mouse_pos[0]
 				if index < len(self.objects):
 					self.selected_object_index = index
-					self._editor_state.current_object_type = type(self.objects[self.selected_object_index])
+					self.object_selection_info.current_object_type = type(self.objects[self.selected_object_index])
 
 		# Animate objects
 		for game_object in self.objects:

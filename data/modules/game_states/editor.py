@@ -44,33 +44,6 @@ class Editor(GameState):
 		self.selector_frame = self.ui.add_frame(Frame((10, 10), (260, 60)))
 		self.selector_frame.add_element(self.mode_selector)
 
-	# self.room = Room("room2", n_rows=10, n_cols=10)
-	# # self._room = Room("test2", n_rows=20, n_cols=20, random_floor=False)
-	#
-	# self.action_queue = EditorActionQueue()
-	#
-	# self.tile_draw_state = TileDrawState(self.room, self.action_queue)
-	#
-	# # self._editing_screen = EditingScreen(self._room, )
-	# # self._selection_screen = TileSelectionScreen(["tiles", "walls"])
-	# # self._object_selection_screen = ObjectsSelectionScreen(self._editor_state)
-	#
-	# # Mode switcher
-	# self.prev_selection_index = 0
-	# self.mode_selection = TextSelector((0, 0), (260, 60), [
-	# 	"Tile",
-	# 	"Object"
-	# ])
-	#
-	# self._ui_screen = UIScreen()
-	# self.selector_frame = self._ui_screen.add_frame(Frame((10, 10), (260, 60)))
-	# self.selector_frame.add_element(
-	# 	self.mode_selection
-	# )
-	#
-	# self.button_panel = self._ui_screen.add_frame(Frame((10, SCREEN_HEIGHT - 80), (SCREEN_WIDTH - 20, 70)))
-	# self.button_panel.add_element(Button((0, 0), "reload", self.reset_object_animations, size=(None, 70)))
-
 	def reset_object_animations(self):
 		for game_object in self.room.objects:
 			if issubclass(type(game_object), AnimatableObject):
@@ -91,6 +64,11 @@ class Editor(GameState):
 			if InputManager.mods & pygame.KMOD_LCTRL and InputManager.mods & pygame.KMOD_SHIFT:
 				self.action_queue.redo_action()
 
+		# Animate objects
+		for game_object in self.room.objects:
+			if issubclass(type(game_object), AnimatableObject):
+				game_object.change_frame(delta * 2)
+
 	# self._ui_screen.update(delta)
 	#
 	# self.tile_draw_state.update(delta, self._ui_screen.on_ui())
@@ -99,12 +77,7 @@ class Editor(GameState):
 	# if InputManager.mods & pygame.KMOD_LCTRL:
 	# 	if InputManager.keys_down[pygame.K_s]:
 	# 		self.room.save()
-	#
-	# # Animate objects
-	# for game_object in self.room.objects:
-	# 	if issubclass(type(game_object), AnimatableObject):
-	# 		game_object.change_frame(delta * 2)
-	#
+
 	# if InputManager.keys_down[pygame.K_0]:
 	# 	self.reset_object_animations()
 
@@ -114,21 +87,6 @@ class Editor(GameState):
 
 		if self.shared_state.show_global_ui:
 			self.ui.draw(screen)
-
-	# display.fill((30, 30, 30))
-	#
-	# self.tile_draw_state.draw(display, self._ui_screen.on_ui())
-	#
-	# if self._editor_state.mode == EditorModes.TileEditing or self._editor_state.mode == EditorModes.ObjectEditing:
-	# 	self._editing_screen.draw(display)
-	#
-	# elif self._editor_state.mode == EditorModes.TileSelecting:
-	# 	self._selection_screen.draw(display)
-	#
-	# elif self._editor_state.mode == EditorModes.ObjectSelecting:
-	# 	self._object_selection_screen.draw(display)
-	#
-	# self._ui_screen.draw(display)
 
 	def next_state(self):
 		return self

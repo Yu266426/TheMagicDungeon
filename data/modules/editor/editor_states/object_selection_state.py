@@ -21,7 +21,7 @@ class ObjectSelectionState(EditorState):
 
 		self.object_screen_index = 0
 		self.object_screens: list[ObjectSelectionScreen] = [
-			ObjectSelectionScreen(self._shared_state, [SmallCube, SmallRedCube, SmallGreenCube, LargeCube, LargeRedCube, LargeGreenCube, Lever, Chest], (16 * TILE_SCALE, 16 * TILE_SCALE), n_cols=3)
+			ObjectSelectionScreen(self.object_selection_info, [SmallCube, SmallRedCube, SmallGreenCube, LargeCube, LargeRedCube, LargeGreenCube, Lever, Chest], (16 * TILE_SCALE, 16 * TILE_SCALE), n_cols=3)
 		]
 
 	def update(self, delta: float):
