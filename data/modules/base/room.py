@@ -22,11 +22,11 @@ class Room:
 		self.offset = int(offset[0]), int(offset[1])
 		self.tile_offset = get_tile_pos(self.offset, (TILE_SIZE, TILE_SIZE))
 
-		# level[back, same, front]
+		# layer[back, player, front]
 		self.tiles: list[list[list[Tile | None]]] = []
 		self.objects: list[GameObject | AnimatableObject] = []
 
-		# New level
+		# New room
 		self.save_path = os.path.join(LEVEL_DIR, f"{name}.json")
 		if not os.path.isfile(self.save_path):
 			print("Creating new room")
@@ -194,19 +194,19 @@ class Room:
 
 		print("Level saved")
 
-	def get_tile(self, level: int, pos: tuple[int, int]):
+	def get_tile(self, layer: int, pos: tuple[int, int]):
 		pos = pos[0] - self.tile_offset[0], pos[1] - self.tile_offset[1]
 
 		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
-			return self.tiles[level][pos[1]][pos[0]]
+			return self.tiles[layer][pos[1]][pos[0]]
 
-	def add_tile(self, level: int, pos: tuple[int, int], tile: Tile):
+	def add_tile(self, layer: int, pos: tuple[int, int], tile: Tile):
 		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
-			self.tiles[level][pos[1]][pos[0]] = tile
+			self.tiles[layer][pos[1]][pos[0]] = tile
 
-	def remove_tile(self, level: int, pos: tuple[int, int]):
+	def remove_tile(self, layer: int, pos: tuple[int, int]):
 		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
-			self.tiles[level][pos[1]][pos[0]] = None
+			self.tiles[layer][pos[1]][pos[0]] = None
 
 	def get_object(self, pos: tuple, with_hitbox: bool = False):
 		if not with_hitbox:
@@ -227,16 +227,16 @@ class Room:
 		if game_object is not None:
 			self.objects.remove(game_object)
 
-	def draw_tile(self, level: int, row: int, col: int, display: pygame.Surface, camera: Camera, with_offset: bool = False):
+	def draw_tile(self, layer: int, row: int, col: int, display: pygame.Surface, camera: Camera, with_offset: bool = False):
 		if with_offset:
 			col -= int(self.offset[0] / TILE_SIZE)
 			row -= int(self.offset[1] / TILE_SIZE)
 
 		if 0 <= row < self.n_cols and 0 <= col < self.n_rows:
-			if self.tiles[level][row][col] is not None:
-				self.tiles[level][row][col].draw(display, camera)
+			if self.tiles[layer][row][col] is not None:
+				self.tiles[layer][row][col].draw(display, camera)
 
-	def draw(self, display: pygame.Surface, camera: Camera, entities: dict[int, dict]):
+	def draw(self, screen: pygame.Surface, camera: Camera, entities: dict[int, dict]):
 		top_left: tuple[int, int] = get_tile_pos((camera.target.x - self.offset[0], camera.target.y - self.offset[1]), (TILE_SIZE, TILE_SIZE))
 		bottom_right: tuple[int, int] = get_tile_pos((camera.target.x + SCREEN_WIDTH - self.offset[0], camera.target.y + SCREEN_HEIGHT - self.offset[1]), (TILE_SIZE, TILE_SIZE))
 
@@ -245,15 +245,15 @@ class Room:
 		top_left = top_left[0], top_left[1]
 		bottom_right = bottom_right[0] + 1, bottom_right[1] + 2
 
-		for level in range(len(self.tiles)):
+		for layer in range(len(self.tiles)):
 			for row in range(top_left[1], bottom_right[1]):
 				for col in range(top_left[0], bottom_right[0]):
-					self.draw_tile(level, row, col, display, camera)
+					self.draw_tile(layer, row, col, screen, camera)
 
-				if level == 1:
+				if layer == 1:
 					if row + y_offset in entities:
 						for entity in entities[row + y_offset].values():
-							entity.draw(display, camera)
+							entity.draw(screen, camera)
 
 		for game_object in self.objects:
-			game_object.draw(display, camera)
+			game_object.draw(screen, camera)

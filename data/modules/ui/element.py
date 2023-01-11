@@ -15,7 +15,7 @@ class UIElement:
 	def update(self, delta: float):
 		pass
 
-	def draw(self, display: pygame.Surface):
+	def draw(self, screen: pygame.Surface):
 		pass
 
 
@@ -74,13 +74,13 @@ class Frame(UIElement):
 			for element in self.elements:
 				element.update(delta)
 
-	def draw(self, display: pygame.Surface):
+	def draw(self, screen: pygame.Surface):
 		if self.active:
 			if self.bg is not None:
-				display.blit(self.bg, self.rect)
+				screen.blit(self.bg, self.rect)
 
 			for element in self.elements:
-				element.draw(display)
+				element.draw(screen)
 
 
 class Button(UIElement):
@@ -119,11 +119,11 @@ class Button(UIElement):
 		else:
 			self.mouse_on = False
 
-	def draw(self, display: pygame.Surface):
-		display.blit(self.image, self.rect)
+	def draw(self, screen: pygame.Surface):
+		screen.blit(self.image, self.rect)
 
 		if self.mouse_on:
-			display.blit(self.highlight, self.rect)
+			screen.blit(self.highlight, self.rect)
 
 
 class TextElement(UIElement):
@@ -138,7 +138,7 @@ class TextElement(UIElement):
 		self.text.set_text(new_text)
 		self.text.render_text()
 
-	def draw(self, display: pygame.Surface):
+	def draw(self, screen: pygame.Surface):
 		render_surface = pygame.Surface(self.text.rendered_text[1].size).convert_alpha()
 		render_surface.fill((0, 0, 0, 0))
 		self.text.draw(render_surface, pos=(0, 0))
@@ -147,7 +147,7 @@ class TextElement(UIElement):
 		offset = 0
 		if self.centered:
 			offset = self.rect.width / 2
-		display.blit(render_surface, (self.rect.x - offset, self.rect.y))
+		screen.blit(render_surface, (self.rect.x - offset, self.rect.y))
 
 
 class TextSelector(Frame):
@@ -156,7 +156,7 @@ class TextSelector(Frame):
 
 		self.options = options
 
-		self.index = 0
+		self.index: int = 0
 		self.current_option = self.options[self.index]
 
 		self.add_element(Button((0, 0), "left", self.change_option, -1, size=(None, self.rect.height)))

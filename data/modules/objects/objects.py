@@ -5,10 +5,10 @@ from data.modules.objects.lever import Lever
 object_types: dict = {}
 
 
-def add_object_type(name: str, type):
+def add_object_type(name: str, object_type):
 	global object_types
 
-	object_types[name] = type
+	object_types[name] = object_type
 
 
 add_object_type("SmallCube", SmallCube)

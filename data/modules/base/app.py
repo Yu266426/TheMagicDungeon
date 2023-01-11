@@ -7,8 +7,6 @@ from data.modules.game_states.loader import Loading
 
 class App:
 	def __init__(self):
-		pygame.init()
-
 		self.is_running: bool = True
 
 		self.flags = pygame.SCALED
@@ -60,3 +58,10 @@ class App:
 
 	def switch_state(self):
 		self.game_state = self.game_state.next_state()
+
+	def run(self):
+		while self.is_running:
+			self.handle_events()
+			self.update()
+			self.draw()
+			self.switch_state()

@@ -18,6 +18,10 @@ class ControlledScreen:
 
 		self.keep_in = keep_in
 
+	@property
+	def camera(self):
+		return self._camera
+
 	def _handle_bounds(self):
 		if self.keep_in is not None:
 			if self.keep_in[2] - self.keep_in[0] < SCREEN_WIDTH:
@@ -26,10 +30,10 @@ class ControlledScreen:
 				if self._camera.target.x + SCREEN_WIDTH < self.keep_in[2]:
 					self._camera.target.x = self.keep_in[2] - SCREEN_WIDTH
 			else:
-				if self._camera.target.x < self.keep_in[0] - 20:
-					self._camera.target.x = self.keep_in[0] - 20
-				if self.keep_in[2] + 20 < self._camera.target.x + SCREEN_WIDTH:
-					self._camera.target.x = self.keep_in[2] - SCREEN_WIDTH + 20
+				if self._camera.target.x < self.keep_in[0] - 30:
+					self._camera.target.x = self.keep_in[0] - 30
+				if self.keep_in[2] + 30 < self._camera.target.x + SCREEN_WIDTH:
+					self._camera.target.x = self.keep_in[2] - SCREEN_WIDTH + 30
 
 			if self.keep_in[3] - self.keep_in[1] < SCREEN_HEIGHT:
 				if self.keep_in[1] < self._camera.target.y:
@@ -37,10 +41,10 @@ class ControlledScreen:
 				if self._camera.target.y + SCREEN_HEIGHT < self.keep_in[3]:
 					self._camera.target.y = self.keep_in[3] - SCREEN_HEIGHT
 			else:
-				if self._camera.target.y < self.keep_in[1] - 20:
-					self._camera.target.y = self.keep_in[1] - 20
-				if self.keep_in[3] + 20 < self._camera.target.y + SCREEN_HEIGHT:
-					self._camera.target.y = self.keep_in[3] - SCREEN_HEIGHT + 20
+				if self._camera.target.y < self.keep_in[1] - 30:
+					self._camera.target.y = self.keep_in[1] - 30
+				if self.keep_in[3] + 30 < self._camera.target.y + SCREEN_HEIGHT:
+					self._camera.target.y = self.keep_in[3] - SCREEN_HEIGHT + 30
 
 	def _mouse_update(self):
 		self._mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
@@ -65,6 +69,15 @@ class ControlledScreen:
 
 		self._handle_bounds()
 
+	def update(self, delta):
+		self._mouse_update()
+		self._keyboard_control(delta)
+		self._mouse_control()
+
+	@property
+	def world_mouse_pos(self):
+		return self._world_mouse_pos
+
 
 class UIScreen:
 	def __init__(self):
@@ -86,6 +99,6 @@ class UIScreen:
 		for frame in self._frames:
 			frame.update(delta)
 
-	def draw(self, display: pygame.Surface):
+	def draw(self, screen: pygame.Surface):
 		for frame in self._frames:
-			frame.draw(display)
+			frame.draw(screen)

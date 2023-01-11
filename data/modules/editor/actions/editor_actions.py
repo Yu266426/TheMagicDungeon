@@ -1,34 +1,37 @@
-from enum import Enum
-
-from data.modules.editor.editor_actions import EditorAction, EditorActionBatch
+from abc import abstractmethod
 
 
-class EditorModes(Enum):
-	TileEditing = 0
-	TileSelecting = 1
-	ObjectEditing = 2
-	ObjectSelecting = 3
+class EditorAction:
+	@abstractmethod
+	def execute(self):
+		pass
+
+	@abstractmethod
+	def undo(self):
+		pass
 
 
-class EditorState:
-	def __init__(self, sprite_sheet_name: str):
-		self.mode = EditorModes.TileEditing
+class EditorActionBatch:
+	def __init__(self):
+		self.actions: list[EditorAction] = []
 
-		# Tile mode
-		self.level = 0
+	def add_action(self, action: EditorAction):
+		self.actions.append(action)
 
-		self.sprite_sheet_name = sprite_sheet_name
-		self.ids: dict[int, dict[int, int]] = {0: {0: 0}}
+	def execute(self):
+		for action in self.actions:
+			action.execute()
 
-		self.selected_topleft = (0, 0)
-		self.selected_bottomright = (0, 0)
+	def undo(self):
+		for action in self.actions[::-1]:
+			action.undo()
 
+
+class EditorActionQueue:
+	def __init__(self, max_actions: int = 20):
 		self.action_index = -1
 		self.editor_actions: list[EditorAction | EditorActionBatch] = []
-		self.max_action_length = 20
-
-		# Object mode
-		self.current_object_type = None
+		self.max_action_length = max_actions
 
 	def add_action(self, action: EditorAction | EditorActionBatch):
 		if self.action_index != len(self.editor_actions) - 1:
