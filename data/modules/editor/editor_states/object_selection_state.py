@@ -2,7 +2,7 @@ import pygame
 
 from data.modules.base.constants import TILE_SCALE, SCREEN_HEIGHT, SCREEN_WIDTH
 from data.modules.base.inputs import InputManager
-from data.modules.base.room import Room
+from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import ObjectSelectionInfo
 from data.modules.editor.editor_states.editor_state import EditorState, EditorStates
@@ -16,7 +16,7 @@ from data.modules.ui.screen import UIScreen
 
 
 class ObjectSelectionState(EditorState):
-	def __init__(self, room: Room, shared_state: SharedEditorState, action_queue: EditorActionQueue, object_selection_info: ObjectSelectionInfo):
+	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue, object_selection_info: ObjectSelectionInfo):
 		super().__init__(room, shared_state, action_queue)
 
 		self.object_selection_info: ObjectSelectionInfo = object_selection_info

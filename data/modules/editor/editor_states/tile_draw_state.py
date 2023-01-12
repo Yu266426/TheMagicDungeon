@@ -4,7 +4,7 @@ import pygame
 
 from data.modules.base.constants import SCREEN_WIDTH, TILE_SIZE
 from data.modules.base.inputs import InputManager
-from data.modules.base.room import Room
+from data.modules.base.room import EditorRoom
 from data.modules.base.utils import get_tile_pos, draw_rect_outline
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo
@@ -20,7 +20,7 @@ class TileTools(enum.Enum):
 
 
 class TileDrawState(EditorState):
-	def __init__(self, room: Room, shared_state: SharedEditorState, action_queue: EditorActionQueue, tile_selection_info: TileSelectionInfo):
+	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue, tile_selection_info: TileSelectionInfo):
 		super().__init__(room, shared_state, action_queue)
 
 		self.tile_selection_info = tile_selection_info

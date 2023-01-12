@@ -1,10 +1,10 @@
-from data.modules.base.room import Room
+from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorAction
 from data.modules.objects.tile import Tile
 
 
 class PlaceTileAction(EditorAction):
-	def __init__(self, room: Room, level: int, row: int, col: int, tile: Tile):
+	def __init__(self, room: EditorRoom, level: int, row: int, col: int, tile: Tile):
 		self._room = room
 
 		self._level = level
@@ -25,7 +25,7 @@ class PlaceTileAction(EditorAction):
 
 
 class RemoveTileAction(EditorAction):
-	def __init__(self, room: Room, level: int, row: int, col: int):
+	def __init__(self, room: EditorRoom, level: int, row: int, col: int):
 		self._room = room
 
 		self._level = level

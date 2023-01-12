@@ -1,10 +1,10 @@
 from data.modules.base.constants import TILE_SIZE
-from data.modules.base.room import Room
+from data.modules.base.room import EditorRoom
 from data.modules.ui.screen import ControlledScreen
 
 
 class SharedEditorState:
-	def __init__(self, room: Room):
+	def __init__(self, room: EditorRoom):
 		# UI
 		self.show_global_ui = True
 		self.on_global_ui = False

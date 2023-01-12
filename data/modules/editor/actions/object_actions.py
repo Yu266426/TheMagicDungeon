@@ -1,10 +1,10 @@
-from data.modules.base.room import Room
+from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorAction
 from data.modules.objects.game_object import GameObject
 
 
 class PlaceObjectAction(EditorAction):
-	def __init__(self, room: Room, game_object: GameObject):
+	def __init__(self, room: EditorRoom, game_object: GameObject):
 		self._room = room
 
 		self.game_object = game_object
@@ -17,7 +17,7 @@ class PlaceObjectAction(EditorAction):
 
 
 class RemoveObjectAction(EditorAction):
-	def __init__(self, room: Room, game_object: GameObject):
+	def __init__(self, room: EditorRoom, game_object: GameObject):
 		self._room = room
 
 		self.game_object = game_object

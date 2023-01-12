@@ -1,7 +1,7 @@
 import pygame
 
 from data.modules.base.inputs import InputManager
-from data.modules.base.room import Room
+from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo, ObjectSelectionInfo
 from data.modules.editor.editor_states.editor_state import EditorState, EditorStates
@@ -19,7 +19,7 @@ from data.modules.ui.screen import UIScreen
 
 class Editor(GameState):
 	def __init__(self):
-		self.room = Room("test", n_rows=10, n_cols=10)
+		self.room = EditorRoom("test", n_rows=10, n_cols=10)
 
 		self.shared_state = SharedEditorState(self.room)
 		self.action_queue = EditorActionQueue()

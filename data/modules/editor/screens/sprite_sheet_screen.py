@@ -9,10 +9,6 @@ from data.modules.ui.screen import ControlledScreen
 
 
 class SpriteSheetScreen(ControlledScreen):
-	"""
-	Generic screen for selecting images from sprite_sheet
-	"""
-
 	def __init__(self, selection_info: TileSelectionInfo, sprite_sheet_name: str):
 		self.selection_info = selection_info
 

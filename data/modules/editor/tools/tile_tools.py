@@ -3,7 +3,7 @@ import pygame
 from data.modules.base.camera import Camera
 from data.modules.base.constants import TILE_SIZE
 from data.modules.base.inputs import InputManager
-from data.modules.base.room import Room
+from data.modules.base.room import EditorRoom
 from data.modules.base.utils import draw_rect_outline
 from data.modules.editor.actions.editor_actions import EditorActionBatch, EditorActionQueue
 from data.modules.editor.actions.tile_actions import RemoveTileAction, PlaceTileAction
@@ -14,7 +14,7 @@ from data.modules.objects.tile import Tile
 
 
 class TileDrawTool(EditorTool):
-	def __init__(self, room: Room, shared_state: SharedEditorState, action_queue: EditorActionQueue):
+	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue):
 		super().__init__(room, shared_state, action_queue)
 
 		self.current_place_tile: tuple[int, int] | None = None
