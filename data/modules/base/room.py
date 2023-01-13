@@ -194,18 +194,21 @@ class Room:
 
 		print("Level saved")
 
+	def check_bounds(self, pos: tuple[int, int]):
+		return 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows
+
 	def get_tile(self, layer: int, pos: tuple[int, int]):
 		pos = pos[0] - self.tile_offset[0], pos[1] - self.tile_offset[1]
 
-		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
+		if self.check_bounds(pos):
 			return self.tiles[layer][pos[1]][pos[0]]
 
 	def add_tile(self, layer: int, pos: tuple[int, int], tile: Tile):
-		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
+		if self.check_bounds(pos):
 			self.tiles[layer][pos[1]][pos[0]] = tile
 
 	def remove_tile(self, layer: int, pos: tuple[int, int]):
-		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
+		if self.check_bounds(pos):
 			self.tiles[layer][pos[1]][pos[0]] = None
 
 	def get_object(self, pos: tuple, with_hitbox: bool = False):
@@ -232,7 +235,7 @@ class Room:
 			col -= int(self.offset[0] / TILE_SIZE)
 			row -= int(self.offset[1] / TILE_SIZE)
 
-		if 0 <= row < self.n_cols and 0 <= col < self.n_rows:
+		if self.check_bounds((col, row)):
 			if self.tiles[layer][row][col] is not None:
 				self.tiles[layer][row][col].draw(display, camera)
 
@@ -310,7 +313,7 @@ class EditorRoom:
 					if tile is not None:
 						tile_data = {
 							"pos": [row, col],
-						"image_info": [tile.sprite_sheet_name, tile.image_index],
+							"image_info": [tile.sprite_sheet_name, tile.image_index],
 						}
 						data["tiles"][level].append(tile_data)
 
@@ -325,16 +328,19 @@ class EditorRoom:
 
 		print("Level saved")
 
+	def check_bounds(self, pos: tuple[int, int]):
+		return 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows
+
 	def get_tile(self, layer: int, pos: tuple[int, int]):
-		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
+		if self.check_bounds(pos):
 			return self.tiles[layer][pos[1]][pos[0]]
 
 	def add_tile(self, layer: int, pos: tuple[int, int], tile: Tile):
-		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
+		if self.check_bounds(pos):
 			self.tiles[layer][pos[1]][pos[0]] = tile
 
 	def remove_tile(self, layer: int, pos: tuple[int, int]):
-		if 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows:
+		if self.check_bounds(pos):
 			self.tiles[layer][pos[1]][pos[0]] = None
 
 	def get_object(self, pos: tuple, with_hitbox: bool = False):
@@ -357,7 +363,7 @@ class EditorRoom:
 			self.objects.remove(game_object)
 
 	def draw_tile(self, layer: int, row: int, col: int, display: pygame.Surface, camera: Camera):
-		if 0 <= row < self.n_cols and 0 <= col < self.n_rows:
+		if self.check_bounds((col, row)):
 			if self.tiles[layer][row][col] is not None:
 				self.tiles[layer][row][col].draw(display, camera)
 
