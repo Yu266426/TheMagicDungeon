@@ -5,9 +5,10 @@ from data.modules.objects.game_object import GameObject, AnimatableObject
 
 class TileSelectionInfo:
 	def __init__(self, sprite_sheet_name: str):
-		# Tile mode
+		# Draw Layer
 		self.layer = 0
 
+		# Selection Info
 		self.sprite_sheet_name = sprite_sheet_name
 		self.ids: dict[int, dict[int, int]] = {0: {0: 0}}
 

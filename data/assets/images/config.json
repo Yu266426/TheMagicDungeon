@@ -1,1 +1,19 @@
-{"images": {"tile_set_button": {"scale": 5}, "right": {"scale": 5}, "left": {"scale": 5}, "reload": {"scale": 5}}}
+{
+  "images": {
+    "tile_set_button": {
+      "scale": 5
+    },
+    "right": {
+      "scale": 5
+    },
+    "left": {
+      "scale": 5
+    },
+    "reload": {
+      "scale": 5
+    },
+    "draw_tool_button": {
+      "scale": 5
+    }
+  }
+}

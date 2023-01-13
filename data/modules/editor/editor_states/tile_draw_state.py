@@ -2,7 +2,7 @@ import enum
 
 import pygame
 
-from data.modules.base.constants import SCREEN_WIDTH, TILE_SIZE
+from data.modules.base.constants import SCREEN_WIDTH, TILE_SIZE, SCREEN_HEIGHT
 from data.modules.base.inputs import InputManager
 from data.modules.base.room import EditorRoom
 from data.modules.base.utils import get_tile_pos, draw_rect_outline
@@ -12,6 +12,8 @@ from data.modules.editor.editor_states.editor_state import EditorState, EditorSt
 from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
 from data.modules.editor.tools.tile_tools import TileDrawTool
+from data.modules.ui.element import Frame, Button
+from data.modules.ui.screen import UIScreen
 from data.modules.ui.text import Text
 
 
@@ -34,6 +36,13 @@ class TileDrawState(EditorState):
 
 		self.layer_text = Text((SCREEN_WIDTH - 10, 7), "arial", 60, (200, 200, 200), text="1", use_sys=True)
 
+		self.ui = UIScreen()
+		self.button_frame = self.ui.add_frame(Frame((0, SCREEN_HEIGHT - 90), (SCREEN_WIDTH, 90), bg_colour=(20, 20, 20, 150)))
+		self.button_frame.add_element(Button((10, 10), "draw_tool_button", self.set_tool, TileTools.DRAW, size=(None, 70)))
+
+	def set_tool(self, new_tool: TileTools):
+		self.current_tool = new_tool
+
 	def update_draw_layer(self):
 		# Change draw layer
 		if InputManager.keys_down[pygame.K_1]:
@@ -48,22 +57,24 @@ class TileDrawState(EditorState):
 
 	def update(self, delta: float):
 		self._shared_state.show_global_ui = True
+		self.ui.update(delta)
 
 		self._shared_state.controlled_screen.update(delta)
 		self.tiled_mouse_pos = get_tile_pos(self._shared_state.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
 
 		self.update_draw_layer()
 
-		if not self._shared_state.on_global_ui:
+		if not self._shared_state.on_global_ui and not self.ui.on_ui():
 			self.tools[self.current_tool].update(self.tiled_mouse_pos, self.tile_selection_info)
 
 	def draw(self, screen: pygame.Surface):
 		draw_rect_outline(screen, (255, 255, 0), -self._shared_state.controlled_screen.camera.target, (self._room.n_cols * TILE_SIZE, self._room.n_rows * TILE_SIZE), 2)
 		self._room.draw(screen, self._shared_state.controlled_screen.camera, {})
 
-		if not self._shared_state.on_global_ui:
+		if not self._shared_state.on_global_ui and not self.ui.on_ui():
 			self.tools[self.current_tool].draw(screen, self._shared_state.controlled_screen.camera, self.tiled_mouse_pos, self.tile_selection_info)
 
+		self.ui.draw(screen)
 		self.layer_text.draw(screen, "r")
 
 	def next_state(self, mode_index: int):
