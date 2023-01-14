@@ -11,7 +11,8 @@ from data.modules.editor.editor_selection_info import TileSelectionInfo
 from data.modules.editor.editor_states.editor_state import EditorState, EditorStates
 from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
-from data.modules.editor.tools.tile_tools import TileDrawTool
+from data.modules.editor.tools.tile_tools.tile_draw_tool import TileDrawTool
+from data.modules.editor.tools.tile_tools.tile_fill_tool import TileFillTool
 from data.modules.ui.element import Frame, Button
 from data.modules.ui.screen import UIScreen
 from data.modules.ui.text import Text
@@ -19,6 +20,7 @@ from data.modules.ui.text import Text
 
 class TileTools(enum.Enum):
 	DRAW = enum.auto()
+	FILL = enum.auto()
 
 
 class TileDrawState(EditorState):
@@ -29,7 +31,8 @@ class TileDrawState(EditorState):
 
 		self.current_tool: TileTools = TileTools.DRAW
 		self.tools: dict[TileTools, EditorTool] = {
-			TileTools.DRAW: TileDrawTool(self._room, self._shared_state, self._action_queue)
+			TileTools.DRAW: TileDrawTool(self._room, self._shared_state, self._action_queue),
+			TileTools.FILL: TileFillTool(self._room, self._shared_state, self._action_queue)
 		}
 
 		self.tiled_mouse_pos = get_tile_pos(self._shared_state.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
@@ -39,6 +42,7 @@ class TileDrawState(EditorState):
 		self.ui = UIScreen()
 		self.button_frame = self.ui.add_frame(Frame((0, SCREEN_HEIGHT - 90), (SCREEN_WIDTH, 90), bg_colour=(20, 20, 20, 150)))
 		self.button_frame.add_element(Button((10, 10), "draw_tool_button", self.set_tool, TileTools.DRAW, size=(None, 70)))
+		self.button_frame.add_element(Button((10, 0), "draw_tool_button", self.set_tool, TileTools.FILL, size=(None, 70)), add_on_to_previous=(True, False), align_with_previous=(False, True))
 
 	def set_tool(self, new_tool: TileTools):
 		self.current_tool = new_tool

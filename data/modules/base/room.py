@@ -197,7 +197,7 @@ class Room:
 	def check_bounds(self, pos: tuple[int, int]):
 		return 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows
 
-	def get_tile(self, layer: int, pos: tuple[int, int]):
+	def get_tile(self, layer: int, pos: tuple[int, int]) -> Tile:
 		pos = pos[0] - self.tile_offset[0], pos[1] - self.tile_offset[1]
 
 		if self.check_bounds(pos):
@@ -331,7 +331,7 @@ class EditorRoom:
 	def check_bounds(self, pos: tuple[int, int]):
 		return 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows
 
-	def get_tile(self, layer: int, pos: tuple[int, int]):
+	def get_tile(self, layer: int, pos: tuple[int, int]) -> Tile:
 		if self.check_bounds(pos):
 			return self.tiles[layer][pos[1]][pos[0]]
 

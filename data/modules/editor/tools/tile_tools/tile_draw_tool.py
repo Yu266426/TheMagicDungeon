@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pygame
 
 from data.modules.base.camera import Camera
@@ -17,10 +19,10 @@ class TileDrawTool(EditorTool):
 	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue):
 		super().__init__(room, shared_state, action_queue)
 
-		self.current_place_tile: tuple[int, int] | None = None
-		self.current_erase_tile: tuple[int, int] | None = None
+		self.current_place_tile: Optional[tuple[int, int]] = None
+		self.current_erase_tile: Optional[tuple[int, int]] = None
 
-		self.current_batch: EditorActionBatch | None = None
+		self.current_batch: Optional[EditorActionBatch] = None
 
 	def draw_tiles(self, mouse_pos: tuple[int, int], selection_info: TileSelectionInfo):
 		for row, row_data in selection_info.ids.items():

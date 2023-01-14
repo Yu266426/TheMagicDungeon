@@ -11,7 +11,7 @@ from data.modules.editor.editor_selection_info import ObjectSelectionInfo
 from data.modules.editor.editor_states.editor_state import EditorState, EditorStates
 from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
-from data.modules.editor.tools.object_tools import ObjectDrawTool
+from data.modules.editor.tools.object_tools.object_tools import ObjectDrawTool
 from data.modules.objects.game_object import AnimatableObject
 from data.modules.ui.element import Frame, Button
 from data.modules.ui.screen import UIScreen
