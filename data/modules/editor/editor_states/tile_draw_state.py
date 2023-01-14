@@ -39,13 +39,16 @@ class TileDrawState(EditorState):
 
 		self.layer_text = Text((SCREEN_WIDTH - 10, 7), "arial", 60, (200, 200, 200), text="1", use_sys=True)
 
+		self.tool_highlight_index = 0
+
 		self.ui = UIScreen()
 		self.button_frame = self.ui.add_frame(Frame((0, SCREEN_HEIGHT - 90), (SCREEN_WIDTH, 90), bg_colour=(20, 20, 20, 150)))
-		self.button_frame.add_element(Button((10, 10), "draw_tool_button", self.set_tool, TileTools.DRAW, size=(None, 70)))
-		self.button_frame.add_element(Button((10, 0), "draw_tool_button", self.set_tool, TileTools.FILL, size=(None, 70)), add_on_to_previous=(True, False), align_with_previous=(False, True))
+		self.button_frame.add_element(Button((10, 10), "draw_tool_button", self.set_tool, TileTools.DRAW, 0, size=(None, 70)))
+		self.button_frame.add_element(Button((10, 0), "draw_tool_button", self.set_tool, TileTools.FILL, 1, size=(None, 70)), add_on_to_previous=(True, False), align_with_previous=(False, True))
 
-	def set_tool(self, new_tool: TileTools):
+	def set_tool(self, new_tool: TileTools, index: int):
 		self.current_tool = new_tool
+		self.tool_highlight_index = index
 
 	def update_draw_layer(self):
 		# Change draw layer
@@ -79,6 +82,9 @@ class TileDrawState(EditorState):
 			self.tools[self.current_tool].draw(screen, self._shared_state.controlled_screen.camera, self.tiled_mouse_pos, self.tile_selection_info)
 
 		self.ui.draw(screen)
+
+		pygame.draw.rect(screen, (47, 186, 224), ((80 * self.tool_highlight_index + 10, SCREEN_HEIGHT - 80), (70, 70)), width=2)
+
 		self.layer_text.draw(screen, "r")
 
 	def next_state(self, mode_index: int):
