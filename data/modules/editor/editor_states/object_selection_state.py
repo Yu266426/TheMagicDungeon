@@ -43,12 +43,13 @@ class ObjectSelectionState(EditorState):
 
 		self.ui.update(delta)
 
-		self.object_screens[self.object_screen_index].update(delta)
+		if not self.ui.on_ui():
+			self.object_screens[self.object_screen_index].update(delta)
 
 	def draw(self, screen: pygame.Surface):
-		self.ui.draw(screen)
-
 		self.object_screens[self.object_screen_index].draw(screen)
+
+		self.ui.draw(screen)
 
 	def next_state(self, mode_index: int):
 		if mode_index == 0:

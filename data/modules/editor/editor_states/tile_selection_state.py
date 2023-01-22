@@ -45,12 +45,13 @@ class TileSelectionState(EditorState):
 
 		self.ui.update(delta)
 
-		self.sprite_sheets[self.sprite_sheet_index].update(delta)
+		if not self.ui.on_ui():
+			self.sprite_sheets[self.sprite_sheet_index].update(delta)
 
 	def draw(self, screen: pygame.Surface):
-		self.ui.draw(screen)
-
 		self.sprite_sheets[self.sprite_sheet_index].draw(screen)
+
+		self.ui.draw(screen)
 
 	def next_state(self, mode_index: int):
 		if mode_index == 0:
