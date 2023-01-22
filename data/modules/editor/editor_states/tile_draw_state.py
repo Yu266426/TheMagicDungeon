@@ -43,8 +43,8 @@ class TileDrawState(EditorState):
 
 		self.ui = UIScreen()
 		self.button_frame = self.ui.add_frame(Frame((0, SCREEN_HEIGHT - 90), (SCREEN_WIDTH, 90), bg_colour=(20, 20, 20, 150)))
-		self.button_frame.add_element(Button((10, 10), "draw_tool_button", self.set_tool, TileTools.DRAW, 0, size=(None, 70)))
-		self.button_frame.add_element(Button((10, 0), "draw_tool_button", self.set_tool, TileTools.FILL, 1, size=(None, 70)), add_on_to_previous=(True, False), align_with_previous=(False, True))
+		self.button_frame.add_element(Button(self.button_frame, (10, 10), "draw_tool_button", self.set_tool, TileTools.DRAW, 0, size=(None, 70)))
+		self.button_frame.add_element(Button(self.button_frame, (10, 0), "draw_tool_button", self.set_tool, TileTools.FILL, 1, size=(None, 70)), add_on_to_previous=(True, False), align_with_previous=(False, True))
 
 	def set_tool(self, new_tool: TileTools, index: int):
 		self.current_tool = new_tool

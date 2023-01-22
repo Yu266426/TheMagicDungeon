@@ -13,7 +13,7 @@ from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.game_states.game_state import GameState
 from data.modules.objects.cube import SmallCube
 from data.modules.objects.game_object import AnimatableObject
-from data.modules.ui.element import Frame, TextSelector
+from data.modules.ui.element import Frame, TextSelectionMenu
 from data.modules.ui.screen import UIScreen
 
 
@@ -35,7 +35,7 @@ class Editor(GameState):
 			EditorStates.OBJECT_SELECTION_STATE: ObjectSelectionState(self.room, self.shared_state, self.action_queue, self.object_selection_info)
 		}
 
-		self.mode_selector = TextSelector((0, 0), (260, 60), [
+		self.mode_selector = TextSelectionMenu((0, 0), (260, 60), [
 			"Tile",
 			"Object"
 		])

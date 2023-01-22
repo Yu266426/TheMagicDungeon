@@ -13,5 +13,5 @@ class GameState:
 		pass
 
 	@abstractmethod
-	def draw(self, display: pygame.Surface):
+	def draw(self, screen: pygame.Surface):
 		pass

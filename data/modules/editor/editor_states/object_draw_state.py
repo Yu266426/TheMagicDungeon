@@ -36,7 +36,7 @@ class ObjectDrawState(EditorState):
 
 		self.ui = UIScreen()
 		self.button_frame = self.ui.add_frame(Frame((0, SCREEN_HEIGHT - 90), (SCREEN_WIDTH, 90), bg_colour=(20, 20, 20, 150)))
-		self.button_frame.add_element(Button((10, 10), "reload", self.reset_object_animations, size=(None, 70)))
+		self.button_frame.add_element(Button(self.button_frame, (10, 10), "reload", self.reset_object_animations, size=(None, 70)))
 
 	def reset_object_animations(self):
 		for game_object in self._room.objects:

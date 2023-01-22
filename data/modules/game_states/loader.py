@@ -14,16 +14,13 @@ class Loading(GameState):
 		if self.should_switch:
 			from data.modules.game_states.game import Game
 			from data.modules.game_states.editor import Editor
+			from data.modules.game_states.main_menu import MainMenu
 
-			to_game = False
-			if to_game:
-				return Game()
-			else:
-				return Editor()
+			return MainMenu()
 		return self
 
 	def update(self, delta: float):
 		self.should_switch = ResourceManager.load_update()
 
-	def draw(self, display: pygame.Surface):
-		display.fill((0, 0, 0))
+	def draw(self, screen: pygame.Surface):
+		screen.fill((0, 0, 0))

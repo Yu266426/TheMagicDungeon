@@ -32,7 +32,7 @@ class Game(GameState):
 
 		self.camera.lerp_to_target(self.player.hitbox.center - pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), delta * 5)
 
-	def draw(self, display: pygame.Surface):
-		display.fill("black")
+	def draw(self, screen: pygame.Surface):
+		screen.fill((0, 0, 0))
 
-		self.level.draw(display, self.camera)
+		self.level.draw(screen, self.camera)
