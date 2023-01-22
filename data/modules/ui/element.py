@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 import pygame
 
@@ -8,13 +8,16 @@ from data.modules.ui.text import Text
 
 
 class UIElement:
-	def __init__(self, frame: Optional["Frame"], pos: tuple, size: tuple):
-		self.frame = frame
-
+	def __init__(self, pos: tuple, size: tuple):
 		self.pos = pos
 		self.size = size
 
 		self.rect = pygame.Rect(pos, size) if pos[1] is not None else None
+
+	def added_to_frame(self, frame: "Frame"):
+		# Offset the rect to frame space
+		self.rect.x += frame.rect.x
+		self.rect.y += frame.rect.y
 
 	def update(self, delta: float):
 		pass
@@ -25,7 +28,7 @@ class UIElement:
 
 class Frame(UIElement):
 	def __init__(self, pos: tuple, size: tuple, bg_colour=None):
-		super().__init__(None, pos, size)
+		super().__init__(pos, size)
 
 		self.bg = None
 		if bg_colour is not None:
@@ -58,9 +61,7 @@ class Frame(UIElement):
 		# If element does not go out of frame, add it to the frame
 		if 0 <= element.pos[0] and element.pos[0] + element.size[0] <= self.size[0]:
 			if 0 <= element.pos[1] and element.pos[1] + element.size[1] <= self.size[1]:
-				# Offset the rect to frame space
-				element.rect.x += self.rect.x
-				element.rect.y += self.rect.y
+				element.added_to_frame(self)
 
 				# If object is frame, then offset its containers
 				if isinstance(element, Frame):
@@ -89,20 +90,20 @@ class Frame(UIElement):
 
 
 class Image(UIElement):
-	def __init__(self, frame: Frame, pos: tuple, image_name: str, size: tuple):
+	def __init__(self, pos: tuple, image_name: str, size: tuple):
 		self.image: pygame.Surface = ResourceManager.get_resource(ResourceTypes.IMAGE, image_name)
 
 		if self.image.get_size() != size:
 			self.image = pygame.transform.scale(self.image, size)
 
-		super().__init__(frame, pos, size)
+		super().__init__(pos, size)
 
 	def draw(self, screen: pygame.Surface):
 		screen.blit(self.image, self.rect)
 
 
 class Button(UIElement):
-	def __init__(self, frame: Frame, pos: tuple, image_name: str, callback, *callback_args, size: Optional[tuple] = None, text: str = "", alignment: str = "l"):
+	def __init__(self, pos: tuple, image_name: str, callback, *callback_args, size: Optional[tuple] = None, text: str = "", alignment: str = "l"):
 		self.image: pygame.Surface = ResourceManager.get_resource(ResourceTypes.IMAGE, image_name)
 
 		if size is not None:
@@ -114,11 +115,11 @@ class Button(UIElement):
 				self.image = pygame.transform.scale(self.image, size)
 
 		if alignment == "l":
-			super().__init__(frame, pos, self.image.get_size())
+			super().__init__(pos, self.image.get_size())
 		elif alignment == "r":
-			super().__init__(frame, (pos[0] - self.image.get_width(), pos[1]), self.image.get_size())
+			super().__init__((pos[0] - self.image.get_width(), pos[1]), self.image.get_size())
 		elif alignment == "c":
-			super().__init__(frame, (pos[0] - self.image.get_width() / 2, pos[1]), self.image.get_size())
+			super().__init__((pos[0] - self.image.get_width() / 2, pos[1]), self.image.get_size())
 		else:
 			raise ValueError(f"center: `{alignment}` on {self.__class__.__name__} is not valid")
 
@@ -129,7 +130,11 @@ class Button(UIElement):
 		self.highlight = pygame.Surface(self.image.get_size()).convert_alpha()
 		self.highlight.fill((255, 255, 255, 40))
 
-		self.text = Text((self.rect.centerx + self.frame.pos[0], (self.rect.top + self.rect.height * 0.2) + self.frame.pos[1]), "arial", self.size[1] * 0.8, "white", text, use_sys=True)
+		self.text: Union[Text, str] = text
+
+	def added_to_frame(self, frame: "Frame"):
+		super().added_to_frame(frame)
+		self.text = Text((self.rect.centerx, self.rect.top + self.rect.height * 0.2), "arial", self.size[1] * 0.8, "white", self.text, use_sys=True)
 
 	def update(self, delta: float):
 		if self.rect.collidepoint(pygame.mouse.get_pos()):
@@ -150,8 +155,8 @@ class Button(UIElement):
 
 
 class TextElement(UIElement):
-	def __init__(self, frame: Frame, pos: tuple, height: int | float, font_name: str, colour, text: str, centered=False, use_sys=True):
-		super().__init__(frame, pos, (0, height))
+	def __init__(self, pos: tuple, height: int | float, font_name: str, colour, text: str, centered=False, use_sys=True):
+		super().__init__(pos, (0, height))
 
 		self.text = Text(pos, font_name, height * 1.25, colour, text, use_sys=use_sys)
 
@@ -182,10 +187,10 @@ class TextSelectionMenu(Frame):
 		self.index: int = 0
 		self.current_option = self.options[self.index]
 
-		self.add_element(Button(self, (0, 0), "left", self.change_option, -1, size=(None, self.rect.height)))
-		self.add_element(Button(self, (self.rect.width, 0), "right", self.change_option, 1, size=(None, self.rect.height), alignment="r"))
+		self.add_element(Button((0, 0), "left", self.change_option, -1, size=(None, self.rect.height)))
+		self.add_element(Button((self.rect.width, 0), "right", self.change_option, 1, size=(None, self.rect.height), alignment="r"))
 
-		self.text = TextElement(self, (self.rect.width / 2, self.rect.height * 0.3 / 2), self.rect.height * 0.7, "arial", (255, 255, 255), self.current_option, centered=True)
+		self.text = TextElement((self.rect.width / 2, self.rect.height * 0.3 / 2), self.rect.height * 0.7, "arial", (255, 255, 255), self.current_option, centered=True)
 		self.add_element(self.text)
 
 	def change_option(self, direction):
