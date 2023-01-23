@@ -39,6 +39,12 @@ class Frame(UIElement):
 
 		self.active = True
 
+	def added_to_frame(self, frame: "Frame"):
+		super().added_to_frame(frame)
+		for f_element in self.elements:
+			f_element.rect.x += frame.rect.x
+			f_element.rect.y += frame.rect.y
+
 	def add_element(self, element: UIElement, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> "Frame":
 		# Align
 		if align_with_previous[0]:
@@ -63,12 +69,6 @@ class Frame(UIElement):
 			if 0 <= element.pos[1] and element.pos[1] + element.size[1] <= self.size[1]:
 				element.added_to_frame(self)
 
-				# If object is frame, then offset its containers
-				if isinstance(element, Frame):
-					for f_element in element.elements:
-						f_element.rect.x += element.rect.x
-						f_element.rect.y += element.rect.y
-
 				self.elements.append(element)
 		else:
 			print(f"WARNING: Element of type: `{type(element).__name__}` too large to fit in frame.")
@@ -90,13 +90,13 @@ class Frame(UIElement):
 
 
 class Image(UIElement):
-	def __init__(self, pos: tuple, image_name: str, size: tuple):
+	def __init__(self, pos: tuple, image_name: str, size: Optional[tuple] = None):
 		self.image: pygame.Surface = ResourceManager.get_resource(ResourceTypes.IMAGE, image_name)
 
-		if self.image.get_size() != size:
+		if size is not None:
 			self.image = pygame.transform.scale(self.image, size)
 
-		super().__init__(pos, size)
+		super().__init__(pos, self.image.get_size())
 
 	def draw(self, screen: pygame.Surface):
 		screen.blit(self.image, self.rect)

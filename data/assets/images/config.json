@@ -16,7 +16,10 @@
       "scale": 5
     },
     "main_menu_button": {
-      "scale": 5
+      "scale": 4.5
+    },
+    "main_title": {
+      "scale": 2
     }
   }
 }

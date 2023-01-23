@@ -10,7 +10,7 @@ class App:
 		self.is_running: bool = True
 
 		self.flags = pygame.SCALED
-		self.vsync = 1
+		self.vsync = True
 
 		self.window: pygame.Surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags=self.flags, vsync=self.vsync)
 		self.clock: pygame.time.Clock = pygame.time.Clock()
