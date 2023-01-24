@@ -58,6 +58,7 @@ class TileSelectionState(EditorState):
 			if InputManager.keys_pressed[pygame.K_SPACE]:
 				return EditorStates.TILE_SELECTION_STATE
 			else:
+				self.sprite_sheets[self.sprite_sheet_index].update_state()
 				return EditorStates.TILE_DRAW_STATE
 		elif mode_index == 1:
 			return EditorStates.OBJECT_DRAW_STATE
