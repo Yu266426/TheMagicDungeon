@@ -10,7 +10,7 @@ from data.modules.editor.editor_states.object_selection_state import ObjectSelec
 from data.modules.editor.editor_states.tile_draw_state import TileDrawState
 from data.modules.editor.editor_states.tile_selection_state import TileSelectionState
 from data.modules.editor.shared_editor_state import SharedEditorState
-from data.modules.game_states.game_state import GameState
+from data.modules.game_states.game_state import GameState, GameStateIds
 from data.modules.objects.cube import SmallCube
 from data.modules.objects.game_object import AnimatableObject
 from data.modules.ui.element import Frame, TextSelectionMenu
@@ -19,6 +19,8 @@ from data.modules.ui.screen import UIScreen
 
 class Editor(GameState):
 	def __init__(self):
+		super().__init__(GameStateIds.EDITOR)
+
 		self.room = EditorRoom("test", n_rows=10, n_cols=10)
 
 		self.shared_state = SharedEditorState(self.room)
@@ -81,5 +83,5 @@ class Editor(GameState):
 		if self.shared_state.show_global_ui:
 			self.ui.draw(screen)
 
-	def next_state(self):
+	def next_state(self) -> GameState:
 		return self

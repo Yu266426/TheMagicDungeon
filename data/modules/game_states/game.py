@@ -6,11 +6,13 @@ from data.modules.base.inputs import InputManager
 from data.modules.base.level import Level
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.player import Player
-from data.modules.game_states.game_state import GameState
+from data.modules.game_states.game_state import GameState, GameStateIds
 
 
 class Game(GameState):
 	def __init__(self):
+		super().__init__(GameStateIds.GAME)
+
 		self.entities = EntityManager()
 
 		self.level = Level(self.entities)
@@ -20,7 +22,7 @@ class Game(GameState):
 		self.player = Player((400, 400), pygame.Surface((80, 80)), self.level)
 		self.entities.add_entity(self.player)
 
-	def next_state(self):
+	def next_state(self) -> GameState:
 		return self
 
 	def update(self, delta: float):

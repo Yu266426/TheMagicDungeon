@@ -1,16 +1,20 @@
 import pygame
 
-from data.modules.game_states.game_state import GameState
+from data.modules.base.events import EventManager
+from data.modules.base.inputs import InputManager
+from data.modules.game_states.game_state import GameState, GameStateIds
 from data.modules.ui.element import Frame, Button, Image
 from data.modules.ui.screen import UIScreen
 
 
 class MainMenu(GameState):
 	def __init__(self):
+		super().__init__(GameStateIds.MAIN_MENU)
+
 		self.ui = UIScreen()
 
 		self.title_frame = self.ui.add_frame(Frame((150, 50), (500, 200)))
-		self.title_frame.add_element(Image((0,0), "main_title"))
+		self.title_frame.add_element(Image((0, 0), "main_title"))
 
 		self.go_to_state = ""
 
@@ -23,7 +27,7 @@ class MainMenu(GameState):
 	def set_next_state(self, next_state):
 		self.go_to_state = next_state
 
-	def next_state(self):
+	def next_state(self) -> GameState:
 		if self.go_to_state == "":
 			return self
 		elif self.go_to_state == "game":
@@ -35,6 +39,9 @@ class MainMenu(GameState):
 
 	def update(self, delta: float):
 		self.ui.update(delta)
+
+		if InputManager.keys_pressed[pygame.K_ESCAPE]:
+			EventManager.run_handlers(GameStateIds.MAIN_MENU, pygame.QUIT)
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill((30, 30, 30))

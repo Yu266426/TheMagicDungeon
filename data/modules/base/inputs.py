@@ -1,5 +1,8 @@
 import pygame.mouse
 
+from data.modules.base.events import EventManager
+from data.modules.game_states.game_state import GameStateIds
+
 
 class InputManager:
 	# Mouse
@@ -25,3 +28,32 @@ class InputManager:
 		cls.keys_pressed = pygame.key.get_pressed()
 
 		cls.mods = pygame.key.get_mods()
+
+	@classmethod
+	def register_handlers(cls):
+		EventManager.add_handler(GameStateIds.ALL, pygame.KEYDOWN, cls._keydown_handler)
+		EventManager.add_handler(GameStateIds.ALL, pygame.KEYUP, cls._keyup_handler)
+		EventManager.add_handler(GameStateIds.ALL, pygame.MOUSEBUTTONDOWN, cls._mouse_down_handler)
+		EventManager.add_handler(GameStateIds.ALL, pygame.MOUSEBUTTONUP, cls._mouse_up_handler)
+
+	@classmethod
+	def _keydown_handler(cls, event: pygame.event.Event):
+		if event.key <= 512:
+			cls.keys_down[event.key] = True
+
+	@classmethod
+	def _keyup_handler(cls, event: pygame.event.Event):
+		if event.key <= 512:
+			cls.keys_up[event.key] = True
+
+	@classmethod
+	def _mouse_down_handler(cls, event: pygame.event.Event):
+		button = event.button - 1
+		if button <= 2:
+			cls.mouse_down[button] = True
+
+	@classmethod
+	def _mouse_up_handler(cls, event: pygame.event.Event):
+		button = event.button - 1
+		if button <= 2:
+			cls.mouse_up[button] = True

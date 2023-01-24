@@ -1,7 +1,9 @@
 import pygame.display
 
 from data.modules.base.constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from data.modules.base.events import EventManager
 from data.modules.base.inputs import InputManager
+from data.modules.game_states.game_state import GameStateIds, GameState
 from data.modules.game_states.loader import Loading
 
 
@@ -15,35 +17,16 @@ class App:
 		self.window: pygame.Surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags=self.flags, vsync=self.vsync)
 		self.clock: pygame.time.Clock = pygame.time.Clock()
 
-		self.game_state = Loading()
+		self.game_state: GameState = Loading()
+
+		EventManager.add_handler(GameStateIds.ALL, pygame.QUIT, self.quit_handler)
+
+	def quit_handler(self, event: pygame.event.Event):
+		self.is_running = False
 
 	def handle_events(self):
 		InputManager.reset()
-
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				self.is_running = False
-
-			elif event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_ESCAPE:
-					self.is_running = False
-
-				if event.key <= 512:
-					InputManager.keys_down[event.key] = True
-
-			elif event.type == pygame.KEYUP:
-				if event.key <= 512:
-					InputManager.keys_up[event.key] = True
-
-			elif event.type == pygame.MOUSEBUTTONDOWN:
-				button = event.button - 1
-				if button <= 2:
-					InputManager.mouse_down[button] = True
-
-			elif event.type == pygame.MOUSEBUTTONUP:
-				button = event.button - 1
-				if button <= 2:
-					InputManager.mouse_up[button] = True
+		EventManager.handle_events(self.game_state.id)
 
 	def update(self):
 		self.clock.tick()
