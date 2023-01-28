@@ -41,7 +41,7 @@ class MainMenu(GameState):
 		self.ui.update(delta)
 
 		if InputManager.keys_pressed[pygame.K_ESCAPE]:
-			EventManager.run_handlers(GameStateIds.MAIN_MENU, pygame.QUIT)
+			EventManager.run_handlers(GameStateIds.ALL, pygame.QUIT)
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill((30, 30, 30))
