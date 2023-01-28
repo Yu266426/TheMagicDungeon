@@ -1,8 +1,8 @@
 import pygame
 
-from data.modules.base.camera import Camera
-from data.modules.base.constants import TILE_SCALE
-from data.modules.ui.text import Text
+from ..camera import Camera
+from ..constants import TILE_SCALE
+from ..ui.text import Text
 
 
 class SpriteSheet:

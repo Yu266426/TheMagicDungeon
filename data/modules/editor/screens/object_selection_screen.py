@@ -2,11 +2,11 @@ import math
 
 import pygame
 
-from data.modules.base.inputs import InputManager
+from data.modules.engine.inputs import InputManager
 from data.modules.base.utils import draw_rect_outline, get_tile_pos
 from data.modules.editor.editor_selection_info import ObjectSelectionInfo
 from data.modules.objects.game_object import AnimatableObject, GameObject
-from data.modules.ui.screen import ControlledScreen
+from data.modules.engine.ui.screen import ControlledScreen
 
 
 class ObjectSelectionScreen(ControlledScreen):

@@ -1,14 +1,16 @@
+from typing import Type
+
 import pygame.display
 
-from data.modules.base.constants import SCREEN_HEIGHT, SCREEN_WIDTH
-from data.modules.base.events import EventManager
-from data.modules.base.inputs import InputManager
-from data.modules.game_states.game_state import GameStateIds, GameState
-from data.modules.game_states.loader import Loading
+from .constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from .events import EventManager
+from .game_state import GameStateIds, GameState
+from .inputs import InputManager
+from .loader import Loading
 
 
 class App:
-	def __init__(self):
+	def __init__(self, after_load_state: Type[GameState]):
 		self.is_running: bool = True
 
 		self.flags = pygame.SCALED
@@ -17,7 +19,7 @@ class App:
 		self.window: pygame.Surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags=self.flags, vsync=self.vsync)
 		self.clock: pygame.time.Clock = pygame.time.Clock()
 
-		self.game_state: GameState = Loading()
+		self.game_state: GameState = Loading(after_load_state)
 
 		EventManager.add_handler(GameStateIds.ALL, pygame.QUIT, self.quit_handler)
 

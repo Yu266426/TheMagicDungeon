@@ -6,8 +6,8 @@ from typing import Any, Callable
 
 import pygame
 
-from data.modules.base.files import SPRITE_SHEET_DIR, IMAGE_DIR
-from data.modules.graphics.sprite_sheet import SpriteSheet
+from .files import SPRITE_SHEET_DIR, IMAGE_DIR
+from .graphics.sprite_sheet import SpriteSheet
 
 
 class ResourceTypes(Enum):
@@ -73,6 +73,8 @@ class ResourceManager:
 
 					generate_config_function(config_path, file_name)
 					cls._resources_to_load.append((resource_type, file_name[:-4], file_path))
+
+		cls._loaded_resources[resource_type] = {}
 
 	@classmethod
 	def init_load(cls):

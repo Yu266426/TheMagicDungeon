@@ -1,7 +1,7 @@
 import pygame
 
-from data.modules.base.camera import Camera
-from data.modules.base.resources import ResourceManager, ResourceTypes
+from ..camera import Camera
+from ..resources import ResourceManager, ResourceTypes
 
 
 class Animation:

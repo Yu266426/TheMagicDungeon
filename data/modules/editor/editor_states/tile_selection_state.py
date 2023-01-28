@@ -1,15 +1,15 @@
 import pygame
 
-from data.modules.base.constants import SCREEN_HEIGHT, SCREEN_WIDTH
-from data.modules.base.inputs import InputManager
+from data.modules.engine.constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from data.modules.engine.inputs import InputManager
 from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo
 from data.modules.editor.editor_states.editor_state import EditorState, EditorStates
 from data.modules.editor.screens.sprite_sheet_screen import SpriteSheetScreen
 from data.modules.editor.shared_editor_state import SharedEditorState
-from data.modules.ui.element import Frame, Button
-from data.modules.ui.screen import UIScreen
+from data.modules.engine.ui.element import Frame, Button
+from data.modules.engine.ui.screen import UIScreen
 
 
 class TileSelectionState(EditorState):

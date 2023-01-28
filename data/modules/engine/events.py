@@ -2,7 +2,7 @@ from typing import Callable, Any
 
 import pygame
 
-from data.modules.game_states.game_state import GameStateIds
+from .game_state import GameStateIds
 
 
 class EventManager:

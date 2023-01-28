@@ -1,11 +1,11 @@
 import pygame
 
-from data.modules.base.inputs import InputManager
-from data.modules.base.resources import ResourceTypes, ResourceManager
+from data.modules.engine.inputs import InputManager
+from data.modules.engine.resources import ResourceTypes, ResourceManager
 from data.modules.base.utils import draw_rect_outline, abs_tuple, get_tile_pos
 from data.modules.editor.editor_selection_info import TileSelectionInfo
-from data.modules.graphics.sprite_sheet import SpriteSheet
-from data.modules.ui.screen import ControlledScreen
+from data.modules.engine.graphics.sprite_sheet import SpriteSheet
+from data.modules.engine.ui.screen import ControlledScreen
 
 
 class SpriteSheetScreen(ControlledScreen):

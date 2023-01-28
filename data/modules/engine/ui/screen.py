@@ -1,9 +1,9 @@
 import pygame
 
-from data.modules.base.camera import Camera
-from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
-from data.modules.base.inputs import InputManager
-from data.modules.ui.element import Frame
+from ..camera import Camera
+from ..constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from ..inputs import InputManager
+from .element import Frame
 
 
 class ControlledScreen:

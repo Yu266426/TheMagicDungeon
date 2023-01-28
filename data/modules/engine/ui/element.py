@@ -2,9 +2,9 @@ from typing import Optional, Union
 
 import pygame
 
-from data.modules.base.inputs import InputManager
-from data.modules.base.resources import ResourceManager, ResourceTypes
-from data.modules.ui.text import Text
+from ..inputs import InputManager
+from ..resources import ResourceManager, ResourceTypes
+from ..ui.text import Text
 
 
 class UIElement:

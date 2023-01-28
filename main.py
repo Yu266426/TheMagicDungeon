@@ -1,16 +1,15 @@
 import pygame
 
-from data.modules.base.app import App
-from data.modules.base.events import EventManager
-from data.modules.base.inputs import InputManager
+from data.modules.engine.app import App
+import data.modules.engine as engine
+from data.modules.game_states.main_menu import MainMenu
 
 if __name__ == '__main__':
 	pygame.init()
 
-	EventManager.init()
-	InputManager.register_handlers()
+	engine.init()
 
-	app = App()
+	app = App(MainMenu)
 	app.run()
 
 	pygame.quit()

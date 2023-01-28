@@ -1,7 +1,7 @@
 import pygame.mouse
 
-from data.modules.base.events import EventManager
-from data.modules.game_states.game_state import GameStateIds
+from .events import EventManager
+from .game_state import GameStateIds
 
 
 class InputManager:

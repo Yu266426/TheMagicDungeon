@@ -1,6 +1,6 @@
-from data.modules.base.constants import TILE_SIZE
+from data.modules.engine.constants import TILE_SIZE
 from data.modules.base.room import EditorRoom
-from data.modules.ui.screen import ControlledScreen
+from data.modules.engine.ui.screen import ControlledScreen
 
 
 class SharedEditorState:

@@ -1,22 +1,23 @@
+from typing import Type
+
 import pygame
 
-from data.modules.base.resources import ResourceManager
-from data.modules.game_states.game_state import GameState, GameStateIds
+from .resources import ResourceManager
+from .game_state import GameState, GameStateIds
 
 
 class Loading(GameState):
-	def __init__(self):
+	def __init__(self, after_load_state: Type[GameState]):
 		super().__init__(GameStateIds.LOADING)
 
 		ResourceManager.init_load()
 
 		self.should_switch = False
+		self.after_load_state = after_load_state
 
 	def next_state(self) -> GameState:
 		if self.should_switch:
-			from data.modules.game_states.main_menu import MainMenu
-
-			return MainMenu()
+			return self.after_load_state()
 		return self
 
 	def update(self, delta: float):
