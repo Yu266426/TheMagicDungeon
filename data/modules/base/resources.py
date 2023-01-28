@@ -2,7 +2,7 @@ import json
 import os
 from collections import deque
 from enum import Enum
-from typing import Any
+from typing import Any, Callable
 
 import pygame
 
@@ -58,38 +58,29 @@ class ResourceManager:
 				file.write(json.dumps(data))
 
 	@classmethod
+	def _init_for_resource(cls, resource_type: ResourceTypes, path: str, init_data: dict, generate_config_function: Callable[[str, str], None]):
+		config_path = os.path.join(path, "config.json")
+
+		# Create config if it does not exist
+		if not os.path.isfile(config_path):
+			with open(config_path, "x") as config_file:
+				config_file.write(json.dumps(init_data))
+
+		for dir_path, _, file_names in os.walk(path):
+			for file_name in file_names:
+				if file_name.endswith(".png"):
+					file_path = os.path.join(dir_path, file_name)
+
+					generate_config_function(config_path, file_name)
+					cls._resources_to_load.append((resource_type, file_name[:-4], file_path))
+
+	@classmethod
 	def init_load(cls):
 		# * Sprite Sheets
-		# Create default config for sprite_sheets, if none exist
-		sprite_sheet_config_path = os.path.join(SPRITE_SHEET_DIR, "config.json")
-		if not os.path.isfile(sprite_sheet_config_path):
-			with open(sprite_sheet_config_path, "x") as sprite_sheet_config_file:
-				sprite_sheet_data = {"sprite_sheets": {}}
-				sprite_sheet_config_file.write(json.dumps(sprite_sheet_data))
-
-		# Walk through sprite_sheets dir, appending all pngs for loading
-		for dir_path, _, file_names in os.walk(SPRITE_SHEET_DIR):
-			for file_name in file_names:
-				if file_name.endswith(".png"):
-					file_path = os.path.join(dir_path, file_name)
-
-					cls._generate_sprite_sheet_config(sprite_sheet_config_path, file_name)
-					cls._resources_to_load.append((ResourceTypes.SPRITE_SHEET, file_name[:-4], file_path))
+		cls._init_for_resource(ResourceTypes.SPRITE_SHEET, SPRITE_SHEET_DIR, {"sprite_sheets": {}}, cls._generate_sprite_sheet_config)
 
 		# * Images
-		image_config_path = os.path.join(IMAGE_DIR, "config.json")
-		if not os.path.isfile(image_config_path):
-			with open(image_config_path, "x") as image_config_file:
-				image_config_data = {"images": {}}
-				image_config_file.write(json.dumps(image_config_data))
-
-		for dir_path, _, file_names in os.walk(IMAGE_DIR):
-			for file_name in file_names:
-				if file_name.endswith(".png"):
-					file_path = os.path.join(dir_path, file_name)
-
-					cls._generate_image_config(image_config_path, file_name)
-					cls._resources_to_load.append((ResourceTypes.IMAGE, file_name[:-4], file_path))
+		cls._init_for_resource(ResourceTypes.IMAGE, IMAGE_DIR, {"images": {}}, cls._generate_image_config)
 
 	@classmethod
 	def load_update(cls):
