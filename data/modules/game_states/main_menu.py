@@ -1,10 +1,8 @@
 import pygame
-
-from data.modules.engine.events import EventManager
-from data.modules.engine.inputs import InputManager
-from data.modules.engine.game_state import GameState, GameStateIds
-from data.modules.engine.ui.element import Frame, Button, Image
-from data.modules.engine.ui.screen import UIScreen
+from pygbase import InputManager, EventManager
+from pygbase.game_state import GameState, GameStateIds
+from pygbase.ui.element import Frame, Image, Button
+from pygbase.ui.screen import UIScreen
 
 
 class MainMenu(GameState):

@@ -1,6 +1,9 @@
 import pygame
+from pygbase import InputManager
+from pygbase.game_state import GameStateIds, GameState
+from pygbase.ui.element import TextSelectionMenu, Frame
+from pygbase.ui.screen import UIScreen
 
-from data.modules.engine.inputs import InputManager
 from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo, ObjectSelectionInfo
@@ -10,11 +13,8 @@ from data.modules.editor.editor_states.object_selection_state import ObjectSelec
 from data.modules.editor.editor_states.tile_draw_state import TileDrawState
 from data.modules.editor.editor_states.tile_selection_state import TileSelectionState
 from data.modules.editor.shared_editor_state import SharedEditorState
-from data.modules.engine.game_state import GameState, GameStateIds
 from data.modules.objects.cube import SmallCube
 from data.modules.objects.game_object import AnimatableObject
-from data.modules.engine.ui.element import Frame, TextSelectionMenu
-from data.modules.engine.ui.screen import UIScreen
 
 
 class Editor(GameState):

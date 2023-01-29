@@ -1,8 +1,7 @@
 import pygame
-
-from data.modules.engine.camera import Camera
-from data.modules.engine.resources import ResourceManager
-from data.modules.engine.graphics.animation import Animation
+from pygbase import ResourceManager
+from pygbase.camera import Camera
+from pygbase.graphics.animation import Animation
 
 
 class GameObject:

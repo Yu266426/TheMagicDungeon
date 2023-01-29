@@ -1,16 +1,17 @@
 import pygame
 
-import data.modules.engine as engine
+import pygbase
+from pygbase import ResourceType
+from pygbase.app import App
+from pygbase.graphics.sprite_sheet import SpriteSheet
+
 from data.modules.base.files import IMAGE_DIR, SPRITE_SHEET_DIR
-from data.modules.engine import ResourceType
-from data.modules.engine.app import App
-from data.modules.engine.graphics.sprite_sheet import SpriteSheet
 from data.modules.game_states.main_menu import MainMenu
 
 if __name__ == '__main__':
 	pygame.init()
 
-	engine.init()
+	pygbase.init()
 
 
 	def load_image(data: dict, resource_path: str):
@@ -21,14 +22,14 @@ if __name__ == '__main__':
 		return image
 
 
-	engine.add_resource_type(1, ResourceType(
+	pygbase.add_resource_type(1, ResourceType(
 		"image", IMAGE_DIR,
 		{"scale": 1},
 		None,
 		load_image
 	))
 
-	engine.add_resource_type(2, ResourceType(
+	pygbase.add_resource_type(2, ResourceType(
 		"sprite_sheet", SPRITE_SHEET_DIR,
 		{
 			"rows": 0,

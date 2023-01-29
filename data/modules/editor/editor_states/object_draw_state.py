@@ -1,10 +1,11 @@
 import enum
 
 import pygame
+from pygbase import SCREEN_HEIGHT, SCREEN_WIDTH, InputManager
+from pygbase.ui.element import Frame, Button
+from pygbase.ui.screen import UIScreen
 
 from data.modules.base.constants import TILE_SIZE
-from data.modules.engine import SCREEN_WIDTH, SCREEN_HEIGHT
-from data.modules.engine.inputs import InputManager
 from data.modules.base.room import EditorRoom
 from data.modules.base.utils import draw_rect_outline, get_tile_pos
 from data.modules.editor.actions.editor_actions import EditorActionQueue
@@ -14,8 +15,6 @@ from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
 from data.modules.editor.tools.object_tools.object_tools import ObjectDrawTool
 from data.modules.objects.game_object import AnimatableObject
-from data.modules.engine.ui.element import Frame, Button
-from data.modules.engine.ui.screen import UIScreen
 
 
 class ObjectTools(enum.Enum):

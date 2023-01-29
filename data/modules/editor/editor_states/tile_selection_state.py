@@ -1,4 +1,7 @@
 import pygame
+from pygbase import SCREEN_HEIGHT, SCREEN_WIDTH, InputManager
+from pygbase.ui.element import Frame, Button
+from pygbase.ui.screen import UIScreen
 
 from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
@@ -6,10 +9,6 @@ from data.modules.editor.editor_selection_info import TileSelectionInfo
 from data.modules.editor.editor_states.editor_state import EditorState, EditorStates
 from data.modules.editor.screens.sprite_sheet_screen import SpriteSheetScreen
 from data.modules.editor.shared_editor_state import SharedEditorState
-from data.modules.engine import SCREEN_HEIGHT, SCREEN_WIDTH
-from data.modules.engine.inputs import InputManager
-from data.modules.engine.ui.element import Frame, Button
-from data.modules.engine.ui.screen import UIScreen
 
 
 class TileSelectionState(EditorState):

@@ -1,8 +1,8 @@
 from abc import abstractmethod
 
 import pygame
+from pygbase.camera import Camera
 
-from data.modules.engine.camera import Camera
 from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo, ObjectSelectionInfo

@@ -1,7 +1,7 @@
 import pygame
+from pygbase import InputManager
+from pygbase.camera import Camera
 
-from data.modules.engine.camera import Camera
-from data.modules.engine.inputs import InputManager
 from data.modules.base.level import Level
 from data.modules.entities.entity import Entity
 

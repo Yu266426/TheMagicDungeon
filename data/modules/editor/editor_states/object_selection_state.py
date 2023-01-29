@@ -1,8 +1,9 @@
 import pygame
+from pygbase import SCREEN_HEIGHT, SCREEN_WIDTH, InputManager
+from pygbase.ui.element import Frame, Button
+from pygbase.ui.screen import UIScreen
 
 from data.modules.base.constants import TILE_SCALE
-from data.modules.engine import SCREEN_WIDTH, SCREEN_HEIGHT
-from data.modules.engine.inputs import InputManager
 from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import ObjectSelectionInfo
@@ -12,8 +13,6 @@ from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.objects.chest import Chest
 from data.modules.objects.cube import SmallCube, SmallRedCube, SmallGreenCube, LargeCube, LargeRedCube, LargeGreenCube
 from data.modules.objects.lever import Lever
-from data.modules.engine.ui.element import Frame, Button
-from data.modules.engine.ui.screen import UIScreen
 
 
 class ObjectSelectionState(EditorState):

@@ -2,10 +2,10 @@ from collections import deque
 from typing import Optional
 
 import pygame
+from pygbase import InputManager
+from pygbase.camera import Camera
 
-from data.modules.engine.camera import Camera
 from data.modules.base.constants import TILE_SIZE
-from data.modules.engine.inputs import InputManager
 from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue, EditorActionBatch
 from data.modules.editor.actions.tile_actions import PlaceTileAction, RemoveTileAction

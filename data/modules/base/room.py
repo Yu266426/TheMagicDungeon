@@ -3,12 +3,11 @@ import os
 import random
 
 import pygame
+from pygbase import ResourceManager, SCREEN_WIDTH, SCREEN_HEIGHT
+from pygbase.camera import Camera
 
-from data.modules.engine import SCREEN_WIDTH, SCREEN_HEIGHT
-from data.modules.engine.camera import Camera
 from data.modules.base.constants import TILE_SIZE
 from data.modules.base.files import LEVEL_DIR
-from data.modules.engine.resources import ResourceManager
 from data.modules.base.utils import get_tile_pos, generate_3d_list
 from data.modules.objects.game_object import GameObject, AnimatableObject
 from data.modules.objects.objects import object_types
