@@ -1,10 +1,10 @@
 import pygame
 
-from data.modules.engine.inputs import InputManager
-from data.modules.engine.resources import ResourceTypes, ResourceManager
 from data.modules.base.utils import draw_rect_outline, abs_tuple, get_tile_pos
 from data.modules.editor.editor_selection_info import TileSelectionInfo
 from data.modules.engine.graphics.sprite_sheet import SpriteSheet
+from data.modules.engine.inputs import InputManager
+from data.modules.engine.resources import ResourceManager
 from data.modules.engine.ui.screen import ControlledScreen
 
 
@@ -13,7 +13,7 @@ class SpriteSheetScreen(ControlledScreen):
 		self.selection_info = selection_info
 
 		self.sprite_sheet_name: str = sprite_sheet_name
-		self.sprite_sheet: SpriteSheet = ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, sprite_sheet_name)
+		self.sprite_sheet: SpriteSheet = ResourceManager.get_resource(2, sprite_sheet_name)
 
 		super().__init__(keep_in=(0, 0, self.sprite_sheet.n_cols * self.sprite_sheet.tile_width, self.sprite_sheet.n_rows * self.sprite_sheet.tile_height))
 
@@ -53,14 +53,18 @@ class SpriteSheetScreen(ControlledScreen):
 		self._get_mouse_pos()
 
 		if InputManager.mouse_down[0]:
-			if (0 <= self._tiled_mouse_pos[0] < self.sprite_sheet.n_cols and
-					0 <= self._tiled_mouse_pos[1] < self.sprite_sheet.n_rows):
+			if (
+					0 <= self._tiled_mouse_pos[0] < self.sprite_sheet.n_cols and
+					0 <= self._tiled_mouse_pos[1] < self.sprite_sheet.n_rows
+			):
 				self.selected_topleft = self._tiled_mouse_pos
 				self.selected_bottomright = self._tiled_mouse_pos
 
 		if InputManager.mouse_pressed[0]:
-			if (0 <= self._tiled_mouse_pos[0] < self.sprite_sheet.n_cols and
-					0 <= self._tiled_mouse_pos[1] < self.sprite_sheet.n_rows):
+			if (
+					0 <= self._tiled_mouse_pos[0] < self.sprite_sheet.n_cols and
+					0 <= self._tiled_mouse_pos[1] < self.sprite_sheet.n_rows
+			):
 				self.selected_bottomright = self._tiled_mouse_pos
 
 		if InputManager.mouse_up[0]:

@@ -1,14 +1,14 @@
 import pygame
 
 from data.modules.engine.camera import Camera
-from data.modules.engine.resources import ResourceManager, ResourceTypes
+from data.modules.engine.resources import ResourceManager
 from data.modules.engine.graphics.animation import Animation
 
 
 class GameObject:
 	def __init__(self, pos: tuple, sprite_sheet_id: int, image_id: int, custom_hitbox: pygame.Rect | None = None):
 		self.pos = pygame.Vector2(pos)
-		self.image = ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, sprite_sheet_id).get_image(image_id)
+		self.image = ResourceManager.get_resource(2, sprite_sheet_id).get_image(image_id)
 		self.rect = self.image.get_rect(midbottom=self.pos)
 
 		if custom_hitbox is None:

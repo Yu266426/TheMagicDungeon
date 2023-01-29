@@ -3,7 +3,7 @@ from typing import Optional
 import pygame
 
 from data.modules.engine.camera import Camera
-from data.modules.engine.constants import TILE_SIZE
+from data.modules.base.constants import TILE_SIZE
 from data.modules.engine.inputs import InputManager
 from data.modules.base.room import EditorRoom
 from data.modules.base.utils import draw_rect_outline

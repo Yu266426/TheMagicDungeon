@@ -1,12 +1,12 @@
 import pygame
 
-from data.modules.engine.camera import Camera
-from data.modules.engine.constants import SCREEN_WIDTH, SCREEN_HEIGHT
-from data.modules.engine.inputs import InputManager
 from data.modules.base.level import Level
+from data.modules.engine import SCREEN_WIDTH, SCREEN_HEIGHT
+from data.modules.engine.camera import Camera
+from data.modules.engine.game_state import GameState, GameStateIds
+from data.modules.engine.inputs import InputManager
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.player import Player
-from data.modules.engine.game_state import GameState, GameStateIds
 
 
 class Game(GameState):

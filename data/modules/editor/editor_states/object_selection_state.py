@@ -1,6 +1,7 @@
 import pygame
 
-from data.modules.engine.constants import TILE_SCALE, SCREEN_HEIGHT, SCREEN_WIDTH
+from data.modules.base.constants import TILE_SCALE
+from data.modules.engine import SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.engine.inputs import InputManager
 from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue

@@ -1,7 +1,7 @@
 import pygame
 
 from ..camera import Camera
-from ..resources import ResourceManager, ResourceTypes
+from ..resources import ResourceManager
 
 
 class Animation:
@@ -21,7 +21,7 @@ class Animation:
 
 	def _load_animation(self):
 		for index in range(self.anim_start_index, self.anim_start_index + self.length + 1):
-			self.images.append(ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, self.sprite_sheet_id).get_image(index))
+			self.images.append(ResourceManager.get_resource(2, self.sprite_sheet_id).get_image(index))
 
 	def change_frame(self, amount: float):
 		self.frame += amount

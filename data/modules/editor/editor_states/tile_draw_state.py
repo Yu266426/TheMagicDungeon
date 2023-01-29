@@ -2,8 +2,7 @@ import enum
 
 import pygame
 
-from data.modules.engine.constants import SCREEN_WIDTH, TILE_SIZE, SCREEN_HEIGHT
-from data.modules.engine.inputs import InputManager
+from data.modules.base.constants import TILE_SIZE
 from data.modules.base.room import EditorRoom
 from data.modules.base.utils import get_tile_pos, draw_rect_outline
 from data.modules.editor.actions.editor_actions import EditorActionQueue
@@ -13,6 +12,8 @@ from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
 from data.modules.editor.tools.tile_tools.tile_draw_tool import TileDrawTool
 from data.modules.editor.tools.tile_tools.tile_fill_tool import TileFillTool
+from data.modules.engine import SCREEN_WIDTH, SCREEN_HEIGHT
+from data.modules.engine.inputs import InputManager
 from data.modules.engine.ui.element import Frame, Button
 from data.modules.engine.ui.screen import UIScreen
 from data.modules.engine.ui.text import Text

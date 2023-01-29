@@ -2,7 +2,8 @@ import enum
 
 import pygame
 
-from data.modules.engine.constants import TILE_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH
+from data.modules.base.constants import TILE_SIZE
+from data.modules.engine import SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.engine.inputs import InputManager
 from data.modules.base.room import EditorRoom
 from data.modules.base.utils import draw_rect_outline, get_tile_pos

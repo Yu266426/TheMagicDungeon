@@ -1,12 +1,12 @@
 import pygame
 
 from ..camera import Camera
-from ..constants import TILE_SCALE
+from data.modules.base.constants import TILE_SCALE
 from ..ui.text import Text
 
 
 class SpriteSheet:
-	def __init__(self, resource_info: tuple, data: dict):
+	def __init__(self, data: dict, resource_path: str):
 		# Data info
 		self.n_rows: int = data["rows"]
 		self.n_cols: int = data["columns"]
@@ -15,7 +15,7 @@ class SpriteSheet:
 		self.tile_height: int = data["tile_height"] * self.scale
 
 		# Sprite Sheet
-		self.image: pygame.surface = pygame.image.load(resource_info[2]).convert_alpha()
+		self.image: pygame.surface = pygame.image.load(resource_path).convert_alpha()
 		self.image.set_colorkey((0, 0, 0))
 		self.image = pygame.transform.scale(self.image, (self.image.get_width() * self.scale, self.image.get_height() * self.scale))
 

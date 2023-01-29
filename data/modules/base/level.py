@@ -4,11 +4,12 @@ from collections import deque
 
 import pygame
 
-from data.modules.engine.camera import Camera
-from data.modules.engine.constants import TILE_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH
-from data.modules.engine.files import LEVEL_DIR
+from data.modules.base.constants import TILE_SIZE
+from data.modules.base.files import LEVEL_DIR
 from data.modules.base.room import Room
 from data.modules.base.utils import get_tile_pos
+from data.modules.engine import SCREEN_WIDTH, SCREEN_HEIGHT
+from data.modules.engine.camera import Camera
 from data.modules.entities.entity_manager import EntityManager
 
 

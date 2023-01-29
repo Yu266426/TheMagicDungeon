@@ -4,10 +4,11 @@ import random
 
 import pygame
 
+from data.modules.engine import SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.engine.camera import Camera
-from data.modules.engine.constants import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE
-from data.modules.engine.files import LEVEL_DIR
-from data.modules.engine.resources import ResourceManager, ResourceTypes
+from data.modules.base.constants import TILE_SIZE
+from data.modules.base.files import LEVEL_DIR
+from data.modules.engine.resources import ResourceManager
 from data.modules.base.utils import get_tile_pos, generate_3d_list
 from data.modules.objects.game_object import GameObject, AnimatableObject
 from data.modules.objects.objects import object_types
@@ -51,7 +52,7 @@ class Room:
 		:param gap_radius: Size of gap
 		"""
 
-		wall_sheet = ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, "walls")
+		wall_sheet = ResourceManager.get_resource(2, "walls")
 
 		if self.n_cols % 2 == 0:
 			x_mid_point = self.n_cols // 2 - 1
@@ -136,7 +137,7 @@ class Room:
 					self.tiles[1][row][self.n_cols - 1] = Tile("walls", random.randrange(0, wall_sheet.length), ((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
 
 	def generate_floor(self):
-		tiles_sheet = ResourceManager.get_resource(ResourceTypes.SPRITE_SHEET, "tiles")
+		tiles_sheet = ResourceManager.get_resource(2, "tiles")
 		for row in range(self.n_rows):
 			for col in range(self.n_cols):
 				self.tiles[0][row][col] = Tile(

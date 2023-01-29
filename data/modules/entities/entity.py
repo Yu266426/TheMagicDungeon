@@ -1,7 +1,7 @@
 import pygame
 
 from data.modules.engine.camera import Camera
-from data.modules.engine.constants import TILE_SIZE
+from data.modules.base.constants import TILE_SIZE
 from data.modules.base.level import Level
 from data.modules.base.utils import get_1d_pos
 

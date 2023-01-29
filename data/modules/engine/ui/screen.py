@@ -1,7 +1,7 @@
 import pygame
 
+from .. import SCREEN_WIDTH, SCREEN_HEIGHT
 from ..camera import Camera
-from ..constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from ..inputs import InputManager
 from .element import Frame
 

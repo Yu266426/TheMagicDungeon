@@ -1,4 +1,4 @@
-from data.modules.engine.constants import TILE_SIZE
+from data.modules.base.constants import TILE_SIZE
 from data.modules.base.utils import get_1d_pos
 
 

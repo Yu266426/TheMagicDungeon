@@ -3,7 +3,7 @@ from typing import Optional, Union
 import pygame
 
 from ..inputs import InputManager
-from ..resources import ResourceManager, ResourceTypes
+from ..resources import ResourceManager
 from ..ui.text import Text
 
 
@@ -91,7 +91,7 @@ class Frame(UIElement):
 
 class Image(UIElement):
 	def __init__(self, pos: tuple, image_name: str, size: Optional[tuple] = None):
-		self.image: pygame.Surface = ResourceManager.get_resource(ResourceTypes.IMAGE, image_name)
+		self.image: pygame.Surface = ResourceManager.get_resource(1, image_name)
 
 		if size is not None:
 			self.image = pygame.transform.scale(self.image, size)
@@ -104,7 +104,7 @@ class Image(UIElement):
 
 class Button(UIElement):
 	def __init__(self, pos: tuple, image_name: str, callback, *callback_args, size: Optional[tuple] = None, text: str = "", alignment: str = "l"):
-		self.image: pygame.Surface = ResourceManager.get_resource(ResourceTypes.IMAGE, image_name)
+		self.image: pygame.Surface = ResourceManager.get_resource(1, image_name)
 
 		if size is not None:
 			if size[0] is None:

@@ -2,7 +2,7 @@ from typing import Type
 
 import pygame.display
 
-from .constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from . import SCREEN_WIDTH, SCREEN_HEIGHT
 from .events import EventManager
 from .game_state import GameStateIds, GameState
 from .inputs import InputManager
