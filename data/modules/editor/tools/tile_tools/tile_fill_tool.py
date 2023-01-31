@@ -2,8 +2,7 @@ from collections import deque
 from typing import Optional
 
 import pygame
-from pygbase import InputManager
-from pygbase.camera import Camera
+from pygbase import InputManager, Camera
 
 from data.modules.base.constants import TILE_SIZE
 from data.modules.base.room import EditorRoom

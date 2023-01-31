@@ -1,8 +1,9 @@
 import pygame
-from pygbase import SCREEN_HEIGHT, SCREEN_WIDTH, InputManager
+from pygbase import InputManager
 from pygbase.ui.element import Frame, Button
 from pygbase.ui.screen import UIScreen
 
+from data.modules.base.constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo

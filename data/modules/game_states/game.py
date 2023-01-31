@@ -1,8 +1,8 @@
 import pygame
-from pygbase import SCREEN_WIDTH, SCREEN_HEIGHT, InputManager
-from pygbase.camera import Camera
-from pygbase.game_state import GameState, GameStateIds
+from pygbase import InputManager, Camera
+from pygbase.game_state import GameState
 
+from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.level import Level
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.player import Player
@@ -10,7 +10,7 @@ from data.modules.entities.player import Player
 
 class Game(GameState):
 	def __init__(self):
-		super().__init__(GameStateIds.GAME)
+		super().__init__(3)
 
 		self.entities = EntityManager()
 

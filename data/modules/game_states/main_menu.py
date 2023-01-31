@@ -1,13 +1,13 @@
 import pygame
 from pygbase import InputManager, EventManager
-from pygbase.game_state import GameState, GameStateIds
+from pygbase.game_state import GameState
 from pygbase.ui.element import Frame, Image, Button
 from pygbase.ui.screen import UIScreen
 
 
 class MainMenu(GameState):
 	def __init__(self):
-		super().__init__(GameStateIds.MAIN_MENU)
+		super().__init__(2)
 
 		self.ui = UIScreen()
 
@@ -39,7 +39,7 @@ class MainMenu(GameState):
 		self.ui.update(delta)
 
 		if InputManager.keys_pressed[pygame.K_ESCAPE]:
-			EventManager.run_handlers(GameStateIds.ALL, pygame.QUIT)
+			EventManager.run_handlers(0, pygame.QUIT)
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill((30, 30, 30))

@@ -1,6 +1,6 @@
 import pygame
-from pygbase import InputManager
-from pygbase.game_state import GameStateIds, GameState
+from pygbase import InputManager, EventManager
+from pygbase.game_state import GameState
 from pygbase.ui.element import TextSelectionMenu, Frame
 from pygbase.ui.screen import UIScreen
 
@@ -19,7 +19,7 @@ from data.modules.objects.game_object import AnimatableObject
 
 class Editor(GameState):
 	def __init__(self):
-		super().__init__(GameStateIds.EDITOR)
+		super().__init__(4)
 
 		self.room = EditorRoom("test", n_rows=10, n_cols=10)
 
@@ -75,6 +75,9 @@ class Editor(GameState):
 		if InputManager.mods & pygame.KMOD_LCTRL:
 			if InputManager.keys_down[pygame.K_s]:
 				self.room.save()
+
+		if InputManager.keys_pressed[pygame.K_ESCAPE]:
+			EventManager.run_handlers(0, pygame.QUIT)
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill((30, 30, 30))

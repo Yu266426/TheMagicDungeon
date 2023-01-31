@@ -1,6 +1,5 @@
 import pygame
-from pygbase import ResourceManager
-from pygbase.camera import Camera
+from pygbase import ResourceManager, Camera
 
 
 class Tile:

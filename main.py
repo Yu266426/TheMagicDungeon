@@ -5,13 +5,14 @@ from pygbase import ResourceType
 from pygbase.app import App
 from pygbase.graphics.sprite_sheet import SpriteSheet
 
+from data.modules.base.constants import TILE_SCALE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.files import IMAGE_DIR, SPRITE_SHEET_DIR
 from data.modules.game_states.main_menu import MainMenu
 
 if __name__ == '__main__':
 	pygame.init()
 
-	pygbase.init()
+	pygbase.init((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 	def load_image(data: dict, resource_path: str):
@@ -39,7 +40,7 @@ if __name__ == '__main__':
 			"scale": -1
 		},
 		lambda data: data["scale"] != -1,
-		lambda data, resource_path: SpriteSheet(data, resource_path)
+		lambda data, resource_path: SpriteSheet(data, resource_path, TILE_SCALE)
 	))
 
 	app = App(MainMenu)

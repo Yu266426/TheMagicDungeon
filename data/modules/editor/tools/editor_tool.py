@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 import pygame
-from pygbase.camera import Camera
+from pygbase import Camera
 
 from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue

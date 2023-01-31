@@ -1,12 +1,12 @@
 import enum
 
 import pygame
-from pygbase import SCREEN_HEIGHT, SCREEN_WIDTH, InputManager
+from pygbase import InputManager
 from pygbase.ui.element import Frame, Button
 from pygbase.ui.screen import UIScreen
 from pygbase.ui.text import Text
 
-from data.modules.base.constants import TILE_SIZE
+from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.room import EditorRoom
 from data.modules.base.utils import get_tile_pos, draw_rect_outline
 from data.modules.editor.actions.editor_actions import EditorActionQueue

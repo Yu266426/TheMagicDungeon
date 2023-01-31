@@ -1,6 +1,6 @@
 import pygame
 from pygbase import ResourceManager
-from pygbase.camera import Camera
+from pygbase import Camera
 from pygbase.graphics.animation import Animation
 
 
