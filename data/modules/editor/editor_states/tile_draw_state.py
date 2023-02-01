@@ -78,7 +78,7 @@ class TileDrawState(EditorState):
 		draw_rect_outline(screen, (255, 255, 0), -self._shared_state.controlled_screen.camera.target, (self._room.n_cols * TILE_SIZE, self._room.n_rows * TILE_SIZE), 2)
 		self._room.draw(screen, self._shared_state.controlled_screen.camera, {})
 
-		if not self._shared_state.on_global_ui and not self.ui.on_ui():
+		if not self._shared_state.on_global_ui and self._shared_state.should_draw_tool and not self.ui.on_ui():
 			self.tools[self.current_tool].draw(screen, self._shared_state.controlled_screen.camera, self.tiled_mouse_pos, self.tile_selection_info)
 
 		self.ui.draw(screen)

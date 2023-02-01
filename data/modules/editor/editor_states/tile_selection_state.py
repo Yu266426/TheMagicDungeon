@@ -45,7 +45,7 @@ class TileSelectionState(EditorState):
 
 		self.ui.update(delta)
 
-		if not self.ui.on_ui():
+		if self._shared_state.should_draw_tool and not self.ui.on_ui():
 			self.sprite_sheets[self.sprite_sheet_index].update(delta)
 
 	def draw(self, screen: pygame.Surface):

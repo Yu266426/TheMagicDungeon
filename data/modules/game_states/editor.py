@@ -1,7 +1,7 @@
 import pygame
-from pygbase import InputManager, EventManager
+from pygbase import InputManager
 from pygbase.game_state import GameState
-from pygbase.ui.element import TextSelectionMenu, Frame
+from pygbase.ui.element import TextSelectionMenu, Frame, Button
 from pygbase.ui.screen import UIScreen
 
 from data.modules.base.room import EditorRoom
@@ -46,45 +46,69 @@ class Editor(GameState):
 		self.selector_frame = self.ui.add_frame(Frame((10, 10), (260, 60)))
 		self.selector_frame.add_element(self.mode_selector)
 
+		self.show_overlay = False
+		self.should_quit_editor = False
+
+		self.overlay_ui = UIScreen()
+		self.overlay_frame = self.overlay_ui.add_frame(Frame((200, 200), (400, 400), bg_colour=(10, 10, 10, 200)))
+
+		self.overlay_frame.add_element(Button((200, 20), "main_menu_button", self.quit_editor, text="Back", alignment="c"))
+		self.overlay_frame.add_element(Button((0, 20), "main_menu_button", self.room.save, text="Save", alignment="c"), align_with_previous=(True, False), add_on_to_previous=(False, True))
+
 	def reset_object_animations(self):
 		for game_object in self.room.objects:
 			if issubclass(type(game_object), AnimatableObject):
 				game_object.frame = 0
 
+	def quit_editor(self):
+		self.should_quit_editor = True
+
 	def update(self, delta: float):
-		if self.shared_state.show_global_ui:
-			self.ui.update(delta)
-			self.shared_state.on_global_ui = self.ui.on_ui()
+		if InputManager.keys_down[pygame.K_ESCAPE]:
+			self.show_overlay = not self.show_overlay
+			self.shared_state.should_draw_tool = not self.shared_state.should_draw_tool
 
-		self.current_state = self.states[self.current_state].next_state(self.mode_selector.index)
+		if not self.show_overlay:
+			if self.shared_state.show_global_ui:
+				self.ui.update(delta)
+				self.shared_state.on_global_ui = self.ui.on_ui()
 
-		self.states[self.current_state].update(delta)
+			self.current_state = self.states[self.current_state].next_state(self.mode_selector.index)
 
-		if InputManager.keys_down[pygame.K_z]:
-			if InputManager.mods & pygame.KMOD_LCTRL and not InputManager.mods & pygame.KMOD_SHIFT:
-				self.action_queue.undo_action()
-			if InputManager.mods & pygame.KMOD_LCTRL and InputManager.mods & pygame.KMOD_SHIFT:
-				self.action_queue.redo_action()
+			self.states[self.current_state].update(delta)
 
-		# Animate objects
-		for game_object in self.room.objects:
-			if issubclass(type(game_object), AnimatableObject):
-				game_object.change_frame(delta * 2)
+			if InputManager.keys_down[pygame.K_z]:
+				if InputManager.mods & pygame.KMOD_LCTRL and not InputManager.mods & pygame.KMOD_SHIFT:
+					self.action_queue.undo_action()
+				if InputManager.mods & pygame.KMOD_LCTRL and InputManager.mods & pygame.KMOD_SHIFT:
+					self.action_queue.redo_action()
 
-		# Save
-		if InputManager.mods & pygame.KMOD_LCTRL:
-			if InputManager.keys_down[pygame.K_s]:
-				self.room.save()
+			# Animate objects
+			for game_object in self.room.objects:
+				if issubclass(type(game_object), AnimatableObject):
+					game_object.change_frame(delta * 2)
 
-		if InputManager.keys_pressed[pygame.K_ESCAPE]:
-			EventManager.run_handlers(0, pygame.QUIT)
+			# Save
+			if InputManager.mods & pygame.KMOD_LCTRL:
+				if InputManager.keys_down[pygame.K_s]:
+					self.room.save()
+		else:
+			self.overlay_ui.update(delta)
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill((30, 30, 30))
+
 		self.states[self.current_state].draw(screen)
 
-		if self.shared_state.show_global_ui:
+		if self.shared_state.show_global_ui and not self.show_overlay:
 			self.ui.draw(screen)
 
+		if self.show_overlay:
+			self.overlay_ui.draw(screen)
+
 	def next_state(self) -> GameState:
-		return self
+		if not self.should_quit_editor:
+			return self
+		else:
+			from data.modules.game_states.main_menu import MainMenu
+			return MainMenu()
