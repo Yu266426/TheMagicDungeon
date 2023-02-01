@@ -52,8 +52,8 @@ class Editor(GameState):
 		self.overlay_ui = UIScreen()
 		self.overlay_frame = self.overlay_ui.add_frame(Frame((200, 200), (400, 400), bg_colour=(10, 10, 10, 200)))
 
-		self.overlay_frame.add_element(Button((200, 20), "main_menu_button", self.quit_editor, text="Back", alignment="c"))
-		self.overlay_frame.add_element(Button((0, 20), "main_menu_button", self.room.save, text="Save", alignment="c"), align_with_previous=(True, False), add_on_to_previous=(False, True))
+		self.overlay_frame.add_element(Button((200, 20), "button", self.quit_editor, text="Back", alignment="c"))
+		self.overlay_frame.add_element(Button((0, 20), "button", self.room.save, text="Save", alignment="c"), align_with_previous=(True, False), add_on_to_previous=(False, True))
 
 	def reset_object_animations(self):
 		for game_object in self.room.objects:

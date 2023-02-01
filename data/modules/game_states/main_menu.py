@@ -19,8 +19,8 @@ class MainMenu(GameState):
 		self.button_frame = self.ui.add_frame(Frame((220, 300), (360, 400)))
 		self.ui.add_frame(self.button_frame)
 
-		self.button_frame.add_element(Button((0, 0), "main_menu_button", self.set_next_state, "game", text="Start"))
-		self.button_frame.add_element(Button((0, 30), "main_menu_button", self.set_next_state, "editor", text="Editor"), add_on_to_previous=(False, True))
+		self.button_frame.add_element(Button((0, 0), "button", self.set_next_state, "game", text="Start"))
+		self.button_frame.add_element(Button((0, 30), "button", self.set_next_state, "editor", text="Editor"), add_on_to_previous=(False, True))
 
 	def set_next_state(self, next_state):
 		self.go_to_state = next_state
