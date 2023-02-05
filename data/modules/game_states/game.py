@@ -18,7 +18,7 @@ class Game(GameState):
 
 		self.camera = Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
 
-		self.player = Player((400, 400), pygame.Surface((80, 80)), self.level)
+		self.player = Player((400, 400), self.level)
 		self.entities.add_entity(self.player)
 
 	def next_state(self) -> GameState:

@@ -1,14 +1,15 @@
 import pygame
 from pygbase import InputManager, Camera
+from pygbase.graphics.animation import Animation
 
 from data.modules.base.level import Level
 from data.modules.entities.entity import Entity
 
 
 class Player(Entity):
-	def __init__(self, pos: tuple[int, int], image, level: Level):
-		super().__init__(pos, image, hitbox=(80, 50))
-		self.image.fill("red")
+	def __init__(self, pos: tuple[int, int], level: Level):
+		super().__init__(pos, None, hitbox=(80, 50))
+		self.walk_animation = Animation("player_run_animation", 0, 2)
 
 		self.input = pygame.Vector2()
 
@@ -28,5 +29,7 @@ class Player(Entity):
 
 		self.move(self.input * 500 * delta, self.level)
 
+		self.walk_animation.change_frame(10 * delta)
+
 	def draw(self, display: pygame.Surface, camera: Camera):
-		display.blit(self.image, self.image.get_rect(midbottom=self.pos).topleft - camera.target)
+		self.walk_animation.draw_at_pos(display, self.pos, camera, draw_pos="midbottom")
