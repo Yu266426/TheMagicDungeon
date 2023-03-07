@@ -26,7 +26,7 @@ class Room:
 		self.objects: list[GameObject | AnimatableObject] = []
 
 		# New room
-		self.save_path = os.path.join(LEVEL_DIR, f"{name}.json")
+		self.save_path = LEVEL_DIR / f"{name}.json"
 		if not os.path.isfile(self.save_path):
 			print("Creating new room")
 
@@ -273,7 +273,7 @@ class EditorRoom:
 		# New room
 		self.save_path = os.path.join(LEVEL_DIR, f"{name}.json")
 		if not os.path.isfile(self.save_path):
-			print("Creating new room")
+			print("Creating new editor room")
 			self.tiles = generate_3d_list(3, self.n_rows, self.n_cols)
 		else:
 			self.load()

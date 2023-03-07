@@ -1,5 +1,5 @@
 import pygame
-from pygbase import InputManager, Camera
+from pygbase import InputManager, Camera, EventManager
 from pygbase.game_state import GameState
 
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
@@ -11,7 +11,6 @@ from data.modules.entities.player import Player
 class Game(GameState):
 	def __init__(self):
 		super().__init__(3)
-
 		self.entities = EntityManager()
 
 		self.level = Level(self.entities)
@@ -21,9 +20,6 @@ class Game(GameState):
 		self.player = Player((400, 400), self.level)
 		self.entities.add_entity(self.player)
 
-	def next_state(self) -> GameState:
-		return self
-
 	def update(self, delta: float):
 		self.entities.update(delta)
 
@@ -32,6 +28,9 @@ class Game(GameState):
 			self.player.level = self.level
 
 		self.camera.lerp_to_target(self.player.hitbox.center - pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), delta * 5)
+
+		if InputManager.keys_down[pygame.K_ESCAPE]:
+			EventManager.post_event(pygame.QUIT)
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill((0, 0, 0))

@@ -1,5 +1,5 @@
 import pygame
-from pygbase import InputManager
+from pygbase import InputManager, Common
 from pygbase.ui.element import Frame, Button
 from pygbase.ui.screen import UIScreen
 
@@ -29,9 +29,9 @@ class ObjectSelectionState(EditorState):
 		self.ui = UIScreen()
 		self.button_frame = self.ui.add_frame(Frame((0, SCREEN_HEIGHT - 86), (SCREEN_WIDTH, 86)))
 
-		self.button_frame.add_element(Button((3, 3), "tile_set_button", self.switch_screen, 0))
+		self.button_frame.add_element(Button((3, 3), Common.get_value("image_res"), "tile_set_button", self.switch_screen, 0))
 		for loop in range(1, len(self.object_screens)):
-			self.button_frame.add_element(Button((3, 3), "tile_set_button", self.switch_screen, loop), align_with_previous=(False, True), add_on_to_previous=(True, False))
+			self.button_frame.add_element(Button((3, 3), Common.get_value("image_res"), "tile_set_button", self.switch_screen, loop), align_with_previous=(False, True), add_on_to_previous=(True, False))
 
 	def switch_screen(self, new_index: int):
 		self.object_screen_index = new_index

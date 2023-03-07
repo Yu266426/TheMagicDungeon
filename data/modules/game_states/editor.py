@@ -1,5 +1,5 @@
 import pygame
-from pygbase import InputManager
+from pygbase import InputManager, Common
 from pygbase.game_state import GameState
 from pygbase.ui.element import TextSelectionMenu, Frame, Button
 from pygbase.ui.screen import UIScreen
@@ -37,7 +37,7 @@ class Editor(GameState):
 			EditorStates.OBJECT_SELECTION_STATE: ObjectSelectionState(self.room, self.shared_state, self.action_queue, self.object_selection_info)
 		}
 
-		self.mode_selector = TextSelectionMenu((0, 0), (260, 60), [
+		self.mode_selector = TextSelectionMenu((0, 0), (260, 60), Common.get_value("image_res"), [
 			"Tile",
 			"Object"
 		])
@@ -47,21 +47,18 @@ class Editor(GameState):
 		self.selector_frame.add_element(self.mode_selector)
 
 		self.show_overlay = False
-		self.should_quit_editor = False
 
 		self.overlay_ui = UIScreen()
 		self.overlay_frame = self.overlay_ui.add_frame(Frame((200, 200), (400, 400), bg_colour=(10, 10, 10, 200)))
 
-		self.overlay_frame.add_element(Button((200, 20), "button", self.quit_editor, text="Back", alignment="c"))
-		self.overlay_frame.add_element(Button((0, 20), "button", self.room.save, text="Save", alignment="c"), align_with_previous=(True, False), add_on_to_previous=(False, True))
+		from data.modules.game_states.main_menu import MainMenu
+		self.overlay_frame.add_element(Button((200, 20), Common.get_value("image_res"), "button", self.set_next_state, MainMenu, text="Back", alignment="c"))
+		self.overlay_frame.add_element(Button((0, 20), Common.get_value("image_res"), "button", self.room.save, text="Save", alignment="c"), align_with_previous=(True, False), add_on_to_previous=(False, True))
 
 	def reset_object_animations(self):
 		for game_object in self.room.objects:
 			if issubclass(type(game_object), AnimatableObject):
 				game_object.frame = 0
-
-	def quit_editor(self):
-		self.should_quit_editor = True
 
 	def update(self, delta: float):
 		if InputManager.keys_down[pygame.K_ESCAPE]:
@@ -105,10 +102,3 @@ class Editor(GameState):
 
 		if self.show_overlay:
 			self.overlay_ui.draw(screen)
-
-	def next_state(self) -> GameState:
-		if not self.should_quit_editor:
-			return self
-		else:
-			from data.modules.game_states.main_menu import MainMenu
-			return MainMenu()

@@ -1,13 +1,10 @@
-import os
+import pathlib
 
-# Base
-CURRENT_DIR = os.getcwd()
-DATA_DIR = os.path.join(CURRENT_DIR, "data")
+CURRENT_DIR = pathlib.Path.cwd()
+DATA_DIR = CURRENT_DIR / "data"
 
-# Asset dirs
-ASSET_DIR = os.path.join(DATA_DIR, "assets")
-IMAGE_DIR = os.path.join(ASSET_DIR, "images")
-SPRITE_SHEET_DIR = os.path.join(ASSET_DIR, "sprite_sheets")
+ASSET_DIR = DATA_DIR / "assets"
+IMAGE_DIR = ASSET_DIR / "images"
+SPRITE_SHEET_DIR = ASSET_DIR / "sprite_sheets"
 
-# Levels
-LEVEL_DIR = os.path.join(DATA_DIR, "levels")
+LEVEL_DIR = DATA_DIR / "levels"
