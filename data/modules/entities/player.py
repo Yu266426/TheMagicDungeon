@@ -2,12 +2,14 @@ import pygame
 from pygbase import InputManager, Camera, AnimationManager, Animation
 
 from data.modules.base.level import Level
+from data.modules.entities.components.hitbox import Hitbox
+from data.modules.entities.components.movement import Movement
 from data.modules.entities.entity import Entity
 
 
 class Player(Entity):
-	def __init__(self, pos: tuple[int, int], level: Level):
-		super().__init__(pos, None, hitbox=(70, 50))
+	def __init__(self, pos, level: Level):
+		super().__init__(pos)
 
 		self.current_state = "idle"
 
@@ -16,9 +18,12 @@ class Player(Entity):
 			("run", Animation("player_run_animation", 0, 2), 8)
 		], "player_idle")
 
-		self.input = pygame.Vector2()
+		self.hitbox = Hitbox((70, 50)).link_pos(self.pos)
 
-		self.level = level
+		self.input = pygame.Vector2()
+		self.movement = Movement(400, level, self.hitbox)
+
+		self.angle = 0
 
 	def get_inputs(self):
 		self.input.x = InputManager.keys_pressed[pygame.K_d] - InputManager.keys_pressed[pygame.K_a]
@@ -35,9 +40,11 @@ class Player(Entity):
 	def update(self, delta: float):
 		self.get_inputs()
 
-		self.move(self.input * 500 * delta, self.level)
+		self.movement.move_in_direction(self.pos, self.input, delta)
 
 		self.animations.update(delta)
 
-	def draw(self, display: pygame.Surface, camera: Camera):
-		self.animations.draw_at_pos(display, self.pos, camera, draw_pos="midbottom")
+		self.angle += 60 * delta
+
+	def draw(self, screen: pygame.Surface, camera: Camera):
+		self.animations.draw_at_pos(screen, self.pos, camera, angle=self.angle, draw_pos="midbottom")

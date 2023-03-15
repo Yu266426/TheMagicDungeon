@@ -5,17 +5,35 @@ from data.modules.base.utils import get_1d_pos
 class EntityManager:
 	def __init__(self):
 		from data.modules.entities.entity import Entity
-		self.entities: list[Entity] = []
-		self.sorted_entities: dict[int, list] = {}
+		self.entities: list[tuple[Entity, list[str]]] = []
+		self.sorted_entities: dict[int, list[Entity]] = {}
+		self.tagged_entities: dict[str, list[Entity]] = {}
 
-	def add_entity(self, entity):
-		self.entities.append(entity)
+	def add_entity(self, entity, tags: list[str] = None):
+		entity_tags = [] if tags is None else tags
+
+		self.entities.append((entity, entity_tags))
+
+		for tag in entity_tags:
+			if tag not in self.tagged_entities:
+				self.tagged_entities[tag] = []
+
+			self.tagged_entities[tag].append(entity)
+
+	def get_entities_of_tag(self, tag: str):
+		if tag in self.tagged_entities:
+			return self.tagged_entities[tag]
+		else:
+			return []
 
 	def update(self, delta: float):
 		self.sorted_entities.clear()
 
-		for entity in self.entities:
+		for entity, tags in self.entities:
 			entity.update(delta)
+			if not entity.is_alive():
+				self.entities.remove((entity, tags))
+				continue
 
 			y_pos = get_1d_pos(entity.pos.y, TILE_SIZE)
 

@@ -20,10 +20,14 @@ class Level:
 		self.connections = {}
 
 		self.room_size = 10
-		self.generate_level(20)
+		self.generate_level()
 
 	# TODO: Redo generation to be over multiple frames
-	def generate_level(self, depth=3):
+	def generate_level(self, depth=20):
+		# Reset level
+		self.rooms.clear()
+		self.connections.clear()
+
 		def add_connection(start: tuple[int, int], end: tuple[int, int]):
 			if start not in connections:
 				connections[start] = []
@@ -100,7 +104,7 @@ class Level:
 						direction = random.choice(available_directions)
 
 						new_pos = room_pos[0] + direction[0], room_pos[1] + direction[1]
-						if self.get_room(new_pos) is None:
+						if self.get_room((new_pos[0] * self.room_size * TILE_SIZE, new_pos[1] * self.room_size * TILE_SIZE)) is None:
 							generated_rooms.add(new_pos)
 							add_connection(room_pos, new_pos)
 							room_queue.append((new_pos, room_depth + 1))
@@ -125,20 +129,21 @@ class Level:
 		self.rooms[pos[1]][pos[0]] = room
 		return room
 
-	def get_room(self, pos: tuple[int, int]):
-		if pos[1] in self.rooms and pos[0] in self.rooms[pos[1]]:
-			return self.rooms[pos[1]][pos[0]]
+	def get_room(self, pos: tuple[float, float]) -> Room | None:
+		room_pos = get_tile_pos(pos, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
+
+		if room_pos[1] in self.rooms and room_pos[0] in self.rooms[room_pos[1]]:
+			return self.rooms[room_pos[1]][room_pos[0]]
 		return None
 
 	def get_tile(self, pos: pygame.Vector2 | tuple[float, float]):
-		room_pos = get_tile_pos(pos, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
-		room = self.get_room(room_pos)
+		room = self.get_room(pos)
 		if room is not None:
 			return room.get_tile(1, get_tile_pos(pos, (TILE_SIZE, TILE_SIZE)))
+		return None
 
 	def draw_tile(self, level: int, pos: tuple[int, int], display: pygame.Surface, camera: Camera):
-		room_pos = get_tile_pos(pos, (self.room_size, self.room_size))
-		room = self.get_room(room_pos)
+		room = self.get_room((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE))
 
 		if room is not None:
 			room.draw_tile(level, pos[1], pos[0], display, camera, with_offset=True)

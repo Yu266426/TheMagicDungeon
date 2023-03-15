@@ -1,1 +1,1 @@
-{"button": {"scale": 4.5}, "draw_tool_button": {"scale": 5}, "left": {"scale": 5}, "main_title": {"scale": 2}, "reload": {"scale": 5}, "right": {"scale": 5}, "tile_set_button": {"scale": 5}}
+{"button": {"scale": 4.5, "rotatable": false}, "draw_tool_button": {"scale": 5, "rotatable": false}, "left": {"scale": 5, "rotatable": false}, "main_title": {"scale": 2, "rotatable": false}, "reload": {"scale": 5, "rotatable": false}, "right": {"scale": 5, "rotatable": false}, "tile_set_button": {"scale": 5, "rotatable": false}}

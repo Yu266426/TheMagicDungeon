@@ -4,6 +4,7 @@ from pygbase.game_state import GameState
 
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.level import Level
+from data.modules.entities.enemy import Enemy
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.player import Player
 
@@ -20,14 +21,16 @@ class Game(GameState):
 		self.player = Player((400, 400), self.level)
 		self.entities.add_entity(self.player)
 
+		for _ in range(10):
+			self.entities.add_entity(Enemy((500, 400), self.level, self.entities))
+
 	def update(self, delta: float):
 		self.entities.update(delta)
 
 		if InputManager.keys_down[pygame.K_SPACE]:
-			self.level = Level(self.entities)
-			self.player.level = self.level
+			self.level.generate_level()
 
-		self.camera.lerp_to_target(self.player.hitbox.center - pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), delta * 5)
+		self.camera.lerp_to_target(self.player.hitbox.rect.center - pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), delta * 5)
 
 		if InputManager.keys_down[pygame.K_ESCAPE]:
 			EventManager.post_event(pygame.QUIT)

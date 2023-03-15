@@ -1,7 +1,7 @@
 import pygame
 from pygbase import InputManager, EventManager, Common
 from pygbase.game_state import GameState
-from pygbase.ui.element import Frame, Image, Button
+from pygbase.ui.element import Frame, Button, ImageElement
 from pygbase.ui.screen import UIScreen
 
 
@@ -12,7 +12,7 @@ class MainMenu(GameState):
 		self.ui = UIScreen()
 
 		self.title_frame = self.ui.add_frame(Frame((150, 50), (500, 200)))
-		self.title_frame.add_element(Image((0, 0), Common.get_value("image_res"), "main_title"))
+		self.title_frame.add_element(ImageElement((0, 0), Common.get_value("image_res"), "main_title"))
 
 		self.button_frame = self.ui.add_frame(Frame((220, 300), (360, 600)))
 
