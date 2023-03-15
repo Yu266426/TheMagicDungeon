@@ -23,8 +23,6 @@ class Player(Entity):
 		self.input = pygame.Vector2()
 		self.movement = Movement(400, level, self.hitbox)
 
-		self.angle = 0
-
 	def get_inputs(self):
 		self.input.x = InputManager.keys_pressed[pygame.K_d] - InputManager.keys_pressed[pygame.K_a]
 		self.input.y = InputManager.keys_pressed[pygame.K_s] - InputManager.keys_pressed[pygame.K_w]
@@ -44,7 +42,5 @@ class Player(Entity):
 
 		self.animations.update(delta)
 
-		self.angle += 60 * delta
-
 	def draw(self, screen: pygame.Surface, camera: Camera):
-		self.animations.draw_at_pos(screen, self.pos, camera, angle=self.angle, draw_pos="midbottom")
+		self.animations.draw_at_pos(screen, self.pos, camera, draw_pos="midbottom")

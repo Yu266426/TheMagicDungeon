@@ -22,7 +22,8 @@ class WanderState(EntityState):
 		self.target = None
 		self.find_target()
 
-		self.time_since_target = 0
+		self.time_since_target = 0.0
+		self.time_to_new_target = 2.0
 
 	def find_target(self):
 		for _ in range(3):
@@ -46,8 +47,9 @@ class WanderState(EntityState):
 		if self.target is not None:
 			self.movement.move_in_direction(self.pos, self.target - self.pos, delta)
 
-			if self.pos.distance_to(self.target) < 20 or self.time_since_target > 2:
+			if self.pos.distance_to(self.target) < 20 or self.time_since_target > self.time_to_new_target:
 				self.find_target()
+				self.time_since_target = random.uniform(1.5, 2.5)
 		else:
 			self.find_target()
 

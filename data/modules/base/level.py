@@ -20,7 +20,7 @@ class Level:
 		self.connections = {}
 
 		self.room_size = 10
-		self.generate_level()
+		self.generate_level(3)
 
 	# TODO: Redo generation to be over multiple frames
 	def generate_level(self, depth=20):

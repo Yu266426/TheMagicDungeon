@@ -1,3 +1,4 @@
+import cProfile
 import logging
 
 import pygbase
@@ -8,6 +9,9 @@ from data.modules.base.files import IMAGE_DIR, SPRITE_SHEET_DIR
 from data.modules.game_states.main_menu import MainMenu
 
 if __name__ == '__main__':
+	# profiler = cProfile.Profile()
+	# profiler.enable()
+
 	pygbase.init((SCREEN_WIDTH, SCREEN_HEIGHT), logging_level=logging.INFO)
 
 	pygbase.add_image_resource("image", 1, str(IMAGE_DIR))
@@ -17,3 +21,6 @@ if __name__ == '__main__':
 	app.run()
 
 	pygbase.quit()
+
+# profiler.disable()
+# profiler.dump_stats("stats.prof")

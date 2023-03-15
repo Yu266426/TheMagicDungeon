@@ -21,7 +21,7 @@ class Game(GameState):
 		self.player = Player((400, 400), self.level)
 		self.entities.add_entity(self.player)
 
-		for _ in range(10):
+		for _ in range(20):
 			self.entities.add_entity(Enemy((500, 400), self.level, self.entities))
 
 	def update(self, delta: float):
