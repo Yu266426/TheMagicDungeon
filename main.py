@@ -22,5 +22,5 @@ if __name__ == '__main__':
 
 	pygbase.quit()
 
-# profiler.disable()
-# profiler.dump_stats("stats.prof")
+	# profiler.disable()
+	# profiler.dump_stats("stats.prof")

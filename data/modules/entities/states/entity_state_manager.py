@@ -1,6 +1,3 @@
-import pygame
-from pygbase import Camera
-
 from data.modules.entities.states.entity_state import EntityState
 
 
@@ -15,6 +12,3 @@ class EntityStateManager:
 			self.current_state = next_state
 
 		self.states[self.current_state].update(delta)
-
-	def draw(self, screen: pygame.Surface, camera: Camera):
-		self.states[self.current_state].draw(screen, camera)

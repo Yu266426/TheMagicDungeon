@@ -21,9 +21,9 @@ class Enemy(Entity):
 		], "idle"
 		)
 
-		self.hitbox = Hitbox((70, 50)).link_pos(self.pos)
+		self.collider = Hitbox((70, 50)).link_pos(self.pos)
 
-		self.movement = Movement(300, level, self.hitbox)
+		self.movement = Movement(300, level, self.collider)
 
 		self.state_manager = EntityStateManager({
 			"wander": WanderState(self.pos, self.movement, level, 5)
@@ -38,12 +38,11 @@ class Enemy(Entity):
 
 		damage_entities = self.entity_manager.get_entities_of_tag("damage")
 		for entity in damage_entities:
-			if self.hitbox.rect.colliderect(entity.hitbox.rect):
+			if self.collider.collides_with(entity.collider):
 				self.health.damage(entity.damage)
 
 	def draw(self, screen: pygame.Surface, camera: Camera):
 		self.animations.draw_at_pos(screen, self.pos, camera, draw_pos="midbottom")
-		self.state_manager.draw(screen, camera)
 
 	def is_alive(self):
 		return self.health.is_alive()

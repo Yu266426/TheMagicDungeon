@@ -1,5 +1,5 @@
 import pygame
-from pygbase import InputManager, Camera, EventManager
+from pygbase import InputManager, Camera, EventManager, Common
 from pygbase.game_state import GameState
 
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
@@ -13,16 +13,17 @@ class Game(GameState):
 	def __init__(self):
 		super().__init__(3)
 		self.entities = EntityManager()
+		Common.set_value("entities", self.entities)
 
 		self.level = Level(self.entities)
 
 		self.camera = Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
 
-		self.player = Player((400, 400), self.level)
+		self.player = Player((400, 400), self.level, self.camera)
 		self.entities.add_entity(self.player)
 
-		for _ in range(20):
-			self.entities.add_entity(Enemy((500, 400), self.level, self.entities))
+		# for _ in range(1000):
+		# 	self.entities.add_entity(Enemy((500, 400), self.level, self.entities))
 
 	def update(self, delta: float):
 		self.entities.update(delta)
@@ -30,7 +31,7 @@ class Game(GameState):
 		if InputManager.keys_down[pygame.K_SPACE]:
 			self.level.generate_level()
 
-		self.camera.lerp_to_target(self.player.hitbox.rect.center - pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), delta * 5)
+		self.camera.lerp_to_target(self.player.collider.rect.center - pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), delta * 5)
 
 		if InputManager.keys_down[pygame.K_ESCAPE]:
 			EventManager.post_event(pygame.QUIT)
