@@ -79,7 +79,7 @@ class SpriteSheetScreen(ControlledScreen):
 
 		draw_rect_outline(
 			screen, (255, 255, 255),
-			(selected_topleft[0] * self.sprite_sheet.tile_width - self._camera.target.x, selected_topleft[1] * self.sprite_sheet.tile_height - self._camera.target.y),
+			(selected_topleft[0] * self.sprite_sheet.tile_width - self._camera.pos.x, selected_topleft[1] * self.sprite_sheet.tile_height - self._camera.pos.y),
 			(self.sprite_sheet.tile_width * (selected_bottomright[0] - selected_topleft[0] + 1), self.sprite_sheet.tile_height * (selected_bottomright[1] - selected_topleft[1] + 1)),
 			2
 		)

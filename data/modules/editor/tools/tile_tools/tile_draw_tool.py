@@ -86,7 +86,7 @@ class TileDrawTool(EditorTool):
 		# Tile outline rect
 		draw_rect_outline(
 			screen, (255, 255, 255),
-			(mouse_pos[0] * TILE_SIZE - camera.target.x, mouse_pos[1] * TILE_SIZE - camera.target.y),
+			(mouse_pos[0] * TILE_SIZE - camera.pos.x, mouse_pos[1] * TILE_SIZE - camera.pos.y),
 			(TILE_SIZE * (selection_info.selected_bottomright[0] - selection_info.selected_topleft[0] + 1), TILE_SIZE * (selection_info.selected_bottomright[1] - selection_info.selected_topleft[1] + 1)),
 			2
 		)

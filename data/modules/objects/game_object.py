@@ -39,4 +39,4 @@ class AnimatableObject(Animation):
 		pass
 
 	def draw(self, display: pygame.Surface, camera: Camera, flag=0):
-		self.draw_at_pos(display, self.pos, camera, flag)
+		self.draw_at_pos(display, self.pos, camera, flag=flag)

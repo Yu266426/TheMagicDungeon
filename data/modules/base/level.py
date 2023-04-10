@@ -149,8 +149,8 @@ class Level:
 			room.draw_tile(level, pos[1], pos[0], display, camera, with_offset=True)
 
 	def draw(self, display: pygame.Surface, camera: Camera):
-		top_left = get_tile_pos(camera.target, (TILE_SIZE, TILE_SIZE))
-		bottom_right = get_tile_pos(camera.target + pygame.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), (TILE_SIZE, TILE_SIZE))
+		top_left = get_tile_pos(camera.pos, (TILE_SIZE, TILE_SIZE))
+		bottom_right = get_tile_pos(camera.pos + pygame.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), (TILE_SIZE, TILE_SIZE))
 		top_left = top_left[0], top_left[1]
 		bottom_right = bottom_right[0] + 2, bottom_right[1] + 2
 

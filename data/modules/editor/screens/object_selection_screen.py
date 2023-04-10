@@ -56,7 +56,7 @@ class ObjectSelectionScreen(ControlledScreen):
 
 		draw_rect_outline(
 			display, (255, 255, 255),
-			((self.selected_object_index % self.n_cols) * self.object_size[0] - self._camera.target.x, (self.selected_object_index // self.n_cols) * self.object_size[1] - self._camera.target.y),
+			((self.selected_object_index % self.n_cols) * self.object_size[0] - self._camera.pos.x, (self.selected_object_index // self.n_cols) * self.object_size[1] - self._camera.pos.y),
 			self.object_size,
 			2
 		)

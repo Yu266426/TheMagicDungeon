@@ -367,8 +367,8 @@ class EditorRoom:
 				self.tiles[layer][row][col].draw(display, camera)
 
 	def draw(self, screen: pygame.Surface, camera: Camera, entities: dict[int, dict]):
-		top_left: tuple[int, int] = get_tile_pos(camera.target, (TILE_SIZE, TILE_SIZE))
-		bottom_right: tuple[int, int] = get_tile_pos((camera.target.x + SCREEN_WIDTH, camera.target.y + SCREEN_HEIGHT), (TILE_SIZE, TILE_SIZE))
+		top_left: tuple[int, int] = get_tile_pos(camera.pos, (TILE_SIZE, TILE_SIZE))
+		bottom_right: tuple[int, int] = get_tile_pos((camera.pos.x + SCREEN_WIDTH, camera.pos.y + SCREEN_HEIGHT), (TILE_SIZE, TILE_SIZE))
 
 		top_left = top_left[0], top_left[1]
 		bottom_right = bottom_right[0] + 1, bottom_right[1] + 2
