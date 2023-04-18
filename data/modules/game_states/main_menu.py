@@ -1,8 +1,7 @@
 import pygame
-from pygbase import InputManager, EventManager, Common
-from pygbase.game_state import GameState
-from pygbase.ui.element import Frame, Button, ImageElement
-from pygbase.ui.screen import UIScreen
+from pygbase import InputManager, EventManager, Common, GameState
+from pygbase import Frame, Button, ImageElement
+from pygbase import UIScreen
 
 
 class MainMenu(GameState):
@@ -17,12 +16,12 @@ class MainMenu(GameState):
 		self.button_frame = self.ui.add_frame(Frame((220, 300), (360, 600)))
 
 		from data.modules.game_states.game import Game
-		self.button_frame.add_element(Button((0, 0), Common.get_value("image_res"), "button", self.set_next_state, Game, text="Start"))
+		self.button_frame.add_element(Button((0, 0), Common.get_value("image_res"), "button", self.set_next_state, (Game(),), text="Start"))
 
 		from data.modules.game_states.editor import Editor
-		self.button_frame.add_element(Button((0, 30), Common.get_value("image_res"), "button", self.set_next_state, Editor, text="Editor"), add_on_to_previous=(False, True))
+		self.button_frame.add_element(Button((0, 30), Common.get_value("image_res"), "button", self.set_next_state, (Editor(),), text="Editor"), add_on_to_previous=(False, True))
 
-		self.button_frame.add_element(Button((0, 30), Common.get_value("image_res"), "button", EventManager.post_event, pygame.QUIT, text="Quit"), add_on_to_previous=(False, True))
+		self.button_frame.add_element(Button((0, 30), Common.get_value("image_res"), "button", EventManager.post_event, (pygame.QUIT,), text="Quit"), add_on_to_previous=(False, True))
 
 	def update(self, delta: float):
 		self.ui.update(delta)
