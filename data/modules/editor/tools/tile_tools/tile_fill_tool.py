@@ -47,8 +47,14 @@ class TileFillTool(EditorTool):
 				continue
 
 			if starting_tile is not None and current_tile is not None:
-				if current_tile.sprite_sheet_name == starting_tile.sprite_sheet_name and current_tile.image_index == starting_tile.image_index:
+				if (
+						current_tile.sprite_sheet_name == starting_tile.sprite_sheet_name
+						and current_tile.image_index == starting_tile.image_index
+				):
 					fill_tiles.add(current_pos)
+				else:
+					continue
+
 			elif starting_tile is None and current_tile is None:
 				fill_tiles.add(current_pos)
 			else:
