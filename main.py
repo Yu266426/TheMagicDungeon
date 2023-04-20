@@ -1,8 +1,8 @@
 import cProfile
 import logging
 
+import pygame
 import pygbase
-from pygbase.app import App
 
 from data.modules.base.constants import TILE_SCALE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.files import IMAGE_DIR, SPRITE_SHEET_DIR
@@ -17,10 +17,10 @@ if __name__ == '__main__':
 	pygbase.add_image_resource("image", 1, str(IMAGE_DIR))
 	pygbase.add_sprite_sheet_resource("sprite_sheet", 2, str(SPRITE_SHEET_DIR), default_scale=TILE_SCALE)
 
-	app = App(MainMenu)
+	app = pygbase.App(MainMenu)
 	app.run()
 
 	pygbase.quit()
 
-	# profiler.disable()
-	# profiler.dump_stats("stats.prof")
+# profiler.disable()
+# profiler.dump_stats("stats.prof")

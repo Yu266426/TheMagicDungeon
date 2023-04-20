@@ -17,9 +17,9 @@ from data.modules.objects.cube import SmallCube
 from data.modules.objects.game_object import AnimatableObject
 
 
-class Editor(GameState):
+class Editor(GameState, name="editor"):
 	def __init__(self):
-		super().__init__(4)
+		super().__init__()
 
 		self.room = EditorRoom("test", n_rows=10, n_cols=10)
 

@@ -9,9 +9,9 @@ from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.player import Player
 
 
-class Game(GameState):
+class Game(GameState, name="game"):
 	def __init__(self):
-		super().__init__(3)
+		super().__init__()
 		self.entities = EntityManager()
 		Common.set_value("entities", self.entities)
 

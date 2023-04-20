@@ -4,9 +4,9 @@ from pygbase import Frame, Button, ImageElement
 from pygbase import UIScreen
 
 
-class MainMenu(GameState):
+class MainMenu(GameState, name="main_menu"):
 	def __init__(self):
-		super().__init__(2)
+		super().__init__()
 
 		self.ui = UIScreen()
 
