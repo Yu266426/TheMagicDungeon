@@ -1,18 +1,17 @@
 import pygame
-from pygbase import ResourceManager, InputManager
-from pygbase.graphics.sprite_sheet import SpriteSheet
-from pygbase.ui.screen import ControlledScreen
+import pygbase
+import pygbase.screen
 
 from data.modules.base.utils import draw_rect_outline, abs_tuple, get_tile_pos
 from data.modules.editor.editor_selection_info import TileSelectionInfo
 
 
-class SpriteSheetScreen(ControlledScreen):
+class SpriteSheetScreen(pygbase.screen.ControlledScreen):
 	def __init__(self, selection_info: TileSelectionInfo, sprite_sheet_name: str):
 		self.selection_info = selection_info
 
 		self.sprite_sheet_name: str = sprite_sheet_name
-		self.sprite_sheet: SpriteSheet = ResourceManager.get_resource(2, sprite_sheet_name)
+		self.sprite_sheet: pygbase.SpriteSheet = pygbase.ResourceManager.get_resource(2, sprite_sheet_name)
 
 		super().__init__(keep_in=(0, 0, self.sprite_sheet.n_cols * self.sprite_sheet.tile_width, self.sprite_sheet.n_rows * self.sprite_sheet.tile_height))
 
@@ -51,7 +50,7 @@ class SpriteSheetScreen(ControlledScreen):
 		self._mouse_update()
 		self._get_mouse_pos()
 
-		if InputManager.mouse_down[0]:
+		if pygbase.InputManager.mouse_down[0]:
 			if (
 					0 <= self._tiled_mouse_pos[0] < self.sprite_sheet.n_cols and
 					0 <= self._tiled_mouse_pos[1] < self.sprite_sheet.n_rows
@@ -59,14 +58,14 @@ class SpriteSheetScreen(ControlledScreen):
 				self.selected_topleft = self._tiled_mouse_pos
 				self.selected_bottomright = self._tiled_mouse_pos
 
-		if InputManager.mouse_pressed[0]:
+		if pygbase.InputManager.mouse_pressed[0]:
 			if (
 					0 <= self._tiled_mouse_pos[0] < self.sprite_sheet.n_cols and
 					0 <= self._tiled_mouse_pos[1] < self.sprite_sheet.n_rows
 			):
 				self.selected_bottomright = self._tiled_mouse_pos
 
-		if InputManager.mouse_up[0]:
+		if pygbase.InputManager.mouse_up[0]:
 			self.update_state()
 
 		self._keyboard_control(delta)

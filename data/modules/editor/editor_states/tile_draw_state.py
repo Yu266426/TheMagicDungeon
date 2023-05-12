@@ -1,10 +1,8 @@
 import enum
 
 import pygame
-from pygbase import InputManager, Common
-from pygbase.ui.element import Frame, Button
-from pygbase.ui.screen import UIScreen
-from pygbase.ui.text import Text
+import pygbase
+import pygbase.ui.text
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.room import EditorRoom
@@ -37,14 +35,14 @@ class TileDrawState(EditorState):
 
 		self.tiled_mouse_pos = get_tile_pos(self._shared_state.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
 
-		self.layer_text = Text((SCREEN_WIDTH - 10, 7), "arial", 60, (200, 200, 200), text="1", use_sys=True)
+		self.layer_text = pygbase.ui.text.Text((SCREEN_WIDTH - 10, 7), "arial", 60, (200, 200, 200), text="1", use_sys=True)
 
 		self.tool_highlight_index = 0
 
-		self.ui = UIScreen()
-		self.button_frame = self.ui.add_frame(Frame((0, SCREEN_HEIGHT - 90), (SCREEN_WIDTH, 90), bg_colour=(20, 20, 20, 150)))
-		self.button_frame.add_element(Button((10, 10), Common.get_resource_type("image"), "draw_tool_button", self.set_tool, (TileTools.DRAW, 0), size=(None, 70)))
-		self.button_frame.add_element(Button((10, 0), Common.get_resource_type("image"), "draw_tool_button", self.set_tool, (TileTools.FILL, 1), size=(None, 70)), add_on_to_previous=(True, False), align_with_previous=(False, True))
+		self.ui = pygbase.UIManager()
+		self.button_frame = self.ui.add_frame(pygbase.Frame((0, 0.9), (1, 0.1), bg_colour=(20, 20, 20, 150)))
+		self.button_frame.add_element(pygbase.Button((0.01, 0.05), (0, 0.9), pygbase.Common.get_resource_type("image"), "draw_tool_button", self.button_frame, self.set_tool, callback_args=(TileTools.DRAW, 0)))
+		self.button_frame.add_element(pygbase.Button((0.01, 0), (0, 0.9), pygbase.Common.get_resource_type("image"), "draw_tool_button", self.button_frame, self.set_tool, callback_args=(TileTools.FILL, 1)), add_on_to_previous=(True, False), align_with_previous=(False, True))
 
 	def set_tool(self, new_tool: TileTools, index: int):
 		self.current_tool = new_tool
@@ -52,13 +50,13 @@ class TileDrawState(EditorState):
 
 	def update_draw_layer(self):
 		# Change draw layer
-		if InputManager.keys_down[pygame.K_1]:
+		if pygbase.InputManager.keys_down[pygame.K_1]:
 			self.tile_selection_info.layer = 0
 			self.layer_text.set_text("1")
-		elif InputManager.keys_down[pygame.K_2]:
+		elif pygbase.InputManager.keys_down[pygame.K_2]:
 			self.tile_selection_info.layer = 1
 			self.layer_text.set_text("2")
-		elif InputManager.keys_down[pygame.K_3]:
+		elif pygbase.InputManager.keys_down[pygame.K_3]:
 			self.tile_selection_info.layer = 2
 			self.layer_text.set_text("3")
 
@@ -83,13 +81,13 @@ class TileDrawState(EditorState):
 
 		self.ui.draw(screen)
 
-		pygame.draw.rect(screen, (47, 186, 224), ((80 * self.tool_highlight_index + 10, SCREEN_HEIGHT - 80), (70, 70)), width=2)
+		pygame.draw.rect(screen, (47, 186, 224), ((80 * self.tool_highlight_index + 10, SCREEN_HEIGHT * 0.905), (SCREEN_HEIGHT * 0.09, SCREEN_HEIGHT * 0.09)), width=2)
 
 		self.layer_text.draw(screen, "r")
 
 	def next_state(self, mode_index: int):
 		if mode_index == 0:
-			if InputManager.keys_pressed[pygame.K_SPACE]:
+			if pygbase.InputManager.keys_pressed[pygame.K_SPACE]:
 				return EditorStates.TILE_SELECTION_STATE
 			else:
 				return EditorStates.TILE_DRAW_STATE

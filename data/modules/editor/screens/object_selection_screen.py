@@ -1,15 +1,15 @@
 import math
 
 import pygame
-from pygbase import InputManager
-from pygbase.ui.screen import ControlledScreen
+import pygbase
+import pygbase.screen
 
 from data.modules.base.utils import draw_rect_outline, get_tile_pos
 from data.modules.editor.editor_selection_info import ObjectSelectionInfo
 from data.modules.objects.game_object import AnimatableObject, GameObject
 
 
-class ObjectSelectionScreen(ControlledScreen):
+class ObjectSelectionScreen(pygbase.screen.ControlledScreen):
 	def __init__(self, object_selection_info: ObjectSelectionInfo, object_types: list, object_size: tuple, n_cols=1):
 		super().__init__(keep_in=(0, 0, n_cols * object_size[0], math.ceil(len(object_types) / n_cols) * object_size[1]))
 
@@ -35,7 +35,7 @@ class ObjectSelectionScreen(ControlledScreen):
 		self._mouse_update()
 		self._get_mouse_pos()
 
-		if InputManager.mouse_down[0]:
+		if pygbase.InputManager.mouse_down[0]:
 			if 0 <= self._tiled_mouse_pos[0] < self.n_cols and 0 <= self._tiled_mouse_pos[1] < self.n_rows:
 				index = self._tiled_mouse_pos[1] * self.n_cols + self._tiled_mouse_pos[0]
 				if index < len(self.objects):

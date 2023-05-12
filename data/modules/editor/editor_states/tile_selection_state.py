@@ -1,9 +1,6 @@
 import pygame
-from pygbase import InputManager, Common
-from pygbase.ui.element import Frame, Button
-from pygbase.ui.screen import UIScreen
+import pygbase
 
-from data.modules.base.constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo
@@ -24,12 +21,12 @@ class TileSelectionState(EditorState):
 			SpriteSheetScreen(self.tile_selection_info, "walls")
 		]
 
-		self.ui = UIScreen()
-		self.button_frame = self.ui.add_frame(Frame((0, SCREEN_HEIGHT - 86), (SCREEN_WIDTH, 86)))
+		self.ui = pygbase.UIManager()
+		self.button_frame = self.ui.add_frame(pygbase.Frame((0, 0.9), (1, 0.1)))
 
-		self.button_frame.add_element(Button((3, 3), Common.get_resource_type("image"), "tile_set_button", self.switch_screen, (0,)))
+		self.button_frame.add_element(pygbase.Button((0.01, 0.02), (0, 0.9), pygbase.Common.get_resource_type("image"), "tile_set_button", self.button_frame, self.switch_screen, callback_args=(0,)))
 		for loop in range(1, len(self.sprite_sheets)):
-			self.button_frame.add_element(Button((3, 3), Common.get_resource_type("image"), "tile_set_button", self.switch_screen, (loop,)), align_with_previous=(False, True), add_on_to_previous=(True, False))
+			self.button_frame.add_element(pygbase.Button((0.01, 0), (0, 0.9), pygbase.Common.get_resource_type("image"), "tile_set_button", self.button_frame, self.switch_screen, callback_args=(loop,)), align_with_previous=(False, True), add_on_to_previous=(True, False))
 
 	def switch_screen(self, new_index: int):
 		self.sprite_sheet_index = new_index
@@ -55,7 +52,7 @@ class TileSelectionState(EditorState):
 
 	def next_state(self, mode_index: int):
 		if mode_index == 0:
-			if InputManager.keys_pressed[pygame.K_SPACE]:
+			if pygbase.InputManager.keys_pressed[pygame.K_SPACE]:
 				return EditorStates.TILE_SELECTION_STATE
 			else:
 				self.sprite_sheets[self.sprite_sheet_index].update_state()

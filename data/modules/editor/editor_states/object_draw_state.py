@@ -1,9 +1,7 @@
 import enum
 
 import pygame
-from pygbase import InputManager, Common
-from pygbase.ui.element import Frame, Button
-from pygbase.ui.screen import UIScreen
+import pygbase
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.room import EditorRoom
@@ -34,9 +32,9 @@ class ObjectDrawState(EditorState):
 
 		self.tiled_mouse_pos = get_tile_pos(self._shared_state.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
 
-		self.ui = UIScreen()
-		self.button_frame = self.ui.add_frame(Frame((0, SCREEN_HEIGHT - 90), (SCREEN_WIDTH, 90), bg_colour=(20, 20, 20, 150)))
-		self.button_frame.add_element(Button((10, 10), Common.get_resource_type("image"), "reload", self.reset_object_animations, (), size=(None, 70)))
+		self.ui = pygbase.UIManager()
+		self.button_frame = self.ui.add_frame(pygbase.Frame((0, 0.9), (1, 0.1), bg_colour=(20, 20, 20, 150)))
+		self.button_frame.add_element(pygbase.Button((0.01, 0.05), (0, 0.9), pygbase.Common.get_resource_type("image"), "reload", self.button_frame, self.reset_object_animations))
 
 	def reset_object_animations(self):
 		for game_object in self._room.objects:
@@ -66,7 +64,7 @@ class ObjectDrawState(EditorState):
 		if mode_index == 0:
 			return EditorStates.TILE_DRAW_STATE
 		elif mode_index == 1:
-			if InputManager.keys_pressed[pygame.K_SPACE]:
+			if pygbase.InputManager.keys_pressed[pygame.K_SPACE]:
 				return EditorStates.OBJECT_SELECTION_STATE
 			else:
 				return EditorStates.OBJECT_DRAW_STATE

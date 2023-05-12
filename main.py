@@ -1,7 +1,6 @@
 import cProfile
 import logging
 
-import pygame
 import pygbase
 
 from data.modules.base.constants import TILE_SCALE, SCREEN_WIDTH, SCREEN_HEIGHT
@@ -22,5 +21,5 @@ if __name__ == '__main__':
 
 	pygbase.quit()
 
-# profiler.disable()
-# profiler.dump_stats("stats.prof")
+	# profiler.disable()
+	# profiler.dump_stats("stats.prof")

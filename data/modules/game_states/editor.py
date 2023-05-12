@@ -1,8 +1,8 @@
 import pygame
+import pygbase
 from pygbase import InputManager, Common
+from pygbase import TextSelectionMenu, Frame, Button, UIManager
 from pygbase.game_state import GameState
-from pygbase.ui.element import TextSelectionMenu, Frame, Button
-from pygbase.ui.screen import UIScreen
 
 from data.modules.base.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
@@ -37,23 +37,22 @@ class Editor(GameState, name="editor"):
 			EditorStates.OBJECT_SELECTION_STATE: ObjectSelectionState(self.room, self.shared_state, self.action_queue, self.object_selection_info)
 		}
 
-		self.mode_selector = TextSelectionMenu((0, 0), (260, 60), Common.get_resource_type("image"), [
+		self.ui = UIManager()
+
+		self.mode_selector = self.ui.add_element(TextSelectionMenu((0.02, 0.02), (0.35, 0.08), Common.get_resource_type("image"), [
 			"Tile",
 			"Object"
-		])
-
-		self.ui = UIScreen()
-		self.selector_frame = self.ui.add_frame(Frame((10, 10), (260, 60)))
-		self.selector_frame.add_element(self.mode_selector)
+		]))
 
 		self.show_overlay = False
 
-		self.overlay_ui = UIScreen()
-		self.overlay_frame = self.overlay_ui.add_frame(Frame((200, 200), (400, 400), bg_colour=(10, 10, 10, 200)))
+		self.overlay_ui = UIManager()
+		self.overlay_frame = self.overlay_ui.add_frame(Frame((0.25, 0.24), (0.5, 0.52), bg_colour=(10, 10, 10, 200)))
 
 		from data.modules.game_states.main_menu import MainMenu
-		self.overlay_frame.add_element(Button((200, 20), Common.get_resource_type("image"), "button", self.set_next_state_type, (MainMenu, ()), text="Back", alignment="c"))
-		self.overlay_frame.add_element(Button((0, 20), Common.get_resource_type("image"), "button", self.room.save, (), text="Save", alignment="c"), align_with_previous=(True, False), add_on_to_previous=(False, True))
+		self.overlay_frame.add_element(Button((0.5, 0.02), (0, 0), Common.get_resource_type("image"), "button", self.overlay_frame, self.set_next_state_type, callback_args=(MainMenu, ()), text="Back", alignment="c"))
+		self.overlay_frame.add_element(Button((0.5, 0.02), (0, 0), Common.get_resource_type("image"), "button", self.overlay_frame, self.room.save, text="Save", alignment="c"), align_with_previous=(True, False), add_on_to_previous=(False, True))
+		self.overlay_frame.add_element(Button((0.5, 0.02), (0, 0), Common.get_resource_type("image"), "button", self.overlay_frame, pygbase.EventManager.post_event, callback_args=(pygame.QUIT,), text="Quit", alignment="c"), align_with_previous=(True, False), add_on_to_previous=(False, True))
 
 	def reset_object_animations(self):
 		for game_object in self.room.objects:
