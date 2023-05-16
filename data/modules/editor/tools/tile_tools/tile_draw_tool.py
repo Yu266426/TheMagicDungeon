@@ -63,16 +63,16 @@ class TileDrawTool(EditorTool):
 
 	def update(self, mouse_pos: tuple[int, int], selection_info: TileSelectionInfo):
 		# Draw
-		if InputManager.mouse_pressed[0]:
+		if InputManager.get_mouse_pressed(0):
 			self._shared_state.show_global_ui = False
 			self.draw_tiles(mouse_pos, selection_info)
 
 		# Erase
-		elif InputManager.mouse_pressed[2]:
+		elif InputManager.get_mouse_pressed(2):
 			self._shared_state.show_global_ui = False
 			self.erase_tiles(mouse_pos, selection_info)
 
-		if InputManager.mouse_up[0] or InputManager.mouse_up[2]:
+		if InputManager.get_mouse_pressed(0) or InputManager.get_mouse_pressed(2):
 			self._shared_state.show_global_ui = True
 
 			if self.current_batch is not None:
@@ -92,7 +92,7 @@ class TileDrawTool(EditorTool):
 		)
 
 		# If not deleting tiles, draw ghost tile
-		if not InputManager.mouse_pressed[2]:
+		if not InputManager.get_mouse_pressed(2):
 			for row, row_data in selection_info.ids.items():
 				for col, image_id in row_data.items():
 					tile_x = mouse_pos[0] + col - selection_info.selected_topleft[0]

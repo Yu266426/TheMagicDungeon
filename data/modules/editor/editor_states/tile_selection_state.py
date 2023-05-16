@@ -53,7 +53,7 @@ class TileSelectionState(EditorState):
 
 	def next_state(self, mode_index: int):
 		if mode_index == 0:
-			if pygbase.InputManager.keys_pressed[pygame.K_SPACE]:
+			if pygbase.InputManager.get_key_pressed(pygame.K_SPACE):
 				return EditorStates.TILE_SELECTION_STATE
 			else:
 				self.sprite_sheets[self.sprite_sheet_index].update_state()

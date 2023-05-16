@@ -1,6 +1,7 @@
 import pygame
 import pygbase
 
+from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.map.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo, ObjectSelectionInfo
@@ -44,6 +45,8 @@ class Editor(pygbase.GameState, name="editor"):
 		self.show_overlay = False
 
 		self.overlay_ui = pygbase.UIManager()
+		self.overlay_darken = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), flags=pygame.SRCALPHA)
+		self.overlay_darken.fill((0, 0, 0, 50))
 		self.overlay_frame = self.overlay_ui.add_frame(pygbase.Frame((pygbase.UIValue(0.25, False), pygbase.UIValue(0.24, False)), (pygbase.UIValue(0.5, False), pygbase.UIValue(0.52, False)), bg_colour=(10, 10, 10, 200)))
 
 		from data.modules.game_states.main_menu import MainMenu
@@ -77,7 +80,7 @@ class Editor(pygbase.GameState, name="editor"):
 				game_object.frame = 0
 
 	def update(self, delta: float):
-		if pygbase.InputManager.keys_down[pygame.K_ESCAPE]:
+		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
 			self.show_overlay = not self.show_overlay
 			self.shared_state.should_draw_tool = not self.shared_state.should_draw_tool
 
@@ -90,10 +93,10 @@ class Editor(pygbase.GameState, name="editor"):
 
 			self.states[self.current_state].update(delta)
 
-			if pygbase.InputManager.keys_down[pygame.K_z]:
-				if pygbase.InputManager.mods & pygame.KMOD_LCTRL and not pygbase.InputManager.mods & pygame.KMOD_SHIFT:
+			if pygbase.InputManager.get_key_just_pressed(pygame.K_z):
+				if pygbase.InputManager.check_modifiers(pygame.KMOD_LCTRL) and not pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
 					self.action_queue.undo_action()
-				if pygbase.InputManager.mods & pygame.KMOD_LCTRL and pygbase.InputManager.mods & pygame.KMOD_SHIFT:
+				if pygbase.InputManager.check_modifiers(pygame.KMOD_LCTRL) and pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
 					self.action_queue.redo_action()
 
 			# Animate objects
@@ -102,8 +105,8 @@ class Editor(pygbase.GameState, name="editor"):
 					game_object.change_frame(delta * 2)
 
 			# Save
-			if pygbase.InputManager.mods & pygame.KMOD_LCTRL:
-				if pygbase.InputManager.keys_down[pygame.K_s]:
+			if pygbase.InputManager.check_modifiers(pygame.KMOD_LCTRL):
+				if pygbase.InputManager.get_key_just_pressed(pygame.K_s):
 					self.room.save()
 		else:
 			self.overlay_ui.update(delta)
@@ -117,4 +120,5 @@ class Editor(pygbase.GameState, name="editor"):
 			self.ui.draw(screen)
 
 		if self.show_overlay:
+			screen.blit(self.overlay_darken, (0, 0))
 			self.overlay_ui.draw(screen)

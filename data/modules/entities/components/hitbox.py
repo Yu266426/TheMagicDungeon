@@ -4,7 +4,7 @@ import pygame
 class Hitbox:
 	def __init__(self, hitbox_size: tuple[int, int], pos: tuple = (0, 0)):
 		self.pos = pygame.Vector2(pos)
-		self._hitbox = pygame.Rect(self.pos, hitbox_size)
+		self._hitbox = pygame.FRect(self.pos, hitbox_size)
 
 	def link_pos(self, pos: pygame.Vector2) -> "Hitbox":
 		self.pos = pos

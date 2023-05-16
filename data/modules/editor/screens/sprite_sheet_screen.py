@@ -50,7 +50,7 @@ class SpriteSheetScreen(pygbase.screen.ControlledScreen):
 		self._mouse_update()
 		self._get_mouse_pos()
 
-		if pygbase.InputManager.mouse_down[0]:
+		if pygbase.InputManager.get_mouse_just_pressed(0):
 			if (
 					0 <= self._tiled_mouse_pos[0] < self.sprite_sheet.n_cols and
 					0 <= self._tiled_mouse_pos[1] < self.sprite_sheet.n_rows
@@ -58,14 +58,14 @@ class SpriteSheetScreen(pygbase.screen.ControlledScreen):
 				self.selected_topleft = self._tiled_mouse_pos
 				self.selected_bottomright = self._tiled_mouse_pos
 
-		if pygbase.InputManager.mouse_pressed[0]:
+		if pygbase.InputManager.get_mouse_pressed(0):
 			if (
 					0 <= self._tiled_mouse_pos[0] < self.sprite_sheet.n_cols and
 					0 <= self._tiled_mouse_pos[1] < self.sprite_sheet.n_rows
 			):
 				self.selected_bottomright = self._tiled_mouse_pos
 
-		if pygbase.InputManager.mouse_up[0]:
+		if pygbase.InputManager.get_mouse_just_released(0):
 			self.update_state()
 
 		self._keyboard_control(delta)

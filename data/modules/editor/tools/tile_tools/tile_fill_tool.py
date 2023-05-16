@@ -86,7 +86,7 @@ class TileFillTool(EditorTool):
 			self.current_batch.add_action(action)
 
 		# Place
-		if InputManager.mouse_down[0]:
+		if InputManager.get_mouse_just_pressed(0):
 			self.current_batch = EditorActionBatch()
 			fill_tiles = self.fill(mouse_pos, selection_info)
 			for pos in fill_tiles:
@@ -96,7 +96,7 @@ class TileFillTool(EditorTool):
 			self.current_batch = None
 
 		# Remove
-		elif InputManager.mouse_down[2]:
+		elif InputManager.get_mouse_just_pressed(2):
 			self.current_batch = EditorActionBatch()
 			fill_tiles = self.fill(mouse_pos, selection_info)
 			for pos in fill_tiles:

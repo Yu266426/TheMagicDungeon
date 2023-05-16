@@ -1,6 +1,3 @@
-import pygame
-from pygbase import Camera
-
 from data.modules.base.constants import TILE_SIZE
 from data.modules.base.utils import get_1d_pos
 
@@ -15,8 +12,8 @@ class EntityManager:
 
 		self.entities_to_remove = set()
 
-	def add_entity(self, entity, tags: list[str] = None):
-		entity_tags = [] if tags is None else tags
+	def add_entity(self, entity, tags: tuple[str] = None):
+		entity_tags = () if tags is None else tags
 
 		self.entities.append(entity)
 		self.entity_tags[entity] = set()

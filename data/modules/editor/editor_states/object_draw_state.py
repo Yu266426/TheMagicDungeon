@@ -69,7 +69,7 @@ class ObjectDrawState(EditorState):
 		if mode_index == 0:
 			return EditorStates.TILE_DRAW_STATE
 		elif mode_index == 1:
-			if pygbase.InputManager.keys_pressed[pygame.K_SPACE]:
+			if pygbase.InputManager.get_key_pressed(pygame.K_SPACE):
 				return EditorStates.OBJECT_SELECTION_STATE
 			else:
 				return EditorStates.OBJECT_DRAW_STATE

@@ -9,6 +9,7 @@ class Item(Entity):
 		super().__init__((0, 0))
 
 		self.durability: int = durability
+		self.flip_x: bool = False  # Updated by ItemSlot
 
 	def added_to_slot(self, pos: pygame.Vector2):
 		self.pos = pos

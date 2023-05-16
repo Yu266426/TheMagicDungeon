@@ -20,7 +20,7 @@ class ObjectDrawTool(EditorTool):
 		self.current_batch: EditorActionBatch | None = None
 
 	def update(self, mouse_pos: tuple[int, int], selection_info: ObjectSelectionInfo):
-		if InputManager.mouse_pressed[0]:
+		if InputManager.get_mouse_pressed(0):
 			x_pos = mouse_pos[0] * TILE_SIZE
 			y_pos = mouse_pos[1] * TILE_SIZE
 
@@ -33,7 +33,7 @@ class ObjectDrawTool(EditorTool):
 
 				self.current_batch.add_action(action)
 
-		if InputManager.mouse_pressed[2]:
+		if InputManager.get_mouse_pressed(2):
 			x_pos = mouse_pos[0] * TILE_SIZE
 			y_pos = (mouse_pos[1] - 1) * TILE_SIZE
 
@@ -46,7 +46,7 @@ class ObjectDrawTool(EditorTool):
 
 				self.current_batch.add_action(action)
 
-		if InputManager.mouse_up[0] or InputManager.mouse_up[2]:
+		if InputManager.get_mouse_just_released(0) or InputManager.get_mouse_just_released(2):
 			if self.current_batch is not None:
 				self._action_queue.add_action(self.current_batch)
 				self.current_batch = None
@@ -60,7 +60,7 @@ class ObjectDrawTool(EditorTool):
 		)
 
 		# Draw selected object if not deleting
-		if not InputManager.mouse_pressed[2]:
+		if not InputManager.get_mouse_pressed(2):
 			if selection_info.current_object_type is not None:
 				x_pos = mouse_pos[0] * TILE_SIZE
 				y_pos = mouse_pos[1] * TILE_SIZE

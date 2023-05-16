@@ -35,7 +35,7 @@ class ObjectSelectionScreen(pygbase.screen.ControlledScreen):
 		self._mouse_update()
 		self._get_mouse_pos()
 
-		if pygbase.InputManager.mouse_down[0]:
+		if pygbase.InputManager.get_mouse_just_pressed(0):
 			if 0 <= self._tiled_mouse_pos[0] < self.n_cols and 0 <= self._tiled_mouse_pos[1] < self.n_rows:
 				index = self._tiled_mouse_pos[1] * self.n_cols + self._tiled_mouse_pos[0]
 				if index < len(self.objects):

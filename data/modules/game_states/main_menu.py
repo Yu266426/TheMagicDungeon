@@ -61,7 +61,7 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 	def update(self, delta: float):
 		self.ui.update(delta)
 
-		if pygbase.InputManager.keys_pressed[pygame.K_ESCAPE]:
+		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
 			pygbase.EventManager.run_handlers("all", pygame.QUIT)
 
 	def draw(self, screen: pygame.Surface):

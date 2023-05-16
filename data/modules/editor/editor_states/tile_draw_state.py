@@ -40,6 +40,7 @@ class TileDrawState(EditorState):
 		self.tool_highlight_index = 0
 
 		self.ui = pygbase.UIManager()
+
 		self.button_frame = self.ui.add_frame(pygbase.Frame((pygbase.UIValue(0), pygbase.UIValue(SCREEN_HEIGHT - 90)), (pygbase.UIValue(1, False), pygbase.UIValue(90)), bg_colour=(20, 20, 20, 150)))
 		self.button_size = self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(10), pygbase.UIValue(10)),
@@ -58,15 +59,15 @@ class TileDrawState(EditorState):
 		self.current_tool = new_tool
 		self.tool_highlight_index = index
 
-	def update_draw_layer(self):
+	def check_draw_layer(self):
 		# Change draw layer
-		if pygbase.InputManager.keys_down[pygame.K_1]:
+		if pygbase.InputManager.get_key_just_pressed(pygame.K_1):
 			self.tile_selection_info.layer = 0
 			self.layer_text.set_text("1")
-		elif pygbase.InputManager.keys_down[pygame.K_2]:
+		elif pygbase.InputManager.get_key_just_pressed(pygame.K_2):
 			self.tile_selection_info.layer = 1
 			self.layer_text.set_text("2")
-		elif pygbase.InputManager.keys_down[pygame.K_3]:
+		elif pygbase.InputManager.get_key_just_pressed(pygame.K_3):
 			self.tile_selection_info.layer = 2
 			self.layer_text.set_text("3")
 
@@ -77,7 +78,7 @@ class TileDrawState(EditorState):
 		self._shared_state.controlled_screen.update(delta)
 		self.tiled_mouse_pos = get_tile_pos(self._shared_state.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
 
-		self.update_draw_layer()
+		self.check_draw_layer()
 
 		if not self._shared_state.on_global_ui and not self.ui.on_ui():
 			self.tools[self.current_tool].update(self.tiled_mouse_pos, self.tile_selection_info)
@@ -98,7 +99,7 @@ class TileDrawState(EditorState):
 
 	def next_state(self, mode_index: int):
 		if mode_index == 0:
-			if pygbase.InputManager.keys_pressed[pygame.K_SPACE]:
+			if pygbase.InputManager.get_key_pressed(pygame.K_SPACE):
 				return EditorStates.TILE_SELECTION_STATE
 			else:
 				return EditorStates.TILE_DRAW_STATE
