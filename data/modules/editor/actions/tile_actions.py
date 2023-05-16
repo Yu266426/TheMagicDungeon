@@ -1,4 +1,4 @@
-from data.modules.base.room import EditorRoom
+from data.modules.map.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorAction
 from data.modules.objects.tile import Tile
 

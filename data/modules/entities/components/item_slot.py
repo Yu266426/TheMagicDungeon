@@ -1,7 +1,7 @@
 from typing import Optional
 
 import pygame
-from pygbase import Camera, Common
+import pygbase
 
 from data.modules.entities.components.items.item import Item
 
@@ -14,7 +14,7 @@ class ItemSlot:
 
 		self.item: Optional[Item] = None
 
-		self.entity_manager = Common.get_value("entities")
+		self.entity_manager = pygbase.Common.get_value("entities")
 
 		self.flip_x = False
 
@@ -34,9 +34,9 @@ class ItemSlot:
 			self.item.update(delta)
 
 			if not self.item.check_durability():
-				self.entity_manager.remove_entity(self.item)
+				self.entity_manager.add_entity_to_remove(self.item)
 				self.item = None
 
-	def draw(self, screen: pygame.Surface, camera: Camera):
+	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
 		if self.item is not None:
 			self.item.draw(screen, camera)

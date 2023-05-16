@@ -7,7 +7,7 @@ from pygbase import Camera
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.files import LEVEL_DIR
-from data.modules.base.room import Room
+from data.modules.map.room import Room
 from data.modules.base.utils import get_tile_pos
 from data.modules.entities.entity_manager import EntityManager
 

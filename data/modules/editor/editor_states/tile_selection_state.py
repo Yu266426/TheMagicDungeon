@@ -1,7 +1,7 @@
 import pygame
 import pygbase
 
-from data.modules.base.room import EditorRoom
+from data.modules.map.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo
 from data.modules.editor.editor_states.editor_state import EditorState, EditorStates

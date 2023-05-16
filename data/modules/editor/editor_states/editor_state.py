@@ -3,7 +3,7 @@ from abc import abstractmethod
 
 import pygame
 
-from data.modules.base.room import EditorRoom
+from data.modules.map.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.shared_editor_state import SharedEditorState
 

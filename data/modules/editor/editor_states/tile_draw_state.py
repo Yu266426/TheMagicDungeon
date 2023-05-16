@@ -5,7 +5,7 @@ import pygbase
 import pygbase.ui.text
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
-from data.modules.base.room import EditorRoom
+from data.modules.map.room import EditorRoom
 from data.modules.base.utils import get_tile_pos, draw_rect_outline
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo

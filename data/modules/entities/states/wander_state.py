@@ -3,7 +3,7 @@ import random
 import pygame
 
 from data.modules.base.constants import TILE_SIZE
-from data.modules.base.level import Level
+from data.modules.map.level import Level
 from data.modules.entities.components.movement import Movement
 from data.modules.entities.states.entity_state import EntityState
 

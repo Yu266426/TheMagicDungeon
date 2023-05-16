@@ -1,8 +1,7 @@
 import pygame
-from pygbase import AnimationManager, Camera
-from pygbase.graphics.animation import Animation
+import pygbase
 
-from data.modules.base.level import Level
+from data.modules.map.level import Level
 from data.modules.entities.components.health import Health
 from data.modules.entities.components.hitbox import Hitbox
 from data.modules.entities.components.movement import Movement
@@ -16,8 +15,8 @@ class Enemy(Entity):
 	def __init__(self, pos, level: Level, entity_manager: EntityManager):
 		super().__init__(pos)
 
-		self.animations = AnimationManager([
-			("idle", Animation("player_idle_animation", 0, 1), 8)
+		self.animations = pygbase.AnimationManager([
+			("idle", pygbase.Animation("player_idle_animation", 0, 1), 8)
 		], "idle"
 		)
 
@@ -41,7 +40,7 @@ class Enemy(Entity):
 			if self.collider.collides_with(entity.collider):
 				self.health.damage(entity.damage)
 
-	def draw(self, screen: pygame.Surface, camera: Camera):
+	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
 		self.animations.draw_at_pos(screen, self.pos, camera, draw_pos="midbottom")
 
 	def is_alive(self):

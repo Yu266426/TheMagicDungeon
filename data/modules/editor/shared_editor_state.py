@@ -1,7 +1,7 @@
 from pygbase.screen import ControlledScreen
 
 from data.modules.base.constants import TILE_SIZE
-from data.modules.base.room import EditorRoom
+from data.modules.map.room import EditorRoom
 
 
 class SharedEditorState:

@@ -3,7 +3,7 @@ from pygbase import InputManager, Camera, EventManager, Common
 from pygbase.game_state import GameState
 
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
-from data.modules.base.level import Level
+from data.modules.map.level import Level
 from data.modules.entities.enemy import Enemy
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.player import Player
@@ -22,7 +22,7 @@ class Game(GameState, name="game"):
 		self.player = Player((400, 400), self.level, self.camera)
 		self.entities.add_entity(self.player)
 
-		for _ in range(1000):
+		for _ in range(100):
 			self.entities.add_entity(Enemy((500, 400), self.level, self.entities))
 
 	def update(self, delta: float):

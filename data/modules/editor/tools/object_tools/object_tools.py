@@ -2,7 +2,7 @@ import pygame
 from pygbase import InputManager, Camera
 
 from data.modules.base.constants import TILE_SIZE
-from data.modules.base.room import EditorRoom
+from data.modules.map.room import EditorRoom
 from data.modules.base.utils import draw_rect_outline
 from data.modules.editor.actions.editor_actions import EditorActionBatch, EditorActionQueue
 from data.modules.editor.actions.object_actions import RemoveObjectAction, PlaceObjectAction

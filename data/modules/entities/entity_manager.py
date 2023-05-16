@@ -30,7 +30,7 @@ class EntityManager:
 
 			self.tagged_entities[tag].append(entity)
 
-	def remove_entity(self, entity):
+	def add_entity_to_remove(self, entity):
 		self.entities_to_remove.add(entity)
 
 	def get_entities_of_tag(self, tag: str):
@@ -63,7 +63,7 @@ class EntityManager:
 
 		for entity in self.entities:
 			if not entity.is_alive():
-				self.remove_entity(entity)
+				self.add_entity_to_remove(entity)
 
 		for entity in self.entities:
 			entity.update(delta)
@@ -74,3 +74,6 @@ class EntityManager:
 				self.sorted_entities[y_pos] = []
 
 			self.sorted_entities[y_pos].append(entity)
+
+		for row, entities in self.sorted_entities.items():
+			entities.sort(key=lambda e: e.pos.y)

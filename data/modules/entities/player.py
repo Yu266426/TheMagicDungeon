@@ -1,7 +1,7 @@
 import pygame
 from pygbase import InputManager, Camera, AnimationManager, Animation
 
-from data.modules.base.level import Level
+from data.modules.map.level import Level
 from data.modules.entities.components.hitbox import Hitbox
 from data.modules.entities.components.item_slot import ItemSlot
 from data.modules.entities.components.items.energy_sword import EnergySword

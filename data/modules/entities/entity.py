@@ -1,5 +1,5 @@
 import pygame
-from pygbase import Camera
+import pygbase
 
 
 class Entity:
@@ -9,7 +9,7 @@ class Entity:
 	def update(self, delta: float):
 		pass
 
-	def draw(self, screen: pygame.Surface, camera: Camera):
+	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
 		pass
 
 	def is_alive(self):
