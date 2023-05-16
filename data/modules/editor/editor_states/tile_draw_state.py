@@ -40,9 +40,19 @@ class TileDrawState(EditorState):
 		self.tool_highlight_index = 0
 
 		self.ui = pygbase.UIManager()
-		self.button_frame = self.ui.add_frame(pygbase.Frame((0, 0.9), (1, 0.1), bg_colour=(20, 20, 20, 150)))
-		self.button_frame.add_element(pygbase.Button((0.01, 0.05), (0, 0.9), pygbase.Common.get_resource_type("image"), "draw_tool_button", self.button_frame, self.set_tool, callback_args=(TileTools.DRAW, 0)))
-		self.button_frame.add_element(pygbase.Button((0.01, 0), (0, 0.9), pygbase.Common.get_resource_type("image"), "draw_tool_button", self.button_frame, self.set_tool, callback_args=(TileTools.FILL, 1)), add_on_to_previous=(True, False), align_with_previous=(False, True))
+		self.button_frame = self.ui.add_frame(pygbase.Frame((pygbase.UIValue(0), pygbase.UIValue(SCREEN_HEIGHT - 90)), (pygbase.UIValue(1, False), pygbase.UIValue(90)), bg_colour=(20, 20, 20, 150)))
+		self.button_size = self.button_frame.add_element(pygbase.Button(
+			(pygbase.UIValue(10), pygbase.UIValue(10)),
+			(pygbase.UIValue(0), pygbase.UIValue(70)),
+			pygbase.Common.get_resource_type("image"), "draw_tool_button",
+			self.button_frame, self.set_tool, callback_args=(TileTools.DRAW, 0)
+		)).size
+		self.button_frame.add_element(pygbase.Button(
+			(pygbase.UIValue(10), pygbase.UIValue(0)),
+			(pygbase.UIValue(0), pygbase.UIValue(70)),
+			pygbase.Common.get_resource_type("image"), "draw_tool_button",
+			self.button_frame, self.set_tool, callback_args=(TileTools.FILL, 1)
+		), add_on_to_previous=(True, False), align_with_previous=(False, True))
 
 	def set_tool(self, new_tool: TileTools, index: int):
 		self.current_tool = new_tool
@@ -81,7 +91,8 @@ class TileDrawState(EditorState):
 
 		self.ui.draw(screen)
 
-		pygame.draw.rect(screen, (47, 186, 224), ((80 * self.tool_highlight_index + 10, SCREEN_HEIGHT * 0.905), (SCREEN_HEIGHT * 0.09, SCREEN_HEIGHT * 0.09)), width=2)
+		# Tool Selection Outline
+		pygame.draw.rect(screen, (47, 186, 224), (((self.button_size.x + 10) * self.tool_highlight_index + 10, SCREEN_HEIGHT - 80), self.button_size), width=2)
 
 		self.layer_text.draw(screen, "r")
 

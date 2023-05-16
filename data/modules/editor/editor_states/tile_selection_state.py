@@ -1,6 +1,7 @@
 import pygame
 import pygbase
 
+from data.modules.base.constants import SCREEN_HEIGHT
 from data.modules.map.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo
@@ -22,11 +23,11 @@ class TileSelectionState(EditorState):
 		]
 
 		self.ui = pygbase.UIManager()
-		self.button_frame = self.ui.add_frame(pygbase.Frame((0, 0.9), (1, 0.1)))
+		self.button_frame = self.ui.add_frame(pygbase.Frame((pygbase.UIValue(0, False), pygbase.UIValue(SCREEN_HEIGHT - 90)), (pygbase.UIValue(1, False), pygbase.UIValue(90)), bg_colour=(20, 20, 20, 150)))
 
-		self.button_frame.add_element(pygbase.Button((0.01, 0.02), (0, 0.9), pygbase.Common.get_resource_type("image"), "tile_set_button", self.button_frame, self.switch_screen, callback_args=(0,)))
+		self.button_frame.add_element(pygbase.Button((pygbase.UIValue(10), pygbase.UIValue(10)), (pygbase.UIValue(0), pygbase.UIValue(70)), pygbase.Common.get_resource_type("image"), "tile_set_button", self.button_frame, self.switch_screen, callback_args=(0,)))
 		for loop in range(1, len(self.sprite_sheets)):
-			self.button_frame.add_element(pygbase.Button((0.01, 0), (0, 0.9), pygbase.Common.get_resource_type("image"), "tile_set_button", self.button_frame, self.switch_screen, callback_args=(loop,)), align_with_previous=(False, True), add_on_to_previous=(True, False))
+			self.button_frame.add_element(pygbase.Button((pygbase.UIValue(10), pygbase.UIValue(10)), (pygbase.UIValue(0), pygbase.UIValue(70)), pygbase.Common.get_resource_type("image"), "tile_set_button", self.button_frame, self.switch_screen, callback_args=(loop,)), align_with_previous=(False, True), add_on_to_previous=(True, False))
 
 	def switch_screen(self, new_index: int):
 		self.sprite_sheet_index = new_index

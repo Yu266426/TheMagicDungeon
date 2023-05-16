@@ -3,7 +3,7 @@ import enum
 import pygame
 import pygbase
 
-from data.modules.base.constants import TILE_SIZE
+from data.modules.base.constants import TILE_SIZE, SCREEN_HEIGHT
 from data.modules.map.room import EditorRoom
 from data.modules.base.utils import draw_rect_outline, get_tile_pos
 from data.modules.editor.actions.editor_actions import EditorActionQueue
@@ -33,8 +33,13 @@ class ObjectDrawState(EditorState):
 		self.tiled_mouse_pos = get_tile_pos(self._shared_state.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
 
 		self.ui = pygbase.UIManager()
-		self.button_frame = self.ui.add_frame(pygbase.Frame((0, 0.9), (1, 0.1), bg_colour=(20, 20, 20, 150)))
-		self.button_frame.add_element(pygbase.Button((0.01, 0.05), (0, 0.9), pygbase.Common.get_resource_type("image"), "reload", self.button_frame, self.reset_object_animations))
+		self.button_frame = self.ui.add_frame(pygbase.Frame((pygbase.UIValue(0, False), pygbase.UIValue(SCREEN_HEIGHT - 90)), (pygbase.UIValue(1, False), pygbase.UIValue(90)), bg_colour=(20, 20, 20, 150)))
+		self.button_frame.add_element(pygbase.Button(
+			(pygbase.UIValue(10), pygbase.UIValue(10)),
+			(pygbase.UIValue(0), pygbase.UIValue(70)),
+			pygbase.Common.get_resource_type("image"), "reload",
+			self.button_frame, self.reset_object_animations
+		))
 
 	def reset_object_animations(self):
 		for game_object in self._room.objects:
