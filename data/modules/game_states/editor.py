@@ -19,7 +19,7 @@ class Editor(pygbase.GameState, name="editor"):
 	def __init__(self):
 		super().__init__()
 
-		self.room = EditorRoom("test", n_rows=10, n_cols=10)
+		self.room = EditorRoom("start", n_rows=20, n_cols=20)
 
 		self.shared_state = SharedEditorState(self.room)
 		self.action_queue = EditorActionQueue()
@@ -93,10 +93,13 @@ class Editor(pygbase.GameState, name="editor"):
 
 			self.states[self.current_state].update(delta)
 
+			print(self.action_queue.editor_actions)
 			if pygbase.InputManager.get_key_just_pressed(pygame.K_z):
-				if pygbase.InputManager.check_modifiers(pygame.KMOD_LCTRL) and not pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
+				if pygbase.InputManager.check_modifiers(pygame.KMOD_CTRL) and not pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
+					print("undo")
 					self.action_queue.undo_action()
-				if pygbase.InputManager.check_modifiers(pygame.KMOD_LCTRL) and pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
+				if pygbase.InputManager.check_modifiers(pygame.KMOD_CTRL) and pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
+					print("redo")
 					self.action_queue.redo_action()
 
 			# Animate objects

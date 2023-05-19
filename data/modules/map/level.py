@@ -19,7 +19,7 @@ class Level:
 		self.rooms: dict[int, dict[int, Room]] = {}
 		self.connections = {}
 
-		self.room_size = 10
+		self.room_size = 20
 		self.generate_level(3)
 
 	# TODO: Redo generation to be over multiple frames

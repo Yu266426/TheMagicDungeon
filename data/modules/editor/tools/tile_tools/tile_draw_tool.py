@@ -72,7 +72,7 @@ class TileDrawTool(EditorTool):
 			self._shared_state.show_global_ui = False
 			self.erase_tiles(mouse_pos, selection_info)
 
-		if InputManager.get_mouse_pressed(0) or InputManager.get_mouse_pressed(2):
+		if InputManager.get_mouse_just_released(0) or InputManager.get_mouse_just_released(2):
 			self._shared_state.show_global_ui = True
 
 			if self.current_batch is not None:
