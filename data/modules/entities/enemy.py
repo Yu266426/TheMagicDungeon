@@ -1,5 +1,6 @@
 import pygame
 import pygbase
+import setuptools
 
 from data.modules.map.level import Level
 from data.modules.entities.components.health import Health
@@ -22,24 +23,37 @@ class Enemy(Entity):
 
 		self.collider = Hitbox((70, 50)).link_pos(self.pos)
 
-		self.movement = Movement(300, level, self.collider)
+		self.movement = Movement(6000, 0.2, level, self.collider)
 
 		self.state_manager = EntityStateManager({
 			"wander": WanderState(self.pos, self.movement, level, 5)
 		}, "wander")
 
 		self.health = Health(10)
+		self.damage_timer = pygbase.Timer(0.2, False, False)
 
 		self.entity_manager = entity_manager
 
 	def update(self, delta: float):
+		self.damage_timer.tick(delta)
+
 		self.state_manager.update(delta)
 
-		damage_entities = self.entity_manager.get_entities_of_tag("damage")
-		for entity in damage_entities:
-			if self.collider.collides_with(entity.collider):
-				print(entity)
-				self.health.damage(entity.damage)
+		if self.damage_timer.done():
+			damage_entities = self.entity_manager.get_entities_of_tag("damage")
+			for entity in damage_entities:
+				if self.collider.collides_with(entity.collider):
+					# print(entity)
+					self.health.damage(entity.damage)
+
+					dir_vec = entity.pos - self.pos
+					if dir_vec.length() != 0:
+						dir_vec.normalize_ip()
+
+					self.movement.velocity -= dir_vec * 2000
+
+					self.damage_timer.start()
+					break
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
 		self.animations.draw_at_pos(screen, self.pos, camera, draw_pos="midbottom")

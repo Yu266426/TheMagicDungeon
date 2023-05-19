@@ -1,5 +1,5 @@
 from data.modules.base.constants import TILE_SIZE
-from data.modules.base.utils import get_1d_pos
+from data.modules.base.utils import get_1d_tile_pos
 
 
 class EntityManager:
@@ -65,7 +65,7 @@ class EntityManager:
 		for entity in self.entities:
 			entity.update(delta)
 
-			y_pos = get_1d_pos(entity.pos.y, TILE_SIZE)
+			y_pos = get_1d_tile_pos(entity.pos.y, TILE_SIZE)
 
 			if y_pos not in self.sorted_entities:
 				self.sorted_entities[y_pos] = []

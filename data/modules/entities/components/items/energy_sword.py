@@ -16,6 +16,8 @@ class EnergySword(Item):
 		], "active")
 
 		self.angle = -30
+		self.attack_length = 100
+		self.attack_damage = 1
 
 		self.entity_manager: EntityManager = entities
 
@@ -26,7 +28,7 @@ class EnergySword(Item):
 		self.animations.update(delta)
 
 		if InputManager.get_mouse_just_pressed(0):
-			self.entity_manager.add_entity(SwordSwing(self.pos, self.angle * (1 if self.flip_x else -1), 40, 5), tags=("damage",))
+			self.entity_manager.add_entity(SwordSwing(self.pos, self.angle * (1 if self.flip_x else -1), self.attack_length, self.attack_damage), tags=("damage",))
 
 	def draw(self, screen: pygame.Surface, camera: Camera):
 		self.animations.draw_at_pos(

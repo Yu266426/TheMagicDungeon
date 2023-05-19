@@ -5,7 +5,7 @@ def get_tile_pos(pos: tuple | pygame.Vector2, tile_size: tuple[int | float, int 
 	return int(pos[0] // tile_size[0]), int(pos[1] // tile_size[1])
 
 
-def get_1d_pos(pos: int | float, tile_size: int | float):
+def get_1d_tile_pos(pos: int | float, tile_size: int | float):
 	return int(pos // tile_size)
 
 

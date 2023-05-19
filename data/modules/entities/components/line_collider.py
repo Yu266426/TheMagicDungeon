@@ -16,8 +16,16 @@ class LineCollider:
 
 		self.line = pygame.Vector2(0, -self.length).rotate(self.angle)
 
+	def link_pos(self, pos: pygame.Vector2) -> "LineCollider":
+		self.start_pos = pos
+		return self
+
 	def set_angle(self, new_angle: float):
 		self.angle = new_angle
+		self.line = pygame.Vector2(0, -self.length).rotate(self.angle)
+
+	def change_angle(self, amount: float):
+		self.angle += amount
 		self.line = pygame.Vector2(0, -self.length).rotate(self.angle)
 
 	@property

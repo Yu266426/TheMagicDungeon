@@ -24,7 +24,7 @@ class Player(Entity):
 		self.collider = Hitbox((70, 50)).link_pos(self.pos)
 
 		self.input = pygame.Vector2()
-		self.movement = Movement(400, level, self.collider)
+		self.movement = Movement(10000, 0.2, level, self.collider)
 
 		self.entities = entities
 
@@ -42,10 +42,10 @@ class Player(Entity):
 		else:
 			self.animations.switch_state("idle")
 
-		if pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
-			self.movement.speed = 800
-		else:
-			self.movement.speed = 400
+		# if pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
+		# 	self.movement.speed = 800
+		# else:
+		# 	self.movement.speed = 400
 
 	def update(self, delta: float):
 		self.get_inputs()
