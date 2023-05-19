@@ -1,3 +1,6 @@
+import pygame
+import pygbase
+
 from data.modules.entities.components.line_collider import LineCollider
 from data.modules.entities.entity import Entity
 
@@ -9,3 +12,6 @@ class SwordSwing(Entity):
 		self.damage = damage
 
 		self.collider = LineCollider(self.pos, angle, length)
+
+	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
+		self.collider.draw(screen, camera)

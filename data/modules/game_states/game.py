@@ -1,6 +1,5 @@
 import pygame
-from pygbase import InputManager, Camera, EventManager
-from pygbase.game_state import GameState
+import pygbase
 
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.entities.enemy import Enemy
@@ -9,14 +8,14 @@ from data.modules.entities.player import Player
 from data.modules.map.level import Level
 
 
-class Game(GameState, name="game"):
+class Game(pygbase.GameState, name="game"):
 	def __init__(self):
 		super().__init__()
 		self.entities = EntityManager()
 
 		self.level = Level(self.entities)
 
-		self.camera = Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
+		self.camera = pygbase.Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
 
 		self.player = Player((400, 400), self.level, self.camera, self.entities)
 		self.entities.add_entity(self.player)
@@ -27,13 +26,13 @@ class Game(GameState, name="game"):
 	def update(self, delta: float):
 		self.entities.update(delta)
 
-		if InputManager.get_key_just_pressed(pygame.K_SPACE):
+		if pygbase.InputManager.get_key_just_pressed(pygame.K_SPACE):
 			self.level.generate_level()
 
 		self.camera.lerp_to_target(self.player.collider.rect.center - pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), delta * 5)
 
-		if InputManager.get_key_just_pressed(pygame.K_ESCAPE):
-			EventManager.post_event(pygame.QUIT)
+		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
+			pygbase.EventManager.post_event(pygame.QUIT)
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill((0, 0, 0))

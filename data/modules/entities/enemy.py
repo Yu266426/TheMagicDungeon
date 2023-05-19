@@ -38,6 +38,7 @@ class Enemy(Entity):
 		damage_entities = self.entity_manager.get_entities_of_tag("damage")
 		for entity in damage_entities:
 			if self.collider.collides_with(entity.collider):
+				print(entity)
 				self.health.damage(entity.damage)
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):

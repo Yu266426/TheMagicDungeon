@@ -33,7 +33,6 @@ class ItemSlot:
 
 		if self.item is not None:
 			self.item.flip_x = self.flip_x
-			self.item.update(delta)
 
 			if not self.item.check_durability():
 				self.entity_manager.add_entity_to_remove(self.item)

@@ -12,8 +12,8 @@ class EnergySword(Item):
 		super().__init__(100)
 
 		self.animations = AnimationManager([
-			("drawn", Animation("energy_sword", 0, 1), 1)
-		], "drawn")
+			("active", Animation("energy_sword", 0, 1), 1)
+		], "active")
 
 		self.angle = -30
 
@@ -26,7 +26,7 @@ class EnergySword(Item):
 		self.animations.update(delta)
 
 		if InputManager.get_mouse_just_pressed(0):
-			self.entity_manager.add_entity(SwordSwing(self.pos, self.angle, 40, 5), tags=("damage",))
+			self.entity_manager.add_entity(SwordSwing(self.pos, self.angle * (1 if self.flip_x else -1), 40, 5), tags=("damage",))
 
 	def draw(self, screen: pygame.Surface, camera: Camera):
 		self.animations.draw_at_pos(
