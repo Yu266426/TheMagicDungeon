@@ -1,6 +1,7 @@
 import random
 
 import pygame
+import pygbase
 
 from data.modules.base.constants import TILE_SIZE
 from data.modules.map.level import Level
@@ -9,7 +10,7 @@ from data.modules.entities.states.entity_state import EntityState
 
 
 class WanderState(EntityState):
-	def __init__(self, pos: pygame.Vector2, movement: Movement, level: Level, wander_range: int):
+	def __init__(self, pos: pygame.Vector2, movement: Movement, level: Level, wander_range: int, animations: pygbase.AnimationManager):
 		self.pos = pos
 		self.level = level
 
@@ -22,6 +23,8 @@ class WanderState(EntityState):
 
 		self.time_since_target = 0.0
 		self.time_to_new_target = 2.0
+
+		self.animations = animations
 
 	def find_target(self):
 		random_target = (
@@ -42,6 +45,8 @@ class WanderState(EntityState):
 	def update(self, delta: float):
 		if self.target is not None:
 			self.movement.move_in_direction(self.pos, self.target - self.pos, delta)
+			self.animations.reset_animation_on_switch = False
+			self.animations.switch_state("run")
 
 			if self.pos.distance_to(self.target) < 20 or self.time_since_target > self.time_to_new_target:
 				self.find_target()

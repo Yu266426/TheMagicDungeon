@@ -6,8 +6,10 @@ from data.modules.entities.entity import Entity
 
 
 class SwordSwing(Entity):
-	def __init__(self, pos, angle: float, length: float, damage: int, flip: int):
+	def __init__(self, pos: pygame.Vector2, angle: float, length: float, damage: int, flip: int):
 		super().__init__(pos)
+		self.parent_pos = pos
+
 		self.alive = True
 
 		self.damage = damage
@@ -16,9 +18,11 @@ class SwordSwing(Entity):
 		self.max_angle = 100
 
 		self.flip = flip
-		self.swing_speed = 700
+		self.swing_speed = 500
 
 		self.collider = LineCollider(self.pos, angle, length).link_pos(pos)
+
+		self.animation = pygbase.Animation("sword_swing_1", 0, 9, False)
 
 	def is_alive(self):
 		return self.alive
@@ -26,8 +30,18 @@ class SwordSwing(Entity):
 	def update(self, delta: float):
 		self.collider.change_angle(self.flip * self.swing_speed * delta)
 
+		self.animation.change_frame(40 * delta)
+
 		if abs(self.collider.angle - self.starting_angle) > self.max_angle:
 			self.alive = False
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
-		self.collider.draw(screen, camera)
+		# self.collider.draw(screen, camera)
+
+		angle = self.starting_angle
+		if self.flip == 1:
+			angle -= 90
+		else:
+			angle += 90 + 180
+
+		self.animation.draw_at_pos(screen, self.parent_pos + pygame.Vector2(0, -60) * self.flip, camera, angle, (-0, 70 * self.flip), flip=(False, self.flip == -1), draw_pos="midbottom")

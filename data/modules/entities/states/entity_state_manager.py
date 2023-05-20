@@ -6,9 +6,15 @@ class EntityStateManager:
 		self.current_state = current_state
 		self.states = states
 
+	def change_state(self, next_state: str):
+		if next_state != self.current_state:
+			self.current_state = next_state
+			self.states[self.current_state].on_enter()
+
 	def update(self, delta: float):
 		next_state = self.states[self.current_state].next_state()
 		if next_state != "":
 			self.current_state = next_state
+			self.states[self.current_state].on_enter()
 
 		self.states[self.current_state].update(delta)

@@ -7,6 +7,7 @@ from data.modules.entities.components.movement import Movement
 from data.modules.entities.entity import Entity
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.states.entity_state_manager import EntityStateManager
+from data.modules.entities.states.stunned_state import StunnedState
 from data.modules.entities.states.wander_state import WanderState
 from data.modules.map.level import Level
 
@@ -16,7 +17,8 @@ class Enemy(Entity):
 		super().__init__(pos)
 
 		self.animations = pygbase.AnimationManager([
-			("idle", pygbase.Animation("player_idle_animation", 0, 1), 8)
+			("idle", pygbase.Animation("player_idle_animation", 0, 1), 8),
+			("run", pygbase.Animation("player_run_animation", 0, 2), 8)
 		], "idle"
 		)
 
@@ -25,7 +27,8 @@ class Enemy(Entity):
 		self.movement = Movement(3000, 10, level, self.collider)
 
 		self.state_manager = EntityStateManager({
-			"wander": WanderState(self.pos, self.movement, level, 5)
+			"wander": WanderState(self.pos, self.movement, level, 5, self.animations),
+			"stunned": StunnedState(2, "wander", self.pos, self.movement)
 		}, "wander")
 
 		self.health = Health(10)
@@ -34,6 +37,8 @@ class Enemy(Entity):
 		self.entity_manager = entity_manager
 
 	def update(self, delta: float):
+		self.animations.update(delta)
+
 		self.damage_timer.tick(delta)
 
 		self.state_manager.update(delta)
@@ -52,6 +57,10 @@ class Enemy(Entity):
 					self.movement.velocity -= dir_vec * 2000
 
 					self.damage_timer.start()
+
+					self.state_manager.change_state("stunned")
+					self.animations.reset_animation_on_switch = True
+					self.animations.switch_state("idle")
 					break
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
