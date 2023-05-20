@@ -1,7 +1,7 @@
 import pygame
 import pygbase
 
-from data.modules.entities.components.hitbox import Hitbox
+from data.modules.entities.components.boxcollider import BoxCollider
 from data.modules.entities.components.line_collider import LineCollider
 
 
@@ -9,7 +9,7 @@ class TestState(pygbase.GameState, name="testing"):
 	def __init__(self):
 		super().__init__()
 
-		self.box = Hitbox((200, 200), (200, 300))
+		self.box = BoxCollider((200, 200), (200, 300))
 		self.box_lines = self.box.get_edge_lines()
 
 		self.line = LineCollider((30, 30), 100, 1000)

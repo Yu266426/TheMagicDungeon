@@ -6,12 +6,12 @@ if TYPE_CHECKING:
 	from data.modules.entities.components.line_collider import LineCollider
 
 
-class Hitbox:
+class BoxCollider:
 	def __init__(self, hitbox_size: tuple[int, int], pos: tuple = (0, 0)):
 		self.pos = pygame.Vector2(pos)
 		self._hitbox = pygame.FRect(self.pos, hitbox_size)
 
-	def link_pos(self, pos: pygame.Vector2) -> "Hitbox":
+	def link_pos(self, pos: pygame.Vector2) -> "BoxCollider":
 		self.pos = pos
 		return self
 
@@ -32,7 +32,7 @@ class Hitbox:
 	def collides_with(self, collider):
 		from data.modules.entities.components.line_collider import LineCollider
 
-		if isinstance(collider, Hitbox):
+		if isinstance(collider, BoxCollider):
 			return self.rect.colliderect(collider.rect)
 		elif isinstance(collider, LineCollider):
 			return collider.collides_with(self)

@@ -73,4 +73,4 @@ class EntityManager:
 			self.sorted_entities[y_pos].append(entity)
 
 		for row, entities in self.sorted_entities.items():
-			entities.sort(key=lambda e: e.pos.y)
+			entities.sort(key=lambda e: e.pos.y * 7 + e.pos.x)

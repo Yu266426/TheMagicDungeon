@@ -231,16 +231,16 @@ class Room:
 
 	def draw_tile(self, layer: int, row: int, col: int, display: pygame.Surface, camera: Camera, with_offset: bool = False):
 		if with_offset:
-			col -= int(self.offset[0] / TILE_SIZE)
-			row -= int(self.offset[1] / TILE_SIZE)
+			col -= self.tile_offset[0]
+			row -= self.tile_offset[1]
 
 		if self.check_bounds((col, row)):
 			if self.tiles[layer][row][col] is not None:
 				self.tiles[layer][row][col].draw(display, camera)
 
 	def draw(self, screen: pygame.Surface, camera: Camera, entities: dict[int, dict]):
-		top_left: tuple[int, int] = get_tile_pos((camera.target.x - self.offset[0], camera.target.y - self.offset[1]), (TILE_SIZE, TILE_SIZE))
-		bottom_right: tuple[int, int] = get_tile_pos((camera.target.x + SCREEN_WIDTH - self.offset[0], camera.target.y + SCREEN_HEIGHT - self.offset[1]), (TILE_SIZE, TILE_SIZE))
+		top_left: tuple[int, int] = get_tile_pos((camera.pos.x - self.offset[0], camera.pos.y - self.offset[1]), (TILE_SIZE, TILE_SIZE))
+		bottom_right: tuple[int, int] = get_tile_pos((camera.pos.x + SCREEN_WIDTH - self.offset[0], camera.pos.y + SCREEN_HEIGHT - self.offset[1]), (TILE_SIZE, TILE_SIZE))
 
 		y_offset = int(self.offset[1] // TILE_SIZE)
 

@@ -1,7 +1,7 @@
 import pygame
 import pygbase
 
-from data.modules.entities.components.hitbox import Hitbox
+from data.modules.entities.components.boxcollider import BoxCollider
 from data.modules.entities.components.item_slot import ItemSlot
 from data.modules.entities.components.items.energy_sword import EnergySword
 from data.modules.entities.components.movement import Movement
@@ -11,7 +11,7 @@ from data.modules.map.level import Level
 
 
 class Player(Entity):
-	def __init__(self, pos, level: Level, camera: pygbase.Camera, entities: EntityManager):
+	def __init__(self, pos, level: Level, entities: EntityManager, camera: pygbase.Camera):
 		super().__init__(pos)
 
 		self.current_state = "idle"
@@ -21,14 +21,14 @@ class Player(Entity):
 			("run", pygbase.Animation("player_run_animation", 0, 2), 8)
 		], "player_idle")
 
-		self.collider = Hitbox((70, 50)).link_pos(self.pos)
+		self.collider = BoxCollider((70, 50)).link_pos(self.pos)
 
 		self.input = pygame.Vector2()
-		self.movement = Movement(10000, 0.2, level, self.collider)
+		self.movement = Movement(5000, 10, level, self.collider)
 
 		self.entities = entities
 
-		self.item_slot = ItemSlot(self.pos, (32, -36), entities)
+		self.item_slot = ItemSlot(self.pos, (25, -36), entities, camera)
 		self.item_slot.equip_item(EnergySword(entities))
 
 		self.camera = camera
@@ -42,10 +42,10 @@ class Player(Entity):
 		else:
 			self.animations.switch_state("idle")
 
-		# if pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
-		# 	self.movement.speed = 800
-		# else:
-		# 	self.movement.speed = 400
+	# if pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
+	# 	self.movement.speed = 10000 * 2
+	# else:
+	# 	self.movement.speed = 10000
 
 	def update(self, delta: float):
 		self.get_inputs()
@@ -53,12 +53,6 @@ class Player(Entity):
 		self.movement.move_in_direction(self.pos, self.input, delta)
 
 		self.animations.update(delta)
-
-		mouse_pos = self.camera.screen_to_world(pygame.mouse.get_pos())
-		if mouse_pos.x < self.pos.x:
-			self.item_slot.flip_x = True
-		else:
-			self.item_slot.flip_x = False
 
 		self.item_slot.update(delta)
 

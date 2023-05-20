@@ -1,15 +1,14 @@
 import pygame
 import pygbase
-import setuptools
 
-from data.modules.map.level import Level
+from data.modules.entities.components.boxcollider import BoxCollider
 from data.modules.entities.components.health import Health
-from data.modules.entities.components.hitbox import Hitbox
 from data.modules.entities.components.movement import Movement
 from data.modules.entities.entity import Entity
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.states.entity_state_manager import EntityStateManager
 from data.modules.entities.states.wander_state import WanderState
+from data.modules.map.level import Level
 
 
 class Enemy(Entity):
@@ -21,9 +20,9 @@ class Enemy(Entity):
 		], "idle"
 		)
 
-		self.collider = Hitbox((70, 50)).link_pos(self.pos)
+		self.collider = BoxCollider((70, 50)).link_pos(self.pos)
 
-		self.movement = Movement(6000, 0.2, level, self.collider)
+		self.movement = Movement(3000, 10, level, self.collider)
 
 		self.state_manager = EntityStateManager({
 			"wander": WanderState(self.pos, self.movement, level, 5)

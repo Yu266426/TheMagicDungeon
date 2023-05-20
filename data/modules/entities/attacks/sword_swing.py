@@ -1,5 +1,3 @@
-import math
-
 import pygame
 import pygbase
 
@@ -8,7 +6,7 @@ from data.modules.entities.entity import Entity
 
 
 class SwordSwing(Entity):
-	def __init__(self, pos, angle: float, length: float, damage: int):
+	def __init__(self, pos, angle: float, length: float, damage: int, flip: int):
 		super().__init__(pos)
 		self.alive = True
 
@@ -17,7 +15,7 @@ class SwordSwing(Entity):
 		self.starting_angle = angle
 		self.max_angle = 100
 
-		self.flip = math.copysign(1, angle)
+		self.flip = flip
 		self.swing_speed = 700
 
 		self.collider = LineCollider(self.pos, angle, length).link_pos(pos)

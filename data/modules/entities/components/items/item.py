@@ -9,7 +9,9 @@ class Item(Entity):
 		super().__init__((0, 0))
 
 		self.durability: int = durability
-		self.flip_x: bool = False  # Updated by ItemSlot
+
+		self.flip_x = False  # Updated by ItemSlot
+		self.angle = 0  # Updated by ItemSlot
 
 	def added_to_slot(self, pos: pygame.Vector2):
 		self.pos = pos
@@ -25,6 +27,9 @@ class Item(Entity):
 			self.durability -= amount
 			if self.durability < 0:
 				self.durability = 0
+
+	def convert_flip(self):
+		return -1 if self.flip_x else 1
 
 	def update(self, delta: float):
 		pass

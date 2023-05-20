@@ -17,7 +17,7 @@ class Game(pygbase.GameState, name="game"):
 
 		self.camera = pygbase.Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
 
-		self.player = Player((400, 400), self.level, self.camera, self.entities)
+		self.player = Player((400, 400), self.level, self.entities, self.camera)
 		self.entities.add_entity(self.player)
 
 		for _ in range(100):

@@ -2,10 +2,9 @@ import pygame
 from data.modules.base.constants import TILE_SIZE
 from data.modules.map.level import Level
 from data.modules.base.utils import get_1d_tile_pos
-from data.modules.entities.components.hitbox import Hitbox
+from data.modules.entities.components.boxcollider import BoxCollider
 
 
-#
 # class Movement:
 # 	def __init__(self, speed: float, level: Level, hitbox: Hitbox):
 # 		self.speed = speed
@@ -69,7 +68,7 @@ from data.modules.entities.components.hitbox import Hitbox
 # 		return is_collision
 
 class Movement:
-	def __init__(self, speed: float, drag: float, level: Level, hitbox: Hitbox):
+	def __init__(self, speed: float, drag: float, level: Level, hitbox: BoxCollider):
 		self.speed = speed
 		self.drag = drag
 
@@ -85,12 +84,9 @@ class Movement:
 
 		acceleration = normalized_direction * self.speed
 
-		self.velocity += acceleration * delta
-		self.velocity -= self.velocity * self.drag
-
 		is_collision = [False, False]
 
-		pos.x += self.velocity.x * delta
+		pos.x += self.velocity.x * delta + 0.5 * acceleration.x * delta ** 2
 		hitbox = self.hitbox.rect
 		if 0 < self.velocity.x:
 			top_right_tile = self.level.get_tile(hitbox.topright)
@@ -116,7 +112,7 @@ class Movement:
 		if is_collision[0]:
 			self.velocity.x = 0
 
-		pos.y += self.velocity.y * delta
+		pos.y += self.velocity.y * delta + 0.5 * acceleration.y * delta ** 2
 		hitbox = self.hitbox.rect
 		if 0 < self.velocity.y:
 			bottom_left_tile = self.level.get_tile(hitbox.bottomleft)
@@ -141,5 +137,7 @@ class Movement:
 
 		if is_collision[1]:
 			self.velocity.y = 0
+
+		self.velocity += (acceleration - self.velocity * self.drag) * delta
 
 		return is_collision

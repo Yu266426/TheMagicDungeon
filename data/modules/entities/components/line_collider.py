@@ -5,7 +5,7 @@ import pygame
 import pygbase
 
 if TYPE_CHECKING:
-	from data.modules.entities.components.hitbox import Hitbox
+	from data.modules.entities.components.boxcollider import BoxCollider
 
 
 class LineCollider:
@@ -14,7 +14,7 @@ class LineCollider:
 		self.angle: float = angle
 		self.length: float = length
 
-		self.line = pygame.Vector2(0, -self.length).rotate(self.angle)
+		self.line = pygame.Vector2(0, -self.length).rotate(-self.angle)
 
 	def link_pos(self, pos: pygame.Vector2) -> "LineCollider":
 		self.start_pos = pos
@@ -22,11 +22,11 @@ class LineCollider:
 
 	def set_angle(self, new_angle: float):
 		self.angle = new_angle
-		self.line = pygame.Vector2(0, -self.length).rotate(self.angle)
+		self.line = pygame.Vector2(0, -self.length).rotate(-self.angle)
 
 	def change_angle(self, amount: float):
-		self.angle += amount
-		self.line = pygame.Vector2(0, -self.length).rotate(self.angle)
+		self.angle -= amount
+		self.line = pygame.Vector2(0, -self.length).rotate(-self.angle)
 
 	@property
 	def end_pos(self):
@@ -98,9 +98,9 @@ class LineCollider:
 		return (dir_1 > 0 > dir_2 or dir_1 < 0 < dir_2) and (dir_3 > 0 > dir_4 or dir_3 < 0 < dir_4)
 
 	def collides_with(self, collider):
-		from data.modules.entities.components.hitbox import Hitbox
+		from data.modules.entities.components.boxcollider import BoxCollider
 
-		if isinstance(collider, Hitbox):
+		if isinstance(collider, BoxCollider):
 			if collider.rect.collidepoint(*self.start_pos):
 				return True
 			if collider.rect.collidepoint(*self.end_pos):
