@@ -9,10 +9,11 @@ if TYPE_CHECKING:
 
 
 class LineCollider:
-	def __init__(self, start_pos: pygame.Vector2 | tuple[float, float], angle: float, length: float):
+	def __init__(self, start_pos: pygame.Vector2 | tuple[float, float], angle: float, length: float, start_offset: float = 0):
 		self.start_pos: pygame.Vector2 = pygame.Vector2(start_pos)
 		self.angle: float = angle
 		self.length: float = length
+		self.offset = start_offset
 
 		self.line = pygame.Vector2(0, -self.length).rotate(-self.angle)
 
@@ -86,14 +87,17 @@ class LineCollider:
 	# 	return intersect_x, intersect_y
 
 	def line_collide(self, line) -> bool:
+		my_start = self.start_pos + self.line.normalize() * self.offset
+		my_end = self.end_pos
+
 		other_start = line.start_pos
 		other_end = line.end_pos
 
 		# Cross Product Method (ChatGPT, make more clear in future)
-		dir_1 = (other_end.x - other_start.x) * (self.start_pos.y - other_start.y) - (other_end.y - other_start.y) * (self.start_pos.x - other_start.x)
-		dir_2 = (other_end.x - other_start.x) * (self.end_pos.y - other_start.y) - (other_end.y - other_start.y) * (self.end_pos.x - other_start.x)
-		dir_3 = (self.end_pos.x - self.start_pos.x) * (other_start.y - self.start_pos.y) - (self.end_pos.y - self.start_pos.y) * (other_start.x - self.start_pos.x)
-		dir_4 = (self.end_pos.x - self.start_pos.x) * (other_end.y - self.start_pos.y) - (self.end_pos.y - self.start_pos.y) * (other_end.x - self.start_pos.x)
+		dir_1 = (other_end.x - other_start.x) * (my_start.y - other_start.y) - (other_end.y - other_start.y) * (my_start.x - other_start.x)
+		dir_2 = (other_end.x - other_start.x) * (my_end.y - other_start.y) - (other_end.y - other_start.y) * (my_end.x - other_start.x)
+		dir_3 = (my_end.x - my_start.x) * (other_start.y - my_start.y) - (my_end.y - my_start.y) * (other_start.x - my_start.x)
+		dir_4 = (my_end.x - my_start.x) * (other_end.y - my_start.y) - (my_end.y - my_start.y) * (other_end.x - my_start.x)
 
 		return (dir_1 > 0 > dir_2 or dir_1 < 0 < dir_2) and (dir_3 > 0 > dir_4 or dir_3 < 0 < dir_4)
 
@@ -114,4 +118,4 @@ class LineCollider:
 			return self.line_collide(collider)
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
-		pygame.draw.line(screen, "yellow", camera.world_to_screen(self.start_pos), camera.world_to_screen(self.start_pos + self.line), width=4)
+		pygame.draw.line(screen, "yellow", camera.world_to_screen(self.start_pos + self.line.normalize() * self.offset), camera.world_to_screen(self.start_pos + self.line), width=4)

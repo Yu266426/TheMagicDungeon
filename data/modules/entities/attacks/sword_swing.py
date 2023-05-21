@@ -14,13 +14,13 @@ class SwordSwing(Entity):
 
 		self.damage = damage
 
-		self.starting_angle = angle
-		self.max_angle = 100
+		self.starting_angle = angle - 20 * flip
+		self.max_angle = 90
 
 		self.flip = flip
-		self.swing_speed = 500
+		self.swing_speed = 600
 
-		self.collider = LineCollider(self.pos, angle, length).link_pos(pos)
+		self.collider = LineCollider(self.pos, self.starting_angle, length, start_offset=50).link_pos(pos)
 
 		self.animation = pygbase.Animation("sword_swing_1", 0, 9, False)
 
@@ -44,4 +44,4 @@ class SwordSwing(Entity):
 		else:
 			angle += 90 + 180
 
-		self.animation.draw_at_pos(screen, self.parent_pos + pygame.Vector2(0, -60) * self.flip, camera, angle, (-0, 70 * self.flip), flip=(False, self.flip == -1), draw_pos="midbottom")
+		self.animation.draw_at_pos(screen, self.parent_pos + pygame.Vector2(0, -70) * self.flip, camera, angle, (-0, 70 * self.flip), flip=(False, self.flip == -1), draw_pos="midbottom")

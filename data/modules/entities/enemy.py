@@ -1,3 +1,5 @@
+import math
+
 import pygame
 import pygbase
 
@@ -32,7 +34,7 @@ class Enemy(Entity):
 		}, "wander")
 
 		self.health = Health(10)
-		self.damage_timer = pygbase.Timer(0.2, False, False)
+		self.damage_timer = pygbase.Timer(0.6, True, False)
 
 		self.entity_manager = entity_manager
 
@@ -64,7 +66,11 @@ class Enemy(Entity):
 					break
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
-		self.animations.draw_at_pos(screen, self.pos, camera, draw_pos="midbottom")
+		if not self.damage_timer.done():
+			if math.sin(pygame.time.get_ticks() / 25) > 0:
+				self.animations.draw_at_pos(screen, self.pos, camera, draw_pos="midbottom")
+		else:
+			self.animations.draw_at_pos(screen, self.pos, camera, draw_pos="midbottom")
 
 	def is_alive(self):
 		return self.health.is_alive()

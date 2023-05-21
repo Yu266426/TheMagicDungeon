@@ -17,7 +17,7 @@ if __name__ == '__main__':
 	pygbase.add_image_resource("image", 1, str(IMAGE_DIR))
 	pygbase.add_sprite_sheet_resource("sprite_sheet", 2, str(SPRITE_SHEET_DIR), default_scale=TILE_SCALE)
 
-	app = pygbase.App(MainMenu, flags=pygame.FULLSCREEN | pygame.SCALED)
+	app = pygbase.App(MainMenu)
 	app.run()
 
 	pygbase.quit()
