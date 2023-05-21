@@ -3,10 +3,11 @@ import os
 import random
 
 import pygame
+import pygbase
 from pygbase import ResourceManager, Camera
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
-from data.modules.base.files import LEVEL_DIR
+from data.modules.base.paths import ROOM_DIR
 from data.modules.base.utils import get_tile_pos, generate_3d_list
 from data.modules.objects.game_object import GameObject, AnimatableObject
 from data.modules.objects.objects import object_types
@@ -26,7 +27,7 @@ class Room:
 		self.objects: list[GameObject | AnimatableObject] = []
 
 		# New room
-		self.save_path = LEVEL_DIR / f"{name}.json"
+		self.save_path = ROOM_DIR / f"{name}.json"
 		if not os.path.isfile(self.save_path):
 			print("Creating new room")
 
@@ -271,7 +272,7 @@ class EditorRoom:
 		self.objects: list[GameObject | AnimatableObject] = []
 
 		# New room
-		self.save_path = os.path.join(LEVEL_DIR, f"{name}.json")
+		self.save_path = os.path.join(ROOM_DIR, f"{name}.json")
 		if not os.path.isfile(self.save_path):
 			print("Creating new editor room")
 			self.tiles = generate_3d_list(3, self.n_rows, self.n_cols)
@@ -385,3 +386,16 @@ class EditorRoom:
 
 		for game_object in self.objects:
 			game_object.draw(screen, camera)
+
+	def draw_room_to_surface(self, surface: pygame.Surface):
+		surface_size = surface.get_size()
+
+		room_surface = pygame.Surface((self.n_cols * TILE_SIZE, self.n_rows * TILE_SIZE), flags=pygame.SRCALPHA)
+		temp_camera = pygbase.Camera()
+
+		for layer in range(len(self.tiles)):
+			for row in range(self.n_rows):
+				for col in range(self.n_cols):
+					self.draw_tile(layer, row, col, room_surface, temp_camera)
+
+		pygame.transform.scale(room_surface, surface_size, surface)

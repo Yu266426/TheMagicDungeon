@@ -6,7 +6,7 @@ import pygame
 from pygbase import Camera
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
-from data.modules.base.files import LEVEL_DIR
+from data.modules.base.paths import ROOM_DIR
 from data.modules.map.room import Room
 from data.modules.base.utils import get_tile_pos
 from data.modules.entities.entity_manager import EntityManager
@@ -60,7 +60,7 @@ class Level:
 
 		# All the rooms available
 		room_names = []
-		for _, _, file_names in os.walk(LEVEL_DIR):
+		for _, _, file_names in os.walk(ROOM_DIR):
 			for file_name in file_names:
 				name = file_name[:-5]
 				if name != "start":

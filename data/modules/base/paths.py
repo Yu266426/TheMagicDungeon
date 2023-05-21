@@ -7,4 +7,4 @@ ASSET_DIR = DATA_DIR / "assets"
 IMAGE_DIR = ASSET_DIR / "images"
 SPRITE_SHEET_DIR = ASSET_DIR / "sprite_sheets"
 
-LEVEL_DIR = DATA_DIR / "rooms"
+ROOM_DIR = DATA_DIR / "rooms"

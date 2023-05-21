@@ -2,7 +2,6 @@ import pygame
 import pygbase
 
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
-from data.modules.map.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo, ObjectSelectionInfo
 from data.modules.editor.editor_states.editor_state import EditorState, EditorStates
@@ -11,15 +10,16 @@ from data.modules.editor.editor_states.object_selection_state import ObjectSelec
 from data.modules.editor.editor_states.tile_draw_state import TileDrawState
 from data.modules.editor.editor_states.tile_selection_state import TileSelectionState
 from data.modules.editor.shared_editor_state import SharedEditorState
+from data.modules.map.room import EditorRoom
 from data.modules.objects.cube import SmallCube
 from data.modules.objects.game_object import AnimatableObject
 
 
 class Editor(pygbase.GameState, name="editor"):
-	def __init__(self):
+	def __init__(self, room: EditorRoom):
 		super().__init__()
 
-		self.room = EditorRoom("start", n_rows=20, n_cols=20)
+		self.room = room
 
 		self.shared_state = SharedEditorState(self.room)
 		self.action_queue = EditorActionQueue()
@@ -56,14 +56,15 @@ class Editor(pygbase.GameState, name="editor"):
 			pygbase.Common.get_resource_type("image"), "button",
 			self.overlay_frame,
 			self.set_next_state_type, callback_args=(MainMenu, ()),
-			text="Back", alignment="c"
+			text="Menu", alignment="c"
 		))
 		self.overlay_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0.5, False), pygbase.UIValue(0.02, False)),
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
 			pygbase.Common.get_resource_type("image"), "button",
 			self.overlay_frame,
-			self.room.save, text="Save", alignment="c"
+			self.room.save,
+			text="Save", alignment="c"
 		), align_with_previous=(True, False), add_on_to_previous=(False, True))
 		self.overlay_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0.5, False), pygbase.UIValue(0.02, False)),
@@ -93,13 +94,10 @@ class Editor(pygbase.GameState, name="editor"):
 
 			self.states[self.current_state].update(delta)
 
-			print(self.action_queue.editor_actions)
 			if pygbase.InputManager.get_key_just_pressed(pygame.K_z):
 				if pygbase.InputManager.check_modifiers(pygame.KMOD_CTRL) and not pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
-					print("undo")
 					self.action_queue.undo_action()
 				if pygbase.InputManager.check_modifiers(pygame.KMOD_CTRL) and pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
-					print("redo")
 					self.action_queue.redo_action()
 
 			# Animate objects

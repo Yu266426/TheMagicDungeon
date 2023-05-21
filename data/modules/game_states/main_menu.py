@@ -36,7 +36,7 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 			text="Start"
 		))
 
-		from data.modules.game_states.editor import Editor
+		from data.modules.game_states.editor_room_selection import EditorRoomSelection
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0, False), pygbase.UIValue(0.02, False)),
 			(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
@@ -44,7 +44,7 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 			"button",
 			self.button_frame,
 			self.set_next_state_type,
-			callback_args=(Editor, ()),
+			callback_args=(EditorRoomSelection, ()),
 			text="Editor"
 		), add_on_to_previous=(False, True))
 
