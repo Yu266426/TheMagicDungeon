@@ -9,13 +9,13 @@ from pygbase import ResourceManager, Camera
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import ROOM_DIR
 from data.modules.base.utils import get_tile_pos, generate_3d_list
-from data.modules.objects.game_object import GameObject, AnimatableObject
-from data.modules.objects.objects import object_types
+from data.modules.entities.entity_manager import EntityManager
+from data.modules.objects.game_object import GameObject, ObjectLoader
 from data.modules.objects.tile import Tile
 
 
 class Room:
-	def __init__(self, name: str, n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0), connections=(False, False, False, False), random_floor=True):
+	def __init__(self, name: str, entity_manager: EntityManager, n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0), connections=(False, False, False, False), random_floor=True):
 		self.n_rows = n_rows
 		self.n_cols = n_cols
 
@@ -24,7 +24,7 @@ class Room:
 
 		# layer[back, player, front]
 		self.tiles: list[list[list[Tile | None]]] = []
-		self.objects: list[GameObject | AnimatableObject] = []
+		self.objects: list[GameObject] = []
 
 		# New room
 		self.save_path = ROOM_DIR / f"{name}.json"
@@ -37,7 +37,7 @@ class Room:
 				self.generate_floor()
 			self.generate_walls(connections)
 		else:
-			self.load()
+			self.load(entity_manager)
 
 			if random_floor:
 				self.generate_floor()
@@ -145,7 +145,7 @@ class Room:
 					(col * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
 				)
 
-	def load(self):
+	def load(self, entity_manager: EntityManager):
 		with open(self.save_path) as file:
 			room_data: dict = json.load(file)
 
@@ -161,9 +161,10 @@ class Room:
 				self.tiles[level][row][col] = Tile(tile["image_info"][0], tile["image_info"][1], (col * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
 
 		for game_object in room_data["objects"]:
-			object_type = game_object["type"]
+			object_name = game_object["name"]
 			pos = game_object["pos"]
-			self.objects.append(object_types[object_type]((pos[0] + self.offset[0], pos[1] + self.offset[1])))
+
+			entity_manager.add_entity(ObjectLoader.create_object(object_name, (pos[0] * TILE_SIZE + self.offset[0], pos[1] * TILE_SIZE + self.offset[1])), ("object",))
 
 	def save(self):
 		data = {
@@ -185,8 +186,8 @@ class Room:
 
 		for game_object in self.objects:
 			data["objects"].append({
-				"type": type(game_object).__name__,
-				"pos": [int(game_object.pos.x), int(game_object.pos.y)]
+				"name": game_object.name,
+				"pos": [int(game_object.pos.x / TILE_SIZE), int(game_object.pos.y / TILE_SIZE)]
 			})
 
 		with open(self.save_path, "w") as file:
@@ -223,10 +224,10 @@ class Room:
 
 		return None
 
-	def add_object(self, game_object: GameObject | AnimatableObject):
+	def add_object(self, game_object: GameObject):
 		self.objects.append(game_object)
 
-	def remove_object(self, game_object: GameObject | AnimatableObject):
+	def remove_object(self, game_object: GameObject):
 		if game_object is not None:
 			self.objects.remove(game_object)
 
@@ -269,7 +270,7 @@ class EditorRoom:
 
 		# layer[back, player, front]
 		self.tiles: list[list[list[Tile | None]]] = []
-		self.objects: list[GameObject | AnimatableObject] = []
+		self.objects: list[GameObject] = []
 
 		# New room
 		self.save_path = os.path.join(ROOM_DIR, f"{name}.json")
@@ -295,9 +296,9 @@ class EditorRoom:
 				self.tiles[level][row][col] = Tile(tile["image_info"][0], tile["image_info"][1], (col * TILE_SIZE, (row + 1) * TILE_SIZE))
 
 		for game_object in room_data["objects"]:
-			object_type = game_object["type"]
+			object_type = game_object["name"]
 			pos = game_object["pos"]
-			self.objects.append(object_types[object_type](pos))
+			self.objects.append(ObjectLoader.create_object(object_type, (pos[0] * TILE_SIZE, pos[1] * TILE_SIZE)))
 
 	def save(self):
 		data = {
@@ -319,8 +320,8 @@ class EditorRoom:
 
 		for game_object in self.objects:
 			data["objects"].append({
-				"type": type(game_object).__name__,
-				"pos": [int(game_object.pos.x), int(game_object.pos.y)]
+				"name": game_object.name,
+				"pos": [int(game_object.pos.x / TILE_SIZE), int(game_object.pos.y / TILE_SIZE)]
 			})
 
 		with open(self.save_path, "w") as file:
@@ -355,10 +356,10 @@ class EditorRoom:
 
 		return None
 
-	def add_object(self, game_object: GameObject | AnimatableObject):
+	def add_object(self, game_object: GameObject):
 		self.objects.append(game_object)
 
-	def remove_object(self, game_object: GameObject | AnimatableObject):
+	def remove_object(self, game_object: GameObject):
 		if game_object is not None:
 			self.objects.remove(game_object)
 

@@ -1,10 +1,10 @@
 from data.modules.base.constants import TILE_SIZE
 from data.modules.base.utils import get_1d_tile_pos
+from data.modules.entities.entity import Entity
 
 
 class EntityManager:
 	def __init__(self):
-		from data.modules.entities.entity import Entity
 		self.entities: list[Entity] = []
 		self.entity_tags: dict[Entity, set[str]] = {}
 		self.sorted_entities: dict[int, list[Entity]] = {}
@@ -44,7 +44,7 @@ class EntityManager:
 
 		return entities
 
-	def remove_entities(self):
+	def _remove_entities(self):
 		self.sorted_entities.clear()
 
 		for entity in self.entities_to_remove:
@@ -56,7 +56,7 @@ class EntityManager:
 		self.entities_to_remove.clear()
 
 	def update(self, delta: float):
-		self.remove_entities()
+		self._remove_entities()
 
 		for entity in self.entities:
 			if not entity.is_alive():

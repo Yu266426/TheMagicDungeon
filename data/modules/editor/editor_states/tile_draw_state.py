@@ -45,13 +45,13 @@ class TileDrawState(EditorState):
 		self.button_size = self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(10), pygbase.UIValue(10)),
 			(pygbase.UIValue(0), pygbase.UIValue(70)),
-			pygbase.Common.get_resource_type("image"), "draw_tool_button",
+			"image", "draw_tool_button",
 			self.button_frame, self.set_tool, callback_args=(TileTools.DRAW, 0)
 		)).size
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(10), pygbase.UIValue(0)),
 			(pygbase.UIValue(0), pygbase.UIValue(70)),
-			pygbase.Common.get_resource_type("image"), "draw_tool_button",
+			"image", "draw_tool_button",
 			self.button_frame, self.set_tool, callback_args=(TileTools.FILL, 1)
 		), add_on_to_previous=(True, False), align_with_previous=(False, True))
 

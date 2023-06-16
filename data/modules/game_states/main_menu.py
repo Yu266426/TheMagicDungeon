@@ -16,7 +16,7 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 		self.title_frame.add_element(pygbase.ImageElement(
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
 			(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
-			pygbase.Common.get_resource_type("image"),
+			"image",
 			"main_title",
 			self.title_frame
 		))
@@ -24,11 +24,10 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 		self.button_frame = self.ui.add_frame(pygbase.Frame((pygbase.UIValue(0.25, False), pygbase.UIValue(0.4, False)), (pygbase.UIValue(0.5, False), pygbase.UIValue(0.6, False))))
 
 		from data.modules.game_states.game import Game
-		from data.modules.game_states.test_state import TestState
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
 			(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
-			pygbase.Common.get_resource_type("image"),
+			"image",
 			"button",
 			self.button_frame,
 			self.set_next_state_type,
@@ -40,7 +39,7 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0, False), pygbase.UIValue(0.02, False)),
 			(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
-			pygbase.Common.get_resource_type("image"),
+			"image",
 			"button",
 			self.button_frame,
 			self.set_next_state_type,
@@ -51,7 +50,7 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0, False), pygbase.UIValue(0.02, False)),
 			(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
-			pygbase.Common.get_resource_type("image"),
+			"image",
 			"button",
 			self.button_frame,
 			pygbase.EventManager.post_event,

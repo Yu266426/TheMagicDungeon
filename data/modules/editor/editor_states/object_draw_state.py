@@ -12,7 +12,6 @@ from data.modules.editor.editor_states.editor_state import EditorState, EditorSt
 from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
 from data.modules.editor.tools.object_tools.object_tools import ObjectDrawTool
-from data.modules.objects.game_object import AnimatableObject
 
 
 class ObjectTools(enum.Enum):
@@ -37,14 +36,14 @@ class ObjectDrawState(EditorState):
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(10), pygbase.UIValue(10)),
 			(pygbase.UIValue(0), pygbase.UIValue(70)),
-			pygbase.Common.get_resource_type("image"), "reload",
+			"image", "reload",
 			self.button_frame, self.reset_object_animations
 		))
 
 	def reset_object_animations(self):
 		for game_object in self._room.objects:
-			if issubclass(type(game_object), AnimatableObject):
-				game_object.frame = 0
+			if game_object.is_animation:
+				game_object.sprite.frame = 0
 
 	def update(self, delta: float):
 		self._shared_state.show_global_ui = True

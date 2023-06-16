@@ -1,0 +1,7 @@
+{
+  "type": "animated",
+  "sprite_sheet_name": "small_animatable",
+  "animation_start_index": 21,
+  "animation_length": 3,
+  "animation_looping": true
+}

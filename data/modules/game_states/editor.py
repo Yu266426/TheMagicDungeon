@@ -11,8 +11,6 @@ from data.modules.editor.editor_states.tile_draw_state import TileDrawState
 from data.modules.editor.editor_states.tile_selection_state import TileSelectionState
 from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.map.room import EditorRoom
-from data.modules.objects.cube import SmallCube
-from data.modules.objects.game_object import AnimatableObject
 
 
 class Editor(pygbase.GameState, name="editor"):
@@ -25,7 +23,7 @@ class Editor(pygbase.GameState, name="editor"):
 		self.action_queue = EditorActionQueue()
 
 		self.tile_selection_info = TileSelectionInfo("tiles")
-		self.object_selection_info = ObjectSelectionInfo(SmallCube)
+		self.object_selection_info = ObjectSelectionInfo("small_cube")
 
 		self.current_state: EditorStates = EditorStates.TILE_DRAW_STATE
 		self.states: dict[EditorStates, EditorState] = {
@@ -37,23 +35,31 @@ class Editor(pygbase.GameState, name="editor"):
 
 		self.ui = pygbase.UIManager()
 
-		self.mode_selector = self.ui.add_element(pygbase.TextSelectionMenu((pygbase.UIValue(0.02, False), pygbase.UIValue(0.02, False)), (pygbase.UIValue(0.35, False), pygbase.UIValue(0.08, False)), pygbase.Common.get_resource_type("image"), [
-			"Tile",
-			"Object"
-		]))
+		self.mode_selector = self.ui.add_element(
+			pygbase.TextSelectionMenu(
+				(pygbase.UIValue(0.02, False), pygbase.UIValue(0.02, False)),
+				(pygbase.UIValue(0.35, False), pygbase.UIValue(0.08, False)),
+				"image",
+				["Tile", "Object"]
+			)
+		)
 
 		self.show_overlay = False
 
 		self.overlay_ui = pygbase.UIManager()
 		self.overlay_darken = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), flags=pygame.SRCALPHA)
 		self.overlay_darken.fill((0, 0, 0, 50))
-		self.overlay_frame = self.overlay_ui.add_frame(pygbase.Frame((pygbase.UIValue(0.25, False), pygbase.UIValue(0.24, False)), (pygbase.UIValue(0.5, False), pygbase.UIValue(0.52, False)), bg_colour=(10, 10, 10, 200)))
+		self.overlay_frame = self.overlay_ui.add_frame(pygbase.Frame(
+			(pygbase.UIValue(0.25, False), pygbase.UIValue(0.24, False)),
+			(pygbase.UIValue(0.5, False), pygbase.UIValue(0.52, False)),
+			bg_colour=(10, 10, 10, 200)
+		))
 
 		from data.modules.game_states.main_menu import MainMenu
 		self.overlay_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0.5, False), pygbase.UIValue(0.02, False)),
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
-			pygbase.Common.get_resource_type("image"), "button",
+			"image", "button",
 			self.overlay_frame,
 			self.set_next_state_type, callback_args=(MainMenu, ()),
 			text="Menu", alignment="c"
@@ -61,7 +67,7 @@ class Editor(pygbase.GameState, name="editor"):
 		self.overlay_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0.5, False), pygbase.UIValue(0.02, False)),
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
-			pygbase.Common.get_resource_type("image"), "button",
+			"image", "button",
 			self.overlay_frame,
 			self.room.save,
 			text="Save", alignment="c"
@@ -69,7 +75,7 @@ class Editor(pygbase.GameState, name="editor"):
 		self.overlay_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0.5, False), pygbase.UIValue(0.02, False)),
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
-			pygbase.Common.get_resource_type("image"), "button",
+			"image", "button",
 			self.overlay_frame,
 			pygbase.EventManager.post_event, callback_args=(pygame.QUIT,),
 			text="Quit", alignment="c"
@@ -102,8 +108,7 @@ class Editor(pygbase.GameState, name="editor"):
 
 			# Animate objects
 			for game_object in self.room.objects:
-				if issubclass(type(game_object), AnimatableObject):
-					game_object.change_frame(delta * 2)
+				game_object.animate(delta * 2)
 
 			# Save
 			if pygbase.InputManager.check_modifiers(pygame.KMOD_LCTRL):

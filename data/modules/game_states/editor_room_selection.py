@@ -30,7 +30,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 			self.rooms_frame.add_element(pygbase.Button(
 				(pygbase.UIValue(0), pygbase.UIValue(0)),
 				(pygbase.UIValue(1, False), pygbase.UIValue(0)),
-				pygbase.Common.get_resource_type("image"), "button",
+				"image", "button",
 				self.rooms_frame,
 				self.select_room,
 				callback_args=(0, self.rooms[0][:-5]),
@@ -40,12 +40,11 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 			# Rest of the rooms
 			for index, room in enumerate(self.rooms[1:]):
 				room_name = room[:-5]
-				room_path = ROOM_DIR / room
 
 				self.rooms_frame.add_element(pygbase.Button(
 					(pygbase.UIValue(0), pygbase.UIValue(10)),
 					(pygbase.UIValue(1, False), pygbase.UIValue(0)),
-					pygbase.Common.get_resource_type("image"), "button",
+					"image", "button",
 					self.rooms_frame,
 					self.select_room,
 					callback_args=(index + 1, room_name),
@@ -61,7 +60,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 		self.ui.add_element(pygbase.Button(
 			(pygbase.UIValue(0.02, False), pygbase.UIValue(0.84, False)),
 			(pygbase.UIValue(0), pygbase.UIValue(0.14, False)),
-			pygbase.Common.get_resource_type("image"), "home_button",
+			"image", "home_button",
 			self.ui.base_container,
 			self.set_next_state_type,
 			callback_args=(MainMenu, ())
@@ -70,7 +69,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 		self.ui.add_element(pygbase.Button(
 			(pygbase.UIValue(0.02, False), pygbase.UIValue(0.84, False)),
 			(pygbase.UIValue(0.32, False), pygbase.UIValue(0.14, False)),
-			pygbase.Common.get_resource_type("image"), "button",
+			"image", "button",
 			self.ui.base_container,
 			self.edit_button_callback,
 			text="Edit"

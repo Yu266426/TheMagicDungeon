@@ -1,8 +1,3 @@
-from typing import Optional, Union, Type
-
-from data.modules.objects.game_object import GameObject, AnimatableObject
-
-
 class TileSelectionInfo:
 	def __init__(self, sprite_sheet_name: str):
 		# Draw Layer
@@ -17,5 +12,5 @@ class TileSelectionInfo:
 
 
 class ObjectSelectionInfo:
-	def __init__(self, starting_object: Union[Type[GameObject], Type[AnimatableObject]]):
-		self.current_object_type: Optional[Type] = starting_object
+	def __init__(self, starting_object: str):
+		self.current_object_name: str = starting_object

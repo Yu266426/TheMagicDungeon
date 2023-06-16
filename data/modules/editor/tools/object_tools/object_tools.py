@@ -9,6 +9,7 @@ from data.modules.editor.actions.object_actions import RemoveObjectAction, Place
 from data.modules.editor.editor_selection_info import ObjectSelectionInfo
 from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
+from data.modules.objects.game_object import ObjectLoader
 
 
 class ObjectDrawTool(EditorTool):
@@ -24,8 +25,8 @@ class ObjectDrawTool(EditorTool):
 			x_pos = mouse_pos[0] * TILE_SIZE
 			y_pos = mouse_pos[1] * TILE_SIZE
 
-			if selection_info.current_object_type is not None and self._room.get_object((x_pos, y_pos - 1)) is None:
-				action = PlaceObjectAction(self._room, selection_info.current_object_type((x_pos, y_pos)))
+			if selection_info.current_object_name is not None and self._room.get_object((x_pos, y_pos - 1)) is None:
+				action = PlaceObjectAction(self._room, ObjectLoader.create_object(selection_info.current_object_name, (x_pos, y_pos)))
 				action.execute()
 
 				if self.current_batch is None:
@@ -61,8 +62,8 @@ class ObjectDrawTool(EditorTool):
 
 		# Draw selected object if not deleting
 		if not InputManager.get_mouse_pressed(2):
-			if selection_info.current_object_type is not None:
+			if selection_info.current_object_name is not None:
 				x_pos = mouse_pos[0] * TILE_SIZE
 				y_pos = mouse_pos[1] * TILE_SIZE
 
-				selection_info.current_object_type((x_pos, y_pos)).draw(screen, camera, flag=pygame.BLEND_ADD)
+				ObjectLoader.create_object(selection_info.current_object_name, (x_pos, y_pos)).draw(screen, camera, flags=pygame.BLEND_ADD)

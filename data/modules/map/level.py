@@ -125,7 +125,7 @@ class Level:
 		if pos[1] not in self.rooms:
 			self.rooms[pos[1]] = {}
 
-		room = Room(room_name, offset=(pos[0] * self.room_size * TILE_SIZE, pos[1] * self.room_size * TILE_SIZE), connections=connections)
+		room = Room(room_name, self.entities, offset=(pos[0] * self.room_size * TILE_SIZE, pos[1] * self.room_size * TILE_SIZE), connections=connections)
 		self.rooms[pos[1]][pos[0]] = room
 		return room
 
