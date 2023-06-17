@@ -4,7 +4,7 @@ import pygame
 import pygbase
 from pygbase.utils import get_angle_to
 
-from data.modules.entities.components.items.item import Item
+from data.modules.entities.items.item import Item
 from data.modules.entities.entity_manager import EntityManager
 
 

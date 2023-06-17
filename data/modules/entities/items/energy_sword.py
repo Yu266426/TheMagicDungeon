@@ -2,7 +2,7 @@ import pygame
 import pygbase
 
 from data.modules.entities.attacks.sword_swing import SwordSwing
-from data.modules.entities.components.items.item import Item
+from data.modules.entities.items.item import Item
 from data.modules.entities.entity_manager import EntityManager
 
 

@@ -1,11 +1,7 @@
 import math
-from typing import Optional, TYPE_CHECKING
 
 import pygame
 import pygbase
-
-if TYPE_CHECKING:
-	from data.modules.entities.components.boxcollider import BoxCollider
 
 
 class LineCollider:
@@ -86,6 +82,16 @@ class LineCollider:
 	#
 	# 	return intersect_x, intersect_y
 
+	def point_within_line_segment(self, point: pygame.Vector2) -> bool:
+		"""
+		Detects if a point **already on** the line is within the line segment
+		"""
+
+		dist_1 = self.start_pos.distance_to(point)
+		dist_2 = self.end_pos.distance_to(point)
+
+		return self.length - 0.05 < dist_1 + dist_2 < self.length + 0.05
+
 	def line_collide(self, line) -> bool:
 		my_start = self.start_pos + self.line.normalize() * self.offset
 		my_end = self.end_pos
@@ -101,8 +107,9 @@ class LineCollider:
 
 		return (dir_1 > 0 > dir_2 or dir_1 < 0 < dir_2) and (dir_3 > 0 > dir_4 or dir_3 < 0 < dir_4)
 
-	def collides_with(self, collider):
-		from data.modules.entities.components.boxcollider import BoxCollider
+	def collides_with(self, collider) -> bool:
+		from data.modules.entities.components.box_collider import BoxCollider
+		from data.modules.entities.components.circle_collider import CircleCollider
 
 		if isinstance(collider, BoxCollider):
 			if collider.rect.collidepoint(*self.start_pos):
@@ -116,6 +123,23 @@ class LineCollider:
 			return False
 		elif isinstance(collider, LineCollider):
 			return self.line_collide(collider)
+		elif isinstance(collider, CircleCollider):
+			if self.start_pos.distance_to(collider.pos) < collider.radius:
+				return True
+			if self.end_pos.distance_to(collider.pos) < collider.radius:
+				return True
+
+			dot = ((collider.pos.x - self.start_pos.x) * (self.end_pos.x - self.start_pos.x) + (collider.pos.y - self.start_pos.y) * (self.end_pos.y - self.start_pos.y)) / self.length ** 2
+
+			closest_point = pygame.Vector2(
+				self.start_pos.x + dot * (self.end_pos.x - self.start_pos.x),
+				self.start_pos.y + dot * (self.end_pos.y - self.start_pos.y)
+			)
+
+			if not self.point_within_line_segment(closest_point):
+				return False
+
+			return closest_point.distance_to(collider.pos) < collider.radius
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
 		pygame.draw.line(screen, "yellow", camera.world_to_screen(self.start_pos + self.line.normalize() * self.offset), camera.world_to_screen(self.start_pos + self.line), width=4)

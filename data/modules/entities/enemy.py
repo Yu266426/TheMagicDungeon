@@ -3,7 +3,7 @@ import math
 import pygame
 import pygbase
 
-from data.modules.entities.components.boxcollider import BoxCollider
+from data.modules.entities.components.box_collider import BoxCollider
 from data.modules.entities.components.health import Health
 from data.modules.entities.components.movement import Movement
 from data.modules.entities.entity import Entity

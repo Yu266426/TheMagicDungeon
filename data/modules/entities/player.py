@@ -1,9 +1,9 @@
 import pygame
 import pygbase
 
-from data.modules.entities.components.boxcollider import BoxCollider
+from data.modules.entities.components.box_collider import BoxCollider
 from data.modules.entities.components.item_slot import ItemSlot
-from data.modules.entities.components.items.energy_sword import EnergySword
+from data.modules.entities.items.energy_sword import EnergySword
 from data.modules.entities.components.movement import Movement
 from data.modules.entities.entity import Entity
 from data.modules.entities.entity_manager import EntityManager
