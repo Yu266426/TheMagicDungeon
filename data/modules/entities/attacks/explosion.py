@@ -13,9 +13,9 @@ class Explosion(Entity):
 		self.damage = damage
 
 		self.particle_manager = particle_manager
-		self.explosion_particles = particle_manager.add_spawner(pygbase.CircleSpawner(self.pos, 0.05, 40, radius, True, "fire", particle_manager))
+		self.explosion_particles = particle_manager.add_spawner(pygbase.CircleSpawner(self.pos, 0.05, 150, radius, True, "fire", particle_manager, radial_velocity_range=(20, 400)))
 
-		self.timer = pygbase.Timer(0.3, False, False)
+		self.timer = pygbase.Timer(0.1, False, False)
 
 	def is_alive(self):
 		return self.alive
