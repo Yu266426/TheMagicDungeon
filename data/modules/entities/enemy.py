@@ -19,8 +19,8 @@ class Enemy(Entity):
 		super().__init__(pos)
 
 		self.animations = pygbase.AnimationManager([
-			("idle", pygbase.Animation("player_idle_animation", 0, 1), 8),
-			("run", pygbase.Animation("player_run_animation", 0, 2), 8)
+			("idle", pygbase.Animation("sprite_sheet", "player_idle_animation", 0, 1), 8),
+			("run", pygbase.Animation("sprite_sheet", "player_run_animation", 0, 2), 8)
 		], "idle"
 		)
 

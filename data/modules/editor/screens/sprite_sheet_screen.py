@@ -11,7 +11,7 @@ class SpriteSheetScreen(pygbase.screen.ControlledScreen):
 		self.selection_info = selection_info
 
 		self.sprite_sheet_name: str = sprite_sheet_name
-		self.sprite_sheet: pygbase.SpriteSheet = pygbase.ResourceManager.get_resource(2, sprite_sheet_name)
+		self.sprite_sheet: pygbase.SpriteSheet = pygbase.ResourceManager.get_resource("sprite_sheet", sprite_sheet_name)
 
 		super().__init__(keep_in=(0, 0, self.sprite_sheet.n_cols * self.sprite_sheet.tile_width, self.sprite_sheet.n_rows * self.sprite_sheet.tile_height))
 

@@ -9,7 +9,7 @@ from data.modules.editor.actions.object_actions import RemoveObjectAction, Place
 from data.modules.editor.editor_selection_info import ObjectSelectionInfo
 from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
-from data.modules.objects.game_object import ObjectLoader
+from data.modules.objects.object_loader import ObjectLoader
 
 
 class ObjectDrawTool(EditorTool):

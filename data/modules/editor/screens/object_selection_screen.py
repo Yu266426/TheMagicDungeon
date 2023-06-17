@@ -6,7 +6,7 @@ import pygbase.screen
 
 from data.modules.base.utils import draw_rect_outline, get_tile_pos
 from data.modules.editor.editor_selection_info import ObjectSelectionInfo
-from data.modules.objects.game_object import GameObject, ObjectLoader
+from data.modules.objects.object_loader import GameObject, ObjectLoader
 
 
 class ObjectSelectionScreen(pygbase.screen.ControlledScreen):

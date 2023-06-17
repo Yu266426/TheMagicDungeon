@@ -5,7 +5,7 @@ import pygbase
 from data.modules.base.constants import TILE_SCALE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import IMAGE_DIR, SPRITE_SHEET_DIR
 from data.modules.game_states.main_menu import MainMenu
-from data.modules.objects.game_object import ObjectLoader
+from data.modules.objects.object_loader import ObjectLoader
 
 if __name__ == '__main__':
 	# profiler = cProfile.Profile()

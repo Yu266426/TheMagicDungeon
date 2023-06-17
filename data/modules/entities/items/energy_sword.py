@@ -13,7 +13,7 @@ class EnergySword(Item):
 		super().__init__(100)
 
 		self.animations = pygbase.AnimationManager([
-			("active", pygbase.Animation("energy_sword", 0, 1), 1)
+			("active", pygbase.Animation("sprite_sheet", "energy_sword", 0, 1), 1)
 		], "active")
 
 		self.starting_angle_offset = -60
