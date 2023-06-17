@@ -16,12 +16,11 @@ class SwordSwing(Entity):
 
 		self.starting_angle = angle - 20 * flip
 		self.max_angle = 90
-
-		self.flip = flip
 		self.swing_speed = 600
 
 		self.collider = LineCollider(self.pos, self.starting_angle, length, start_offset=50).link_pos(pos)
 
+		self.flip = flip
 		self.animation = pygbase.Animation("sword_swing_1", 0, 9, False)
 
 	def is_alive(self):

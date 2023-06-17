@@ -11,7 +11,7 @@ from data.modules.map.level import Level
 
 
 class Player(Entity):
-	def __init__(self, pos, level: Level, entities: EntityManager, camera: pygbase.Camera):
+	def __init__(self, pos, camera: pygbase.Camera, entities: EntityManager, level: Level, particle_manager: pygbase.ParticleManager):
 		super().__init__(pos)
 
 		self.current_state = "idle"
@@ -29,7 +29,7 @@ class Player(Entity):
 		self.entities = entities
 
 		self.item_slot = ItemSlot(self.pos, (25, -36), entities, camera)
-		self.item_slot.equip_item(EnergySword(entities))
+		self.item_slot.equip_item(EnergySword(entities, level, particle_manager))
 
 		self.camera = camera
 

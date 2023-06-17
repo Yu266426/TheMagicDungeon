@@ -1,13 +1,15 @@
 import pygame
 import pygbase
 
+from data.modules.entities.attacks.fireball import Fireball
 from data.modules.entities.attacks.sword_swing import SwordSwing
 from data.modules.entities.items.item import Item
 from data.modules.entities.entity_manager import EntityManager
+from data.modules.map.level import Level
 
 
 class EnergySword(Item):
-	def __init__(self, entities: EntityManager):
+	def __init__(self, entities: EntityManager, level: Level, particle_manager: pygbase.ParticleManager):
 		super().__init__(100)
 
 		self.animations = pygbase.AnimationManager([
@@ -25,9 +27,11 @@ class EnergySword(Item):
 		self.attack_length = 80
 		self.attack_damage = 5
 
+		self.level = level
 		self.entity_manager: EntityManager = entities
+		self.particle_manager: pygbase.ParticleManager = particle_manager
 
-		self.attack_cooldown = pygbase.Timer(0.5, False, False)
+		self.attack_cooldown = pygbase.Timer(0.5, True, False)
 
 	def added_to_slot(self, pos: pygame.Vector2):
 		super().added_to_slot(pos)
@@ -37,7 +41,8 @@ class EnergySword(Item):
 		self.attack_cooldown.tick(delta)
 
 		if pygbase.InputManager.get_mouse_just_pressed(0) and self.attack_cooldown.done():
-			self.entity_manager.add_entity(SwordSwing(self.pos, self.angle + (180 if self.flip_x else 0), self.attack_length, self.attack_damage, self.convert_flip()), tags=("damage",))
+			# self.entity_manager.add_entity(SwordSwing(self.pos, self.angle + (180 if self.flip_x else 0), self.attack_length, self.attack_damage, self.convert_flip()), tags=("damage",))
+			self.entity_manager.add_entity(Fireball(self.pos, self.angle, 800, 400, 30, 70, 10, self.level, self.entity_manager, self.particle_manager))
 
 			self.attack_cooldown.start()
 
