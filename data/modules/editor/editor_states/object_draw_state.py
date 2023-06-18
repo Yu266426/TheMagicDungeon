@@ -19,14 +19,14 @@ class ObjectTools(enum.Enum):
 
 
 class ObjectDrawState(EditorState):
-	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue, object_selection_info: ObjectSelectionInfo):
+	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue, object_selection_info: ObjectSelectionInfo, particle_manager: pygbase.ParticleManager):
 		super().__init__(room, shared_state, action_queue)
 
 		self.object_selection_info = object_selection_info
 
 		self.current_tool: ObjectTools = ObjectTools.DRAW
 		self.tools: dict[ObjectTools, EditorTool] = {
-			ObjectTools.DRAW: ObjectDrawTool(self._room, self._shared_state, self._action_queue)
+			ObjectTools.DRAW: ObjectDrawTool(self._room, self._shared_state, self._action_queue, particle_manager)
 		}
 
 		self.tiled_mouse_pos = get_tile_pos(self._shared_state.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
@@ -40,9 +40,11 @@ class ObjectDrawState(EditorState):
 			self.button_frame, self.reset_object_animations
 		))
 
+		self.particle_manager = particle_manager
+
 	def reset_object_animations(self):
 		for game_object in self._room.objects:
-			if game_object.is_animation:
+			if game_object.is_animated:
 				game_object.sprite.frame = 0
 
 	def update(self, delta: float):
@@ -58,6 +60,8 @@ class ObjectDrawState(EditorState):
 	def draw(self, screen: pygame.Surface):
 		draw_rect_outline(screen, (255, 255, 0), -self._shared_state.controlled_screen.camera.pos, (self._room.n_cols * TILE_SIZE, self._room.n_rows * TILE_SIZE), 2)
 		self._room.draw(screen, self._shared_state.controlled_screen.camera, {})
+
+		self.particle_manager.draw(screen, self._shared_state.controlled_screen.camera)
 
 		if not self._shared_state.on_global_ui and self._shared_state.should_draw_tool and not self.ui.on_ui():
 			self.tools[self.current_tool].draw(screen, self._shared_state.controlled_screen.camera, self.tiled_mouse_pos, self.object_selection_info)

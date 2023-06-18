@@ -14,10 +14,11 @@ from data.modules.map.room import EditorRoom
 
 
 class Editor(pygbase.GameState, name="editor"):
-	def __init__(self, room: EditorRoom):
+	def __init__(self, room: EditorRoom, particle_manager: pygbase.ParticleManager):
 		super().__init__()
 
 		self.room = room
+		self.particle_manager = particle_manager
 
 		self.shared_state = SharedEditorState(self.room)
 		self.action_queue = EditorActionQueue()
@@ -27,9 +28,9 @@ class Editor(pygbase.GameState, name="editor"):
 
 		self.current_state: EditorStates = EditorStates.TILE_DRAW_STATE
 		self.states: dict[EditorStates, EditorState] = {
-			EditorStates.TILE_DRAW_STATE: TileDrawState(self.room, self.shared_state, self.action_queue, self.tile_selection_info),
+			EditorStates.TILE_DRAW_STATE: TileDrawState(self.room, self.shared_state, self.action_queue, self.tile_selection_info, self.particle_manager),
 			EditorStates.TILE_SELECTION_STATE: TileSelectionState(self.room, self.shared_state, self.action_queue, self.tile_selection_info),
-			EditorStates.OBJECT_DRAW_STATE: ObjectDrawState(self.room, self.shared_state, self.action_queue, self.object_selection_info),
+			EditorStates.OBJECT_DRAW_STATE: ObjectDrawState(self.room, self.shared_state, self.action_queue, self.object_selection_info, self.particle_manager),
 			EditorStates.OBJECT_SELECTION_STATE: ObjectSelectionState(self.room, self.shared_state, self.action_queue, self.object_selection_info)
 		}
 
@@ -81,11 +82,6 @@ class Editor(pygbase.GameState, name="editor"):
 			text="Quit", alignment="c"
 		), align_with_previous=(True, False), add_on_to_previous=(False, True))
 
-	def reset_object_animations(self):
-		for game_object in self.room.objects:
-			if issubclass(type(game_object), AnimatableObject):
-				game_object.frame = 0
-
 	def update(self, delta: float):
 		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
 			self.show_overlay = not self.show_overlay
@@ -109,6 +105,8 @@ class Editor(pygbase.GameState, name="editor"):
 			# Animate objects
 			for game_object in self.room.objects:
 				game_object.animate(delta * 2)
+
+			self.particle_manager.update(delta)
 
 			# Save
 			if pygbase.InputManager.check_modifiers(pygame.KMOD_LCTRL):

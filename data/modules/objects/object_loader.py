@@ -2,6 +2,7 @@ import json
 import logging
 import os
 
+import pygame
 import pygbase
 
 from data.modules.base.paths import OBJECT_DIR
@@ -28,10 +29,7 @@ class ObjectLoader:
 		with open(json_path) as json_file:
 			data = json.load(json_file)
 
-		# Shared data
-		sprite_sheet_name = data["sprite_sheet_name"]
-
-		# Optional data
+		# Shared optional data
 		if "hitbox" in data:
 			hitbox = data["custom_hitbox"]
 		else:
@@ -46,6 +44,8 @@ class ObjectLoader:
 		# Type-dependent data
 		object_type: str = data["type"]
 		if object_type == "static":
+			sprite_sheet_name = data["sprite_sheet_name"]
+
 			cls.objects[object_name] = (
 				object_type,
 				pygbase.ResourceManager.get_resource("sprite_sheet", sprite_sheet_name).get_image(data["image_index"]),
@@ -53,6 +53,8 @@ class ObjectLoader:
 				behaviour
 			)
 		elif object_type == "animated":
+			sprite_sheet_name = data["sprite_sheet_name"]
+
 			cls.objects[object_name] = (
 				object_type,
 				("sprite_sheet", sprite_sheet_name, data["animation_start_index"], data["animation_length"], data["animation_looping"]),
@@ -68,11 +70,11 @@ class ObjectLoader:
 			raise ValueError(f"{object_name} object file has invalid type <{type}>")
 
 	@classmethod
-	def create_object(cls, name: str, pos) -> GameObject:
+	def create_object(cls, name: str, pos: pygame.Vector2 | tuple[float, float], additional_args: dict) -> GameObject:
 		object_data = cls.objects[name]
 		if object_data[0] == "static":
 			return GameObject(name, pos, object_data[1], custom_hitbox=object_data[2])
 		elif object_data[0] == "animated":
 			return GameObject(name, pos, pygbase.Animation(*object_data[1]), custom_hitbox=object_data[2])
 		elif object_data[0] == "custom":
-			return object_data[1](pos)
+			return object_data[1](pos, additional_args)

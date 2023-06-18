@@ -3,6 +3,7 @@ import random
 from collections import deque
 
 import pygame
+import pygbase
 from pygbase import Camera
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
@@ -13,8 +14,9 @@ from data.modules.entities.entity_manager import EntityManager
 
 
 class Level:
-	def __init__(self, entities: EntityManager):
-		self.entities = entities
+	def __init__(self, entity_manager: EntityManager, particle_manager: pygbase.ParticleManager):
+		self.entity_manager = entity_manager
+		self.particle_manager = particle_manager
 
 		self.rooms: dict[int, dict[int, Room]] = {}
 		self.connections = {}
@@ -125,7 +127,7 @@ class Level:
 		if pos[1] not in self.rooms:
 			self.rooms[pos[1]] = {}
 
-		room = Room(room_name, self.entities, offset=(pos[0] * self.room_size * TILE_SIZE, pos[1] * self.room_size * TILE_SIZE), connections=connections)
+		room = Room(room_name, self.entity_manager, self.particle_manager, offset=(pos[0] * self.room_size * TILE_SIZE, pos[1] * self.room_size * TILE_SIZE), connections=connections)
 		self.rooms[pos[1]][pos[0]] = room
 		return room
 
@@ -160,6 +162,6 @@ class Level:
 					self.draw_tile(level, (col, row), display, camera)
 
 				if level == 1:
-					entities = self.entities.get_entities(row)
+					entities = self.entity_manager.get_entities(row)
 					for entity in entities:
 						entity.draw(display, camera)

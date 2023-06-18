@@ -11,22 +11,23 @@ from data.modules.map.level import Level
 class Game(pygbase.GameState, name="game"):
 	def __init__(self):
 		super().__init__()
-		self.entities = EntityManager()
+		self.entity_manager = EntityManager()
 		self.particle_manager = pygbase.ParticleManager()
+
 		self.lighting_manager = pygbase.LightingManager(0.5)
 
-		self.level = Level(self.entities)
+		self.level = Level(self.entity_manager, self.particle_manager)
 
 		self.camera = pygbase.Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
 
-		self.player = Player((400, 400), self.camera, self.entities, self.level, self.particle_manager, self.lighting_manager)
-		self.entities.add_entity(self.player)
+		self.player = Player((400, 400), self.camera, self.entity_manager, self.level, self.particle_manager, self.lighting_manager)
+		self.entity_manager.add_entity(self.player)
 
 		for _ in range(100):
-			self.entities.add_entity(Enemy((500, 400), self.level, self.entities))
+			self.entity_manager.add_entity(Enemy((500, 400), self.level, self.entity_manager))
 
 	def update(self, delta: float):
-		self.entities.update(delta)
+		self.entity_manager.update(delta)
 		self.particle_manager.update(delta)
 		self.lighting_manager.update(delta)
 

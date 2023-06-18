@@ -22,7 +22,7 @@ class TileTools(enum.Enum):
 
 
 class TileDrawState(EditorState):
-	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue, tile_selection_info: TileSelectionInfo):
+	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue, tile_selection_info: TileSelectionInfo, particle_manager: pygbase.ParticleManager):
 		super().__init__(room, shared_state, action_queue)
 
 		self.tile_selection_info = tile_selection_info
@@ -55,6 +55,8 @@ class TileDrawState(EditorState):
 			self.button_frame, self.set_tool, callback_args=(TileTools.FILL, 1)
 		), add_on_to_previous=(True, False), align_with_previous=(False, True))
 
+		self.particle_manager = particle_manager
+
 	def set_tool(self, new_tool: TileTools, index: int):
 		self.current_tool = new_tool
 		self.tool_highlight_index = index
@@ -86,6 +88,8 @@ class TileDrawState(EditorState):
 	def draw(self, screen: pygame.Surface):
 		draw_rect_outline(screen, (255, 255, 0), -self._shared_state.controlled_screen.camera.pos, (self._room.n_cols * TILE_SIZE, self._room.n_rows * TILE_SIZE), 2)
 		self._room.draw(screen, self._shared_state.controlled_screen.camera, {})
+
+		self.particle_manager.draw(screen, self._shared_state.controlled_screen.camera)
 
 		if not self._shared_state.on_global_ui and self._shared_state.should_draw_tool and not self.ui.on_ui():
 			self.tools[self.current_tool].draw(screen, self._shared_state.controlled_screen.camera, self.tiled_mouse_pos, self.tile_selection_info)

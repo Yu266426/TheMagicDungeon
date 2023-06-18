@@ -55,6 +55,8 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 		self.selected_room_image = pygame.Surface((SCREEN_WIDTH * 0.46, SCREEN_HEIGHT * 0.46), flags=pygame.SRCALPHA)
 		self.selected_room_image.fill((20, 20, 20))
 
+		self.particle_manager = pygbase.ParticleManager()
+
 		# Buttons
 		from data.modules.game_states.main_menu import MainMenu
 		self.ui.add_element(pygbase.Button(
@@ -99,7 +101,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 		), add_on_to_previous=(False, True))
 
 	def select_room(self, index, room_name):
-		self.selected_room = EditorRoom(room_name)
+		self.selected_room = EditorRoom(room_name, self.particle_manager)
 		self.selected_room.draw_room_to_surface(self.selected_room_image)
 
 		self.room_name_text.set_text(f"Name: {room_name}")
@@ -107,7 +109,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 
 	def edit_button_callback(self):
 		if self.selected_room is not None:
-			self.set_next_state(Editor(self.selected_room))
+			self.set_next_state(Editor(self.selected_room, self.particle_manager))
 
 	def update(self, delta: float):
 		self.ui.update(delta)

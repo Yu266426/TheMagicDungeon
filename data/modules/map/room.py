@@ -4,7 +4,6 @@ import random
 
 import pygame
 import pygbase
-from pygbase import ResourceManager, Camera
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import ROOM_DIR
@@ -16,7 +15,7 @@ from data.modules.objects.tile import Tile
 
 
 class Room:
-	def __init__(self, name: str, entity_manager: EntityManager, n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0), connections=(False, False, False, False), random_floor=True):
+	def __init__(self, name: str, entity_manager: EntityManager, particle_manager: pygbase.ParticleManager, n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0), connections=(False, False, False, False), random_floor=True):
 		self.n_rows = n_rows
 		self.n_cols = n_cols
 
@@ -38,7 +37,7 @@ class Room:
 				self.generate_floor()
 			self.generate_walls(connections)
 		else:
-			self.load(entity_manager)
+			self.load(entity_manager, particle_manager)
 
 			if random_floor:
 				self.generate_floor()
@@ -52,7 +51,7 @@ class Room:
 		:param gap_radius: Size of gap
 		"""
 
-		wall_sheet = ResourceManager.get_resource("sprite_sheet", "walls")
+		wall_sheet = pygbase.ResourceManager.get_resource("sprite_sheet", "walls")
 
 		if self.n_cols % 2 == 0:
 			x_mid_point = self.n_cols // 2 - 1
@@ -137,7 +136,7 @@ class Room:
 					self.tiles[1][row][self.n_cols - 1] = Tile("walls", random.randrange(0, wall_sheet.length), ((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
 
 	def generate_floor(self):
-		tiles_sheet = ResourceManager.get_resource("sprite_sheet", "tiles")
+		tiles_sheet = pygbase.ResourceManager.get_resource("sprite_sheet", "tiles")
 		for row in range(self.n_rows):
 			for col in range(self.n_cols):
 				self.tiles[0][row][col] = Tile(
@@ -146,7 +145,7 @@ class Room:
 					(col * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
 				)
 
-	def load(self, entity_manager: EntityManager):
+	def load(self, entity_manager: EntityManager, particle_manager: pygbase.ParticleManager):
 		with open(self.save_path) as file:
 			room_data: dict = json.load(file)
 
@@ -165,7 +164,7 @@ class Room:
 			object_name = game_object["name"]
 			pos = game_object["pos"]
 
-			entity_manager.add_entity(ObjectLoader.create_object(object_name, (pos[0] * TILE_SIZE + self.offset[0], pos[1] * TILE_SIZE + self.offset[1])), ("object",))
+			entity_manager.add_entity(ObjectLoader.create_object(object_name, (pos[0] * TILE_SIZE + self.offset[0], pos[1] * TILE_SIZE + self.offset[1]), {"entity_manager": entity_manager, "particle_manager": particle_manager}), ("object",))
 
 	def save(self):
 		data = {
@@ -230,9 +229,10 @@ class Room:
 
 	def remove_object(self, game_object: GameObject):
 		if game_object is not None:
+			game_object.removed()
 			self.objects.remove(game_object)
 
-	def draw_tile(self, layer: int, row: int, col: int, display: pygame.Surface, camera: Camera, with_offset: bool = False):
+	def draw_tile(self, layer: int, row: int, col: int, display: pygame.Surface, camera: pygbase.Camera, with_offset: bool = False):
 		if with_offset:
 			col -= self.tile_offset[0]
 			row -= self.tile_offset[1]
@@ -241,7 +241,7 @@ class Room:
 			if self.tiles[layer][row][col] is not None:
 				self.tiles[layer][row][col].draw(display, camera)
 
-	def draw(self, screen: pygame.Surface, camera: Camera, entities: dict[int, dict]):
+	def draw(self, screen: pygame.Surface, camera: pygbase.Camera, entities: dict[int, dict]):
 		top_left: tuple[int, int] = get_tile_pos((camera.pos.x - self.offset[0], camera.pos.y - self.offset[1]), (TILE_SIZE, TILE_SIZE))
 		bottom_right: tuple[int, int] = get_tile_pos((camera.pos.x + SCREEN_WIDTH - self.offset[0], camera.pos.y + SCREEN_HEIGHT - self.offset[1]), (TILE_SIZE, TILE_SIZE))
 
@@ -265,7 +265,7 @@ class Room:
 
 
 class EditorRoom:
-	def __init__(self, name: str, n_rows: int = 10, n_cols: int = 10):
+	def __init__(self, name: str, particle_manager: pygbase.ParticleManager, n_rows: int = 10, n_cols: int = 10):
 		self.n_rows = n_rows
 		self.n_cols = n_cols
 
@@ -279,9 +279,9 @@ class EditorRoom:
 			print("Creating new editor room")
 			self.tiles = generate_3d_list(3, self.n_rows, self.n_cols)
 		else:
-			self.load()
+			self.load(particle_manager)
 
-	def load(self):
+	def load(self, particle_manager: pygbase.ParticleManager):
 		with open(self.save_path) as file:
 			room_data: dict = json.load(file)
 
@@ -299,7 +299,7 @@ class EditorRoom:
 		for game_object in room_data["objects"]:
 			object_type = game_object["name"]
 			pos = game_object["pos"]
-			self.objects.append(ObjectLoader.create_object(object_type, (pos[0] * TILE_SIZE, pos[1] * TILE_SIZE)))
+			self.objects.append(ObjectLoader.create_object(object_type, (pos[0] * TILE_SIZE, pos[1] * TILE_SIZE), {"particle_manager": particle_manager}))
 
 	def save(self):
 		data = {
@@ -362,14 +362,15 @@ class EditorRoom:
 
 	def remove_object(self, game_object: GameObject):
 		if game_object is not None:
+			game_object.removed()
 			self.objects.remove(game_object)
 
-	def draw_tile(self, layer: int, row: int, col: int, display: pygame.Surface, camera: Camera):
+	def draw_tile(self, layer: int, row: int, col: int, display: pygame.Surface, camera: pygbase.Camera):
 		if self.check_bounds((col, row)):
 			if self.tiles[layer][row][col] is not None:
 				self.tiles[layer][row][col].draw(display, camera)
 
-	def draw(self, screen: pygame.Surface, camera: Camera, entities: dict[int, dict]):
+	def draw(self, screen: pygame.Surface, camera: pygbase.Camera, entities: dict[int, dict]):
 		top_left: tuple[int, int] = get_tile_pos(camera.pos, (TILE_SIZE, TILE_SIZE))
 		bottom_right: tuple[int, int] = get_tile_pos((camera.pos.x + SCREEN_WIDTH, camera.pos.y + SCREEN_HEIGHT), (TILE_SIZE, TILE_SIZE))
 
