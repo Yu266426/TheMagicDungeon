@@ -19,14 +19,14 @@ class ObjectTools(enum.Enum):
 
 
 class ObjectDrawState(EditorState):
-	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue, object_selection_info: ObjectSelectionInfo, particle_manager: pygbase.ParticleManager):
+	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue, object_selection_info: ObjectSelectionInfo):
 		super().__init__(room, shared_state, action_queue)
 
 		self.object_selection_info = object_selection_info
 
 		self.current_tool: ObjectTools = ObjectTools.DRAW
 		self.tools: dict[ObjectTools, EditorTool] = {
-			ObjectTools.DRAW: ObjectDrawTool(self._room, self._shared_state, self._action_queue, particle_manager)
+			ObjectTools.DRAW: ObjectDrawTool(self._room, self._shared_state, self._action_queue)
 		}
 
 		self.tiled_mouse_pos = get_tile_pos(self._shared_state.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
@@ -40,7 +40,7 @@ class ObjectDrawState(EditorState):
 			self.button_frame, self.reset_object_animations
 		))
 
-		self.particle_manager = particle_manager
+		self.particle_manager = pygbase.Common.get_value("particle_manager")
 
 	def reset_object_animations(self):
 		for game_object in self._room.objects:

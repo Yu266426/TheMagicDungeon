@@ -24,7 +24,7 @@ class ObjectSelectionScreen(pygbase.screen.ControlledScreen):
 		for index, object_name in enumerate(object_names):
 			x = index % n_cols
 			y = index // n_cols
-			self.objects.append(ObjectLoader.create_object(object_name, (x * object_size[0], y * object_size[1]), {}))
+			self.objects.append(ObjectLoader.create_object(object_name, (x * object_size[0], y * object_size[1])))
 
 		self._tiled_mouse_pos = (0, 0)
 
@@ -40,7 +40,15 @@ class ObjectSelectionScreen(pygbase.screen.ControlledScreen):
 				index = self._tiled_mouse_pos[1] * self.n_cols + self._tiled_mouse_pos[0]
 				if index < len(self.objects):
 					self.selected_object_index = index
-					self.object_selection_info.current_object_name = self.objects[self.selected_object_index].name
+
+					selected_object = self.objects[self.selected_object_index]
+
+					if selected_object.is_editor_object:
+						self.object_selection_info.current_object_name = self.objects[self.selected_object_index].object_name
+						self.object_selection_info.current_editor_object_name = self.objects[self.selected_object_index].name
+					else:
+						self.object_selection_info.current_object_name = self.objects[self.selected_object_index].name
+						self.object_selection_info.current_editor_object_name = None
 
 		# Animate objects
 		for game_object in self.objects:

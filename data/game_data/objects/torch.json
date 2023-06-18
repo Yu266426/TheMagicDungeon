@@ -1,4 +1,5 @@
 {
   "type": "custom",
-  "name": "torch"
+  "name": "torch",
+  "editor_name": "editor_torch"
 }

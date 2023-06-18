@@ -15,7 +15,7 @@ from data.modules.objects.tile import Tile
 
 
 class Room:
-	def __init__(self, name: str, entity_manager: EntityManager, particle_manager: pygbase.ParticleManager, n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0), connections=(False, False, False, False), random_floor=True):
+	def __init__(self, name: str, entity_manager: EntityManager, n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0), connections=(False, False, False, False), random_floor=True):
 		self.n_rows = n_rows
 		self.n_cols = n_cols
 
@@ -37,7 +37,7 @@ class Room:
 				self.generate_floor()
 			self.generate_walls(connections)
 		else:
-			self.load(entity_manager, particle_manager)
+			self.load(entity_manager)
 
 			if random_floor:
 				self.generate_floor()
@@ -145,7 +145,7 @@ class Room:
 					(col * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
 				)
 
-	def load(self, entity_manager: EntityManager, particle_manager: pygbase.ParticleManager):
+	def load(self, entity_manager: EntityManager):
 		with open(self.save_path) as file:
 			room_data: dict = json.load(file)
 
@@ -164,7 +164,7 @@ class Room:
 			object_name = game_object["name"]
 			pos = game_object["pos"]
 
-			entity_manager.add_entity(ObjectLoader.create_object(object_name, (pos[0] * TILE_SIZE + self.offset[0], pos[1] * TILE_SIZE + self.offset[1]), {"entity_manager": entity_manager, "particle_manager": particle_manager}), ("object",))
+			entity_manager.add_entity(ObjectLoader.create_object(object_name, (pos[0] * TILE_SIZE + self.offset[0], pos[1] * TILE_SIZE + self.offset[1])), ("object",))
 
 	def save(self):
 		data = {
@@ -265,7 +265,7 @@ class Room:
 
 
 class EditorRoom:
-	def __init__(self, name: str, particle_manager: pygbase.ParticleManager, n_rows: int = 10, n_cols: int = 10):
+	def __init__(self, name: str, n_rows: int = 10, n_cols: int = 10):
 		self.n_rows = n_rows
 		self.n_cols = n_cols
 
@@ -279,9 +279,9 @@ class EditorRoom:
 			print("Creating new editor room")
 			self.tiles = generate_3d_list(3, self.n_rows, self.n_cols)
 		else:
-			self.load(particle_manager)
+			self.load()
 
-	def load(self, particle_manager: pygbase.ParticleManager):
+	def load(self):
 		with open(self.save_path) as file:
 			room_data: dict = json.load(file)
 
@@ -299,7 +299,7 @@ class EditorRoom:
 		for game_object in room_data["objects"]:
 			object_type = game_object["name"]
 			pos = game_object["pos"]
-			self.objects.append(ObjectLoader.create_object(object_type, (pos[0] * TILE_SIZE, pos[1] * TILE_SIZE), {"particle_manager": particle_manager}))
+			self.objects.append(ObjectLoader.create_object(object_type, (pos[0] * TILE_SIZE, pos[1] * TILE_SIZE)))
 
 	def save(self):
 		data = {

@@ -6,16 +6,18 @@ from data.modules.objects.game_object import GameObject
 
 
 class Torch(GameObject):
-	def __init__(self, pos: tuple, additional_args: dict):
+	def __init__(self, pos: tuple):
 		super().__init__("torch", pos, pygbase.ResourceManager.get_resource("sprite_sheet", "objects").get_image(1))
 
-		if "particle_manager" in additional_args:
-			self.particle_manager: pygbase.ParticleManager = additional_args["particle_manager"]
-			self.fire = self.particle_manager.add_spawner(pygbase.CircleSpawner(self.pos + pygame.Vector2(8 * TILE_SCALE, 12), 0.05, 3, 20, True, "fire", self.particle_manager))
-		else:
-			self.particle_manager = None
-			self.fire = None
+		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
+		self.fire = self.particle_manager.add_spawner(pygbase.CircleSpawner(self.pos + pygame.Vector2(8 * TILE_SCALE, 12), 0.05, 3, 20, True, "fire", self.particle_manager))
 
 	def removed(self):
-		if self.particle_manager is not None:
-			self.particle_manager.remove_spawner(self.fire)
+		self.particle_manager.remove_spawner(self.fire)
+
+
+class EditorTorch(GameObject):
+	def __init__(self, pos: tuple):
+		super().__init__("editor_torch", pos, pygbase.ResourceManager.get_resource("sprite_sheet", "objects").get_image(1), is_editor_object=True)
+
+		self.object_name = "torch"

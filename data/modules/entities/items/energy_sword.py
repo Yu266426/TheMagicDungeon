@@ -9,7 +9,7 @@ from data.modules.map.level import Level
 
 
 class EnergySword(Item):
-	def __init__(self, entities: EntityManager, level: Level, particle_manager: pygbase.ParticleManager, lighting_manager: pygbase.LightingManager):
+	def __init__(self, entities: EntityManager, level: Level):
 		super().__init__(100)
 
 		self.animations = pygbase.AnimationManager([
@@ -29,8 +29,8 @@ class EnergySword(Item):
 
 		self.level = level
 		self.entity_manager: EntityManager = entities
-		self.particle_manager: pygbase.ParticleManager = particle_manager
-		self.lighting_manager: pygbase.LightingManager = lighting_manager
+		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
+		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
 
 		self.attack_cooldown = pygbase.Timer(0.5, True, False)
 

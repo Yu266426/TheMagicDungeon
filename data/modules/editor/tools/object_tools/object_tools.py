@@ -14,14 +14,12 @@ from data.modules.objects.object_loader import ObjectLoader
 
 
 class ObjectDrawTool(EditorTool):
-	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue, particle_manager: pygbase.ParticleManager):
+	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue):
 		super().__init__(room, shared_state, action_queue)
 
 		self.current_mouse_pos: tuple | None = None
 
 		self.current_batch: EditorActionBatch | None = None
-
-		self.particle_manager = particle_manager
 
 	def update(self, mouse_pos: tuple[int, int], selection_info: ObjectSelectionInfo):
 		if InputManager.get_mouse_pressed(0):
@@ -29,7 +27,7 @@ class ObjectDrawTool(EditorTool):
 			y_pos = mouse_pos[1] * TILE_SIZE
 
 			if selection_info.current_object_name is not None and self._room.get_object((x_pos, y_pos - 1)) is None:
-				action = PlaceObjectAction(self._room, ObjectLoader.create_object(selection_info.current_object_name, (x_pos, y_pos), {"particle_manager": self.particle_manager}))
+				action = PlaceObjectAction(self._room, ObjectLoader.create_object(selection_info.current_object_name, (x_pos, y_pos)))
 				action.execute()
 
 				if self.current_batch is None:
@@ -69,4 +67,7 @@ class ObjectDrawTool(EditorTool):
 				x_pos = mouse_pos[0] * TILE_SIZE
 				y_pos = mouse_pos[1] * TILE_SIZE
 
-				ObjectLoader.create_object(selection_info.current_object_name, (x_pos, y_pos), {}).draw(screen, camera, flags=pygame.BLEND_ADD)
+				if selection_info.current_editor_object_name is None:
+					ObjectLoader.create_object(selection_info.current_object_name, (x_pos, y_pos)).draw(screen, camera, flags=pygame.BLEND_ADD)
+				else:
+					ObjectLoader.create_object(selection_info.current_editor_object_name, (x_pos, y_pos)).draw(screen, camera, flags=pygame.BLEND_ADD)

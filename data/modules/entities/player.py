@@ -11,7 +11,7 @@ from data.modules.map.level import Level
 
 
 class Player(Entity):
-	def __init__(self, pos, camera: pygbase.Camera, entities: EntityManager, level: Level, particle_manager: pygbase.ParticleManager, lighting_manager: pygbase.LightingManager):
+	def __init__(self, pos, camera: pygbase.Camera, entities: EntityManager, level: Level):
 		super().__init__(pos)
 
 		self.current_state = "idle"
@@ -29,10 +29,11 @@ class Player(Entity):
 		self.entities = entities
 
 		self.item_slot = ItemSlot(self.pos, (25, -36), entities, camera)
-		self.item_slot.equip_item(EnergySword(entities, level, particle_manager, lighting_manager))
+		self.item_slot.equip_item(EnergySword(entities, level))
 
 		self.camera = camera
 
+		lighting_manager = pygbase.Common.get_value("lighting_manager")
 		self.light = lighting_manager.add_light(pygbase.Light(self.pos, 0.1, 320, 10, 1.2).link_pos(self.pos))
 		self.light2 = lighting_manager.add_light(pygbase.Light(self.pos, 0.15, 400, 15, 1.2).link_pos(self.pos))
 		self.light3 = lighting_manager.add_light(pygbase.Light(self.pos, 0.1, 550, 20, 1.2).link_pos(self.pos))

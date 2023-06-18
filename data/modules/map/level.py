@@ -14,9 +14,9 @@ from data.modules.entities.entity_manager import EntityManager
 
 
 class Level:
-	def __init__(self, entity_manager: EntityManager, particle_manager: pygbase.ParticleManager):
+	def __init__(self, entity_manager: EntityManager):
 		self.entity_manager = entity_manager
-		self.particle_manager = particle_manager
+		self.particle_manager = pygbase.Common.get_value("particle_manager")
 
 		self.rooms: dict[int, dict[int, Room]] = {}
 		self.connections = {}

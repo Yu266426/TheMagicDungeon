@@ -12,15 +12,14 @@ class Game(pygbase.GameState, name="game"):
 	def __init__(self):
 		super().__init__()
 		self.entity_manager = EntityManager()
-		self.particle_manager = pygbase.ParticleManager()
+		self.particle_manager = pygbase.Common.get_value("particle_manager")
+		self.lighting_manager = pygbase.Common.get_value("lighting_manager")
 
-		self.lighting_manager = pygbase.LightingManager(0.5)
-
-		self.level = Level(self.entity_manager, self.particle_manager)
+		self.level = Level(self.entity_manager)
 
 		self.camera = pygbase.Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
 
-		self.player = Player((400, 400), self.camera, self.entity_manager, self.level, self.particle_manager, self.lighting_manager)
+		self.player = Player((400, 400), self.camera, self.entity_manager, self.level)
 		self.entity_manager.add_entity(self.player)
 
 		for _ in range(100):

@@ -18,7 +18,7 @@ class ObjectSelectionState(EditorState):
 
 		self.object_screen_index: int = 0
 		self.object_screens: list[ObjectSelectionScreen] = [
-			ObjectSelectionScreen(self.object_selection_info, ["small_cube", "small_red_cube", "small_green_cube", "large_cube", "large_red_cube", "large_green_cube", "lever", "chest", "torch"], (16 * TILE_SCALE, 16 * TILE_SCALE), n_cols=3),
+			ObjectSelectionScreen(self.object_selection_info, ["small_cube", "small_red_cube", "small_green_cube", "large_cube", "large_red_cube", "large_green_cube", "lever", "chest", "editor_torch"], (16 * TILE_SCALE, 16 * TILE_SCALE), n_cols=3),
 		]
 
 		self.ui = pygbase.UIManager()

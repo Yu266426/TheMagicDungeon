@@ -22,7 +22,7 @@ class TileTools(enum.Enum):
 
 
 class TileDrawState(EditorState):
-	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue, tile_selection_info: TileSelectionInfo, particle_manager: pygbase.ParticleManager):
+	def __init__(self, room: EditorRoom, shared_state: SharedEditorState, action_queue: EditorActionQueue, tile_selection_info: TileSelectionInfo):
 		super().__init__(room, shared_state, action_queue)
 
 		self.tile_selection_info = tile_selection_info
@@ -55,7 +55,7 @@ class TileDrawState(EditorState):
 			self.button_frame, self.set_tool, callback_args=(TileTools.FILL, 1)
 		), add_on_to_previous=(True, False), align_with_previous=(False, True))
 
-		self.particle_manager = particle_manager
+		self.particle_manager = pygbase.Common.get_value("particle_manager")
 
 	def set_tool(self, new_tool: TileTools, index: int):
 		self.current_tool = new_tool

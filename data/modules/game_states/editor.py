@@ -14,11 +14,11 @@ from data.modules.map.room import EditorRoom
 
 
 class Editor(pygbase.GameState, name="editor"):
-	def __init__(self, room: EditorRoom, particle_manager: pygbase.ParticleManager):
+	def __init__(self, room: EditorRoom):
 		super().__init__()
 
 		self.room = room
-		self.particle_manager = particle_manager
+		self.particle_manager = pygbase.Common.get_value("particle_manager")
 
 		self.shared_state = SharedEditorState(self.room)
 		self.action_queue = EditorActionQueue()
@@ -28,9 +28,9 @@ class Editor(pygbase.GameState, name="editor"):
 
 		self.current_state: EditorStates = EditorStates.TILE_DRAW_STATE
 		self.states: dict[EditorStates, EditorState] = {
-			EditorStates.TILE_DRAW_STATE: TileDrawState(self.room, self.shared_state, self.action_queue, self.tile_selection_info, self.particle_manager),
+			EditorStates.TILE_DRAW_STATE: TileDrawState(self.room, self.shared_state, self.action_queue, self.tile_selection_info),
 			EditorStates.TILE_SELECTION_STATE: TileSelectionState(self.room, self.shared_state, self.action_queue, self.tile_selection_info),
-			EditorStates.OBJECT_DRAW_STATE: ObjectDrawState(self.room, self.shared_state, self.action_queue, self.object_selection_info, self.particle_manager),
+			EditorStates.OBJECT_DRAW_STATE: ObjectDrawState(self.room, self.shared_state, self.action_queue, self.object_selection_info),
 			EditorStates.OBJECT_SELECTION_STATE: ObjectSelectionState(self.room, self.shared_state, self.action_queue, self.object_selection_info)
 		}
 

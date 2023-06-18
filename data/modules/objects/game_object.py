@@ -6,7 +6,7 @@ from data.modules.entities.entity import Entity
 
 
 class GameObject(Entity):
-	def __init__(self, name: str, pos: tuple, sprite: pygbase.Image | pygbase.Animation, custom_hitbox: pygame.Rect | None = None):
+	def __init__(self, name: str, pos: tuple, sprite: pygbase.Image | pygbase.Animation, custom_hitbox: pygame.Rect | None = None, is_editor_object: bool = False):
 		super().__init__(pos)
 		self.name = name
 
@@ -22,6 +22,8 @@ class GameObject(Entity):
 		else:
 			self.hitbox: pygame.Rect = custom_hitbox
 			self.hitbox.midbottom = self.pos
+
+		self.is_editor_object = is_editor_object
 
 	def removed(self):
 		pass

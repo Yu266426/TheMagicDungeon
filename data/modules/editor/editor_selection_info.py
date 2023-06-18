@@ -14,3 +14,4 @@ class TileSelectionInfo:
 class ObjectSelectionInfo:
 	def __init__(self, starting_object: str):
 		self.current_object_name: str = starting_object
+		self.current_editor_object_name: str | None = None
