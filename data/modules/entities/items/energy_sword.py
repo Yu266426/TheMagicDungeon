@@ -43,7 +43,7 @@ class EnergySword(Item):
 
 		if pygbase.InputManager.get_mouse_just_pressed(0) and self.attack_cooldown.done():
 			# self.entity_manager.add_entity(SwordSwing(self.pos, self.angle + (180 if self.flip_x else 0), self.attack_length, self.attack_damage, self.convert_flip()), tags=("damage",))
-			self.entity_manager.add_entity(Fireball(self.pos, self.angle, 800, 400, 30, 70, 10, self.level, self.entity_manager, self.particle_manager, self.lighting_manager))
+			self.entity_manager.add_entity(Fireball(self.pos, self.angle, 800, 400, 30, 70, 10, self.level, self.entity_manager))
 
 			self.attack_cooldown.start()
 

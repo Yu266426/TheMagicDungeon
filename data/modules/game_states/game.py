@@ -22,16 +22,13 @@ class Game(pygbase.GameState, name="game"):
 		self.player = Player((400, 400), self.camera, self.entity_manager, self.level)
 		self.entity_manager.add_entity(self.player)
 
-		for _ in range(100):
-			self.entity_manager.add_entity(Enemy((500, 400), self.level, self.entity_manager))
+		# for _ in range(100):
+		# 	self.entity_manager.add_entity(Enemy((500, 400), self.level, self.entity_manager))
 
 	def update(self, delta: float):
 		self.entity_manager.update(delta)
 		self.particle_manager.update(delta)
 		self.lighting_manager.update(delta)
-
-		if pygbase.InputManager.get_key_just_pressed(pygame.K_SPACE):
-			self.level.generate_level()
 
 		self.camera.lerp_to_target(self.player.collider.rect.center - pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), delta * 5)
 
