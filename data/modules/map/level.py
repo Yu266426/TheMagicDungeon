@@ -27,6 +27,10 @@ class Level:
 	# TODO: Redo generation to be over multiple frames
 	def generate_level(self, depth=20):
 		# Reset level
+		for row in self.rooms.values():
+			for room in row.values():
+				room.remove_objects()
+
 		self.rooms.clear()
 		self.connections.clear()
 

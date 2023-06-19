@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import random
 
@@ -14,8 +15,8 @@ from data.modules.objects.object_loader import ObjectLoader
 from data.modules.objects.tile import Tile
 
 
-class Room:
-	def __init__(self, name: str, entity_manager: EntityManager, n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0), connections=(False, False, False, False), random_floor=True):
+class BaseRoom:
+	def __init__(self, n_rows: int, n_cols: int, offset: tuple = (0, 0)):
 		self.n_rows = n_rows
 		self.n_cols = n_cols
 
@@ -26,10 +27,89 @@ class Room:
 		self.tiles: list[list[list[Tile | None]]] = []
 		self.objects: list[GameObject] = []
 
+	def check_bounds(self, pos: tuple[int, int]):
+		return 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows
+
+	def get_tile(self, layer: int, pos: tuple[int, int]) -> Tile:
+		pos = pos[0] - self.tile_offset[0], pos[1] - self.tile_offset[1]
+
+		if self.check_bounds(pos):
+			return self.tiles[layer][pos[1]][pos[0]]
+
+	def add_tile(self, layer: int, pos: tuple[int, int], tile: Tile):
+		if self.check_bounds(pos):
+			self.tiles[layer][pos[1]][pos[0]] = tile
+
+	def remove_tile(self, layer: int, pos: tuple[int, int]):
+		if self.check_bounds(pos):
+			self.tiles[layer][pos[1]][pos[0]] = None
+
+	def get_object(self, pos: tuple, with_hitbox: bool = False):
+		if not with_hitbox:
+			for game_object in self.objects:
+				if game_object.rect.collidepoint(pos[0], pos[1]):
+					return game_object
+		else:
+			for game_object in self.objects:
+				if game_object.hitbox.collidepoint(pos[0], pos[1]):
+					return game_object
+
+		return None
+
+	def add_object(self, game_object: GameObject):
+		self.objects.append(game_object)
+
+	def remove_object(self, game_object: GameObject):
+		if game_object is not None:
+			game_object.removed()
+			self.objects.remove(game_object)
+
+	def remove_objects(self):
+		for game_object in self.objects:
+			game_object.removed()
+
+		self.objects.clear()
+
+	def draw_tile(self, layer: int, row: int, col: int, display: pygame.Surface, camera: pygbase.Camera, with_offset: bool = False):
+		if with_offset:
+			col -= self.tile_offset[0]
+			row -= self.tile_offset[1]
+
+		if self.check_bounds((col, row)):
+			if self.tiles[layer][row][col] is not None:
+				self.tiles[layer][row][col].draw(display, camera)
+
+	def draw(self, screen: pygame.Surface, camera: pygbase.Camera, entities: dict[int, dict]):
+		top_left: tuple[int, int] = get_tile_pos((camera.pos.x - self.offset[0], camera.pos.y - self.offset[1]), (TILE_SIZE, TILE_SIZE))
+		bottom_right: tuple[int, int] = get_tile_pos((camera.pos.x + SCREEN_WIDTH - self.offset[0], camera.pos.y + SCREEN_HEIGHT - self.offset[1]), (TILE_SIZE, TILE_SIZE))
+
+		y_offset = int(self.offset[1] // TILE_SIZE)
+
+		top_left = top_left[0], top_left[1]
+		bottom_right = bottom_right[0] + 1, bottom_right[1] + 2
+
+		for layer in range(len(self.tiles)):
+			for row in range(top_left[1], bottom_right[1]):
+				for col in range(top_left[0], bottom_right[0]):
+					self.draw_tile(layer, row, col, screen, camera)
+
+				if layer == 1:
+					if row + y_offset in entities:
+						for entity in entities[row + y_offset].values():
+							entity.draw(screen, camera)
+
+		for game_object in self.objects:
+			game_object.draw(screen, camera)
+
+
+class Room(BaseRoom):
+	def __init__(self, name: str, entity_manager: EntityManager, n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0), connections=(False, False, False, False), random_floor=True):
+		super().__init__(n_rows, n_cols, offset)
+
 		# New room
 		self.save_path = ROOM_DIR / f"{name}.json"
 		if not os.path.isfile(self.save_path):
-			print("Creating new room")
+			logging.debug("Creating new room")
 
 			self.tiles = generate_3d_list(3, self.n_rows, self.n_cols)
 
@@ -160,123 +240,54 @@ class Room:
 				col = tile["pos"][1]
 				self.tiles[level][row][col] = Tile(tile["image_info"][0], tile["image_info"][1], (col * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1]))
 
-		for game_object in room_data["objects"]:
-			object_name = game_object["name"]
-			pos = game_object["pos"]
+		for object_data in room_data["objects"]:
+			object_name = object_data["name"]
+			pos = object_data["pos"]
 
-			entity_manager.add_entity(ObjectLoader.create_object(object_name, (pos[0] * TILE_SIZE + self.offset[0], pos[1] * TILE_SIZE + self.offset[1])), ("object",))
+			game_object = ObjectLoader.create_object(object_name, (pos[0] * TILE_SIZE + self.offset[0], pos[1] * TILE_SIZE + self.offset[1]))
 
-	def save(self):
-		data = {
-			"rows": self.n_rows,
-			"cols": self.n_cols,
-			"tiles": [[], [], []],
-			"objects": []
-		}
-
-		for level, level_data in enumerate(self.tiles):
-			for row, row_data in enumerate(level_data):
-				for col, tile in enumerate(row_data):
-					if tile is not None:
-						tile_data = {
-							"pos": [row, col],
-							"image_info": [tile.sprite_sheet_name, tile.image_index],
-						}
-						data["tiles"][level].append(tile_data)
-
-		for game_object in self.objects:
-			data["objects"].append({
-				"name": game_object.name,
-				"pos": [int(game_object.pos.x / TILE_SIZE), int(game_object.pos.y / TILE_SIZE)]
-			})
-
-		with open(self.save_path, "w") as file:
-			file.write(json.dumps(data))
-
-		print("Level saved")
-
-	def check_bounds(self, pos: tuple[int, int]):
-		return 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows
-
-	def get_tile(self, layer: int, pos: tuple[int, int]) -> Tile:
-		pos = pos[0] - self.tile_offset[0], pos[1] - self.tile_offset[1]
-
-		if self.check_bounds(pos):
-			return self.tiles[layer][pos[1]][pos[0]]
-
-	def add_tile(self, layer: int, pos: tuple[int, int], tile: Tile):
-		if self.check_bounds(pos):
-			self.tiles[layer][pos[1]][pos[0]] = tile
-
-	def remove_tile(self, layer: int, pos: tuple[int, int]):
-		if self.check_bounds(pos):
-			self.tiles[layer][pos[1]][pos[0]] = None
-
-	def get_object(self, pos: tuple, with_hitbox: bool = False):
-		if not with_hitbox:
-			for game_object in self.objects:
-				if game_object.rect.collidepoint(pos[0], pos[1]):
-					return game_object
-		else:
-			for game_object in self.objects:
-				if game_object.hitbox.collidepoint(pos[0], pos[1]):
-					return game_object
-
-		return None
-
-	def add_object(self, game_object: GameObject):
-		self.objects.append(game_object)
-
-	def remove_object(self, game_object: GameObject):
-		if game_object is not None:
-			game_object.removed()
-			self.objects.remove(game_object)
-
-	def draw_tile(self, layer: int, row: int, col: int, display: pygame.Surface, camera: pygbase.Camera, with_offset: bool = False):
-		if with_offset:
-			col -= self.tile_offset[0]
-			row -= self.tile_offset[1]
-
-		if self.check_bounds((col, row)):
-			if self.tiles[layer][row][col] is not None:
-				self.tiles[layer][row][col].draw(display, camera)
-
-	def draw(self, screen: pygame.Surface, camera: pygbase.Camera, entities: dict[int, dict]):
-		top_left: tuple[int, int] = get_tile_pos((camera.pos.x - self.offset[0], camera.pos.y - self.offset[1]), (TILE_SIZE, TILE_SIZE))
-		bottom_right: tuple[int, int] = get_tile_pos((camera.pos.x + SCREEN_WIDTH - self.offset[0], camera.pos.y + SCREEN_HEIGHT - self.offset[1]), (TILE_SIZE, TILE_SIZE))
-
-		y_offset = int(self.offset[1] // TILE_SIZE)
-
-		top_left = top_left[0], top_left[1]
-		bottom_right = bottom_right[0] + 1, bottom_right[1] + 2
-
-		for layer in range(len(self.tiles)):
-			for row in range(top_left[1], bottom_right[1]):
-				for col in range(top_left[0], bottom_right[0]):
-					self.draw_tile(layer, row, col, screen, camera)
-
-				if layer == 1:
-					if row + y_offset in entities:
-						for entity in entities[row + y_offset].values():
-							entity.draw(screen, camera)
-
-		for game_object in self.objects:
-			game_object.draw(screen, camera)
+			entity_manager.add_entity(game_object, ("object",))
+			self.objects.append(game_object)
 
 
-class EditorRoom:
+# def save(self):
+# 	data = {
+# 		"rows": self.n_rows,
+# 		"cols": self.n_cols,
+# 		"tiles": [[], [], []],
+# 		"objects": []
+# 	}
+#
+# 	for level, level_data in enumerate(self.tiles):
+# 		for row, row_data in enumerate(level_data):
+# 			for col, tile in enumerate(row_data):
+# 				if tile is not None:
+# 					tile_data = {
+# 						"pos": [row, col],
+# 						"image_info": [tile.sprite_sheet_name, tile.image_index],
+# 					}
+# 					data["tiles"][level].append(tile_data)
+#
+# 	for game_object in self.objects:
+# 		data["objects"].append({
+# 			"name": game_object.name,
+# 			"pos": [int(game_object.pos.x / TILE_SIZE), int(game_object.pos.y / TILE_SIZE)]
+# 		})
+#
+# 	with open(self.save_path, "w") as file:
+# 		file.write(json.dumps(data))
+#
+# 	print("Level saved")
+
+
+class EditorRoom(BaseRoom):
 	def __init__(self, name: str, n_rows: int = 10, n_cols: int = 10):
-		self.n_rows = n_rows
-		self.n_cols = n_cols
-
-		# layer[back, player, front]
-		self.tiles: list[list[list[Tile | None]]] = []
-		self.objects: list[GameObject] = []
+		super().__init__(n_rows, n_cols)
 
 		# New room
 		self.save_path = os.path.join(ROOM_DIR, f"{name}.json")
 		if not os.path.isfile(self.save_path):
-			print("Creating new editor room")
+			logging.debug("Creating new editor room")
 			self.tiles = generate_3d_list(3, self.n_rows, self.n_cols)
 		else:
 			self.load()
@@ -328,67 +339,7 @@ class EditorRoom:
 		with open(self.save_path, "w") as file:
 			file.write(json.dumps(data))
 
-		print("Level saved")
-
-	def check_bounds(self, pos: tuple[int, int]):
-		return 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows
-
-	def get_tile(self, layer: int, pos: tuple[int, int]) -> Tile:
-		if self.check_bounds(pos):
-			return self.tiles[layer][pos[1]][pos[0]]
-
-	def add_tile(self, layer: int, pos: tuple[int, int], tile: Tile):
-		if self.check_bounds(pos):
-			self.tiles[layer][pos[1]][pos[0]] = tile
-
-	def remove_tile(self, layer: int, pos: tuple[int, int]):
-		if self.check_bounds(pos):
-			self.tiles[layer][pos[1]][pos[0]] = None
-
-	def get_object(self, pos: tuple, with_hitbox: bool = False):
-		if not with_hitbox:
-			for game_object in self.objects:
-				if game_object.rect.collidepoint(pos[0], pos[1]):
-					return game_object
-		else:
-			for game_object in self.objects:
-				if game_object.hitbox.collidepoint(pos[0], pos[1]):
-					return game_object
-
-		return None
-
-	def add_object(self, game_object: GameObject):
-		self.objects.append(game_object)
-
-	def remove_object(self, game_object: GameObject):
-		if game_object is not None:
-			game_object.removed()
-			self.objects.remove(game_object)
-
-	def draw_tile(self, layer: int, row: int, col: int, display: pygame.Surface, camera: pygbase.Camera):
-		if self.check_bounds((col, row)):
-			if self.tiles[layer][row][col] is not None:
-				self.tiles[layer][row][col].draw(display, camera)
-
-	def draw(self, screen: pygame.Surface, camera: pygbase.Camera, entities: dict[int, dict]):
-		top_left: tuple[int, int] = get_tile_pos(camera.pos, (TILE_SIZE, TILE_SIZE))
-		bottom_right: tuple[int, int] = get_tile_pos((camera.pos.x + SCREEN_WIDTH, camera.pos.y + SCREEN_HEIGHT), (TILE_SIZE, TILE_SIZE))
-
-		top_left = top_left[0], top_left[1]
-		bottom_right = bottom_right[0] + 1, bottom_right[1] + 2
-
-		for layer in range(len(self.tiles)):
-			for row in range(top_left[1], bottom_right[1]):
-				for col in range(top_left[0], bottom_right[0]):
-					self.draw_tile(layer, row, col, screen, camera)
-
-				if layer == 1:
-					if row in entities:
-						for entity in entities[row].values():
-							entity.draw(screen, camera)
-
-		for game_object in self.objects:
-			game_object.draw(screen, camera)
+		logging.info("Level Saved")
 
 	def draw_room_to_surface(self, surface: pygame.Surface):
 		surface_size = surface.get_size()
@@ -400,5 +351,8 @@ class EditorRoom:
 			for row in range(self.n_rows):
 				for col in range(self.n_cols):
 					self.draw_tile(layer, row, col, room_surface, temp_camera)
+
+		for game_object in self.objects:
+			game_object.draw(room_surface, temp_camera)
 
 		pygame.transform.scale(room_surface, surface_size, surface)

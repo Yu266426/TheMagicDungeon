@@ -56,13 +56,12 @@ class Editor(pygbase.GameState, name="editor"):
 			bg_colour=(10, 10, 10, 200)
 		))
 
-		from data.modules.game_states.main_menu import MainMenu
 		self.overlay_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0.5, False), pygbase.UIValue(0.02, False)),
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
 			"image", "button",
 			self.overlay_frame,
-			self.set_next_state_type, callback_args=(MainMenu, ()),
+			self.back_to_main_menu,
 			text="Menu", alignment="c"
 		))
 		self.overlay_frame.add_element(pygbase.Button(
@@ -81,6 +80,12 @@ class Editor(pygbase.GameState, name="editor"):
 			pygbase.EventManager.post_event, callback_args=(pygame.QUIT,),
 			text="Quit", alignment="c"
 		), align_with_previous=(True, False), add_on_to_previous=(False, True))
+
+	def back_to_main_menu(self):
+		from data.modules.game_states.main_menu import MainMenu
+		self.set_next_state_type(MainMenu, ())
+
+		self.room.remove_objects()
 
 	def update(self, delta: float):
 		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):

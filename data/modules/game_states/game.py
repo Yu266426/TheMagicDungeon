@@ -22,8 +22,8 @@ class Game(pygbase.GameState, name="game"):
 		self.player = Player((400, 400), self.camera, self.entity_manager, self.level)
 		self.entity_manager.add_entity(self.player)
 
-		# for _ in range(100):
-		# 	self.entity_manager.add_entity(Enemy((500, 400), self.level, self.entity_manager))
+		for _ in range(100):
+			self.entity_manager.add_entity(Enemy((500, 400), self.level, self.entity_manager))
 
 	def update(self, delta: float):
 		self.entity_manager.update(delta)
@@ -34,6 +34,9 @@ class Game(pygbase.GameState, name="game"):
 
 		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
 			pygbase.EventManager.post_event(pygame.QUIT)
+
+		if pygbase.InputManager.get_key_just_pressed(pygame.K_SPACE):
+			self.level.generate_level()
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill((0, 0, 0))
