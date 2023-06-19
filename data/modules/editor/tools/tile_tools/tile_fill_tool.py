@@ -68,7 +68,7 @@ class TileFillTool(EditorTool):
 
 		return fill_tiles
 
-	def update(self, mouse_pos: tuple[int, int], selection_info: TileSelectionInfo):
+	def update(self, mouse_tile_pos: tuple[int, int], selection_info: TileSelectionInfo):
 		def place_tile(current_pos: tuple[int, int]):
 			action = PlaceTileAction(self._room, selection_info.layer, current_pos[1], current_pos[0], Tile(
 				selection_info.sprite_sheet_name,
@@ -88,7 +88,7 @@ class TileFillTool(EditorTool):
 		# Place
 		if InputManager.get_mouse_just_pressed(0):
 			self.current_batch = EditorActionBatch()
-			fill_tiles = self.fill(mouse_pos, selection_info)
+			fill_tiles = self.fill(mouse_tile_pos, selection_info)
 			for pos in fill_tiles:
 				place_tile(pos)
 
@@ -98,15 +98,15 @@ class TileFillTool(EditorTool):
 		# Remove
 		elif InputManager.get_mouse_just_pressed(2):
 			self.current_batch = EditorActionBatch()
-			fill_tiles = self.fill(mouse_pos, selection_info)
+			fill_tiles = self.fill(mouse_tile_pos, selection_info)
 			for pos in fill_tiles:
 				remove_tile(pos)
 
 			self._action_queue.add_action(self.current_batch)
 			self.current_batch = None
 
-	def draw(self, screen: pygame.Surface, camera: Camera, mouse_pos: tuple, selection_info: TileSelectionInfo):
-		fill_tiles = self.fill(mouse_pos, selection_info)
+	def draw(self, screen: pygame.Surface, camera: Camera, mouse_tile_pos: tuple, selection_info: TileSelectionInfo):
+		fill_tiles = self.fill(mouse_tile_pos, selection_info)
 		for pos in fill_tiles:
 			tile_pos = pos[0] * TILE_SIZE, pos[1] * TILE_SIZE
 			screen.blit(self.fill_preview_surface, camera.world_to_screen(tile_pos), special_flags=pygame.BLEND_ADD)

@@ -18,7 +18,8 @@ class ObjectSelectionState(EditorState):
 
 		self.object_screen_index: int = 0
 		self.object_screens: list[ObjectSelectionScreen] = [
-			ObjectSelectionScreen(self.object_selection_info, ["small_cube", "small_red_cube", "small_green_cube", "large_cube", "large_red_cube", "large_green_cube", "lever", "chest", "editor_torch"], (16 * TILE_SCALE, 16 * TILE_SCALE), n_cols=3),
+			ObjectSelectionScreen(self.object_selection_info, ["small_cube", "small_red_cube", "small_green_cube", "large_cube", "large_red_cube", "large_green_cube", "lever", "chest", "torch"], (16 * TILE_SCALE, 16 * TILE_SCALE), n_cols=6),
+			ObjectSelectionScreen(self.object_selection_info, ["rune_altar"], (32 * TILE_SCALE, 48 * TILE_SCALE), n_cols=5),
 		]
 
 		self.ui = pygbase.UIManager()
@@ -34,12 +35,12 @@ class ObjectSelectionState(EditorState):
 			callback_args=(0,)
 		))
 		for loop in range(1, len(self.object_screens)):
-			self.button_frame.add_element(pygbase.Button((pygbase.UIValue(10), pygbase.UIValue(10)), (pygbase.UIValue(0), pygbase.UIValue(70)), pygbase.Common.get_resource_type("image"), "tile_set_button", self.button_frame, self.switch_screen, callback_args=(loop,)), align_with_previous=(False, True), add_on_to_previous=(True, False))
+			self.button_frame.add_element(pygbase.Button((pygbase.UIValue(10), pygbase.UIValue(10)), (pygbase.UIValue(0), pygbase.UIValue(70)), "image", "tile_set_button", self.button_frame, self.switch_screen, callback_args=(loop,)), align_with_previous=(False, True), add_on_to_previous=(True, False))
 
 	def switch_screen(self, new_index: int):
 		self.object_screen_index = new_index
 
-		self.object_selection_info.current_object_name = type(self.object_screens[self.object_screen_index].objects[self.object_screens[self.object_screen_index].selected_object_index])
+		self.object_selection_info.set_object(self.object_screens[self.object_screen_index].objects[self.object_screens[self.object_screen_index].selected_object_index])
 
 	def update(self, delta: float):
 		self._shared_state.show_global_ui = False

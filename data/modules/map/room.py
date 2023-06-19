@@ -57,6 +57,7 @@ class BaseRoom:
 		return None
 
 	def add_object(self, game_object: GameObject):
+		game_object.added()
 		self.objects.append(game_object)
 
 	def remove_object(self, game_object: GameObject):
@@ -244,7 +245,8 @@ class Room(BaseRoom):
 			object_name = object_data["name"]
 			pos = object_data["pos"]
 
-			game_object = ObjectLoader.create_object(object_name, (pos[0] * TILE_SIZE + self.offset[0], pos[1] * TILE_SIZE + self.offset[1]))
+			game_object = ObjectLoader.create_object(object_name, (pos[0] + self.tile_offset[0], pos[1] + self.tile_offset[1]))
+			game_object.added()
 
 			entity_manager.add_entity(game_object, ("object",))
 			self.objects.append(game_object)
@@ -310,7 +312,11 @@ class EditorRoom(BaseRoom):
 		for game_object in room_data["objects"]:
 			object_type = game_object["name"]
 			pos = game_object["pos"]
-			self.objects.append(ObjectLoader.create_object(object_type, (pos[0] * TILE_SIZE, pos[1] * TILE_SIZE)))
+
+			game_object = ObjectLoader.create_object(object_type, pos)
+			game_object.added()
+
+			self.objects.append(game_object)
 
 	def save(self):
 		data = {
@@ -333,7 +339,7 @@ class EditorRoom(BaseRoom):
 		for game_object in self.objects:
 			data["objects"].append({
 				"name": game_object.name,
-				"pos": [int(game_object.pos.x / TILE_SIZE), int(game_object.pos.y / TILE_SIZE)]
+				"pos": game_object.tile_pos
 			})
 
 		with open(self.save_path, "w") as file:

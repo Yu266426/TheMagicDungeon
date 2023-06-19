@@ -16,9 +16,9 @@ class EditorTool:
 		self._action_queue = action_queue
 
 	@abstractmethod
-	def update(self, mouse_pos: tuple[int, int], selection_info: TileSelectionInfo | ObjectSelectionInfo):
+	def update(self, mouse_tile_pos: tuple[int, int], selection_info: TileSelectionInfo | ObjectSelectionInfo):
 		pass
 
 	@abstractmethod
-	def draw(self, screen: pygame.Surface, camera: Camera, mouse_pos: tuple, selection_info: TileSelectionInfo | ObjectSelectionInfo):
+	def draw(self, screen: pygame.Surface, camera: Camera, mouse_tile_pos: tuple, selection_info: TileSelectionInfo | ObjectSelectionInfo):
 		pass

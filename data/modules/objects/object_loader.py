@@ -66,20 +66,15 @@ class ObjectLoader:
 				object_type,
 				ObjectRegistry.get_object_type(data["name"])
 			)
-
-			cls.objects[data["editor_name"]] = (
-				object_type,
-				ObjectRegistry.get_object_type(data["editor_name"])
-			)
 		else:
 			raise ValueError(f"{object_name} object file has invalid type <{type}>")
 
 	@classmethod
-	def create_object(cls, name: str, pos: pygame.Vector2 | tuple[float, float]) -> GameObject:
+	def create_object(cls, name: str, pos: pygame.Vector2 | tuple, pixel_pos: bool = False) -> GameObject:
 		object_data = cls.objects[name]
 		if object_data[0] == "static":
-			return GameObject(name, pos, object_data[1], custom_hitbox=object_data[2])
+			return GameObject(name, pos, pixel_pos, object_data[1], custom_hitbox=object_data[2])
 		elif object_data[0] == "animated":
-			return GameObject(name, pos, pygbase.Animation(*object_data[1]), custom_hitbox=object_data[2])
+			return GameObject(name, pos, pixel_pos, pygbase.Animation(*object_data[1]), custom_hitbox=object_data[2])
 		elif object_data[0] == "custom":
-			return object_data[1](pos)
+			return object_data[1](pos, pixel_pos)

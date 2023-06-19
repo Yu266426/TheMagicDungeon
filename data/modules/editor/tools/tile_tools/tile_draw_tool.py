@@ -61,16 +61,16 @@ class TileDrawTool(EditorTool):
 
 		self.current_erase_tile = mouse_pos
 
-	def update(self, mouse_pos: tuple[int, int], selection_info: TileSelectionInfo):
+	def update(self, mouse_tile_pos: tuple[int, int], selection_info: TileSelectionInfo):
 		# Draw
 		if InputManager.get_mouse_pressed(0):
 			self._shared_state.show_global_ui = False
-			self.draw_tiles(mouse_pos, selection_info)
+			self.draw_tiles(mouse_tile_pos, selection_info)
 
 		# Erase
 		elif InputManager.get_mouse_pressed(2):
 			self._shared_state.show_global_ui = False
-			self.erase_tiles(mouse_pos, selection_info)
+			self.erase_tiles(mouse_tile_pos, selection_info)
 
 		if InputManager.get_mouse_just_released(0) or InputManager.get_mouse_just_released(2):
 			self._shared_state.show_global_ui = True
@@ -82,11 +82,11 @@ class TileDrawTool(EditorTool):
 			self.current_place_tile = None
 			self.current_erase_tile = None
 
-	def draw(self, screen: pygame.Surface, camera: Camera, mouse_pos: tuple, selection_info: TileSelectionInfo):
+	def draw(self, screen: pygame.Surface, camera: Camera, mouse_tile_pos: tuple, selection_info: TileSelectionInfo):
 		# Tile outline rect
 		draw_rect_outline(
 			screen, (255, 255, 255),
-			(mouse_pos[0] * TILE_SIZE - camera.pos.x, mouse_pos[1] * TILE_SIZE - camera.pos.y),
+			(mouse_tile_pos[0] * TILE_SIZE - camera.pos.x, mouse_tile_pos[1] * TILE_SIZE - camera.pos.y),
 			(TILE_SIZE * (selection_info.selected_bottomright[0] - selection_info.selected_topleft[0] + 1), TILE_SIZE * (selection_info.selected_bottomright[1] - selection_info.selected_topleft[1] + 1)),
 			2
 		)
@@ -95,8 +95,8 @@ class TileDrawTool(EditorTool):
 		if not InputManager.get_mouse_pressed(2):
 			for row, row_data in selection_info.ids.items():
 				for col, image_id in row_data.items():
-					tile_x = mouse_pos[0] + col - selection_info.selected_topleft[0]
-					tile_y = mouse_pos[1] + row - selection_info.selected_topleft[1]
+					tile_x = mouse_tile_pos[0] + col - selection_info.selected_topleft[0]
+					tile_y = mouse_tile_pos[1] + row - selection_info.selected_topleft[1]
 
 					Tile(
 						selection_info.sprite_sheet_name,

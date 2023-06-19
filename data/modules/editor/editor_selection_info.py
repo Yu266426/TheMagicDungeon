@@ -1,3 +1,7 @@
+from data.modules.objects.game_object import GameObject
+from data.modules.objects.object_loader import ObjectLoader
+
+
 class TileSelectionInfo:
 	def __init__(self, sprite_sheet_name: str):
 		# Draw Layer
@@ -14,4 +18,15 @@ class TileSelectionInfo:
 class ObjectSelectionInfo:
 	def __init__(self, starting_object: str):
 		self.current_object_name: str = starting_object
-		self.current_editor_object_name: str | None = None
+
+	def has_object(self):
+		return self.current_object_name is not None
+
+	def set_object(self, game_object: GameObject):
+		self.current_object_name = game_object.name
+
+	def get_object_name(self) -> str:
+		return self.current_object_name
+
+	def get_object(self, pos: tuple) -> GameObject:
+		return ObjectLoader.create_object(self.current_object_name, pos)

@@ -1,5 +1,6 @@
+from data.modules.objects.altars import RuneAltar
 from data.modules.objects.game_object import GameObject
-from data.modules.objects.torch import Torch, EditorTorch
+from data.modules.objects.torch import Torch
 
 
 class ObjectRegistry:
@@ -24,4 +25,4 @@ class ObjectRegistry:
 
 
 ObjectRegistry.register_object("torch", Torch)
-ObjectRegistry.register_object("editor_torch", EditorTorch)
+ObjectRegistry.register_object("rune_altar", RuneAltar)

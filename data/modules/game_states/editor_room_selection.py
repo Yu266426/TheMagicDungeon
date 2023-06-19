@@ -58,7 +58,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 		# Buttons
 		from data.modules.game_states.main_menu import MainMenu
 		self.ui.add_element(pygbase.Button(
-			(pygbase.UIValue(0.02, False), pygbase.UIValue(0.84, False)),
+			(pygbase.UIValue(0.03, False), pygbase.UIValue(0.84, False)),
 			(pygbase.UIValue(0), pygbase.UIValue(0.14, False)),
 			"image", "home_button",
 			self.ui.base_container,
@@ -67,13 +67,20 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 		))
 
 		self.ui.add_element(pygbase.Button(
-			(pygbase.UIValue(0.02, False), pygbase.UIValue(0.84, False)),
-			(pygbase.UIValue(0.32, False), pygbase.UIValue(0.14, False)),
-			"image", "button",
+			(pygbase.UIValue(0.02, False), pygbase.UIValue(0)),
+			(pygbase.UIValue(0), pygbase.UIValue(0.14, False)),
+			"image", "draw_tool_button",
 			self.ui.base_container,
 			self.edit_button_callback,
-			text="Edit"
-		), add_on_to_previous=(True, False))
+		), align_with_previous=(False, True), add_on_to_previous=(True, False))
+
+		self.ui.add_element(pygbase.Button(
+			(pygbase.UIValue(0.02, False), pygbase.UIValue(0)),
+			(pygbase.UIValue(0), pygbase.UIValue(0.14, False)),
+			"image", "plus_button",
+			self.ui.base_container,
+			self.add_room_button_callback,
+		), align_with_previous=(False, True), add_on_to_previous=(True, False))
 
 		# Room Info
 		self.info_frame = self.ui.add_frame(pygbase.Frame(
@@ -99,6 +106,9 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 		), add_on_to_previous=(False, True))
 
 	def select_room(self, index, room_name):
+		if self.selected_room is not None:
+			self.selected_room.remove_objects()
+
 		self.selected_room = EditorRoom(room_name)
 		self.selected_room.draw_room_to_surface(self.selected_room_image)
 
@@ -108,6 +118,9 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 	def edit_button_callback(self):
 		if self.selected_room is not None:
 			self.set_next_state(Editor(self.selected_room))
+
+	def add_room_button_callback(self):
+		self.set_next_state(Editor(EditorRoom("start_room")))
 
 	def update(self, delta: float):
 		self.ui.update(delta)

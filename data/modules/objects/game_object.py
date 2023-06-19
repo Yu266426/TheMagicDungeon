@@ -2,12 +2,20 @@ import pygame
 import pygbase
 from pygbase import Camera
 
+from data.modules.base.constants import TILE_SIZE
+from data.modules.base.utils import draw_rect_outline
 from data.modules.entities.entity import Entity
 
 
 class GameObject(Entity):
-	def __init__(self, name: str, pos: tuple, sprite: pygbase.Image | pygbase.Animation, custom_hitbox: pygame.Rect | None = None, is_editor_object: bool = False):
-		super().__init__(pos)
+	def __init__(self, name: str, pos: pygame.Vector2 | tuple, pixel_pos: bool, sprite: pygbase.Image | pygbase.Animation, custom_hitbox: pygame.Rect | None = None, is_editor_object: bool = False):
+		if pixel_pos:
+			super().__init__(pos)
+			self.tile_pos = int(pos[0] / TILE_SIZE), int(pos[1] / TILE_SIZE)
+		else:
+			super().__init__(((pos[0] + 0.5) * TILE_SIZE, (pos[1] + 1) * TILE_SIZE))
+			self.tile_pos = pos
+
 		self.name = name
 
 		self.sprite = sprite
@@ -25,6 +33,9 @@ class GameObject(Entity):
 
 		self.is_editor_object = is_editor_object
 
+	def added(self):
+		pass
+
 	def removed(self):
 		pass
 
@@ -37,6 +48,8 @@ class GameObject(Entity):
 
 	def draw(self, display: pygame.Surface, camera: Camera, flags=0):
 		if self.is_animated:
-			self.sprite.draw_at_pos(display, self.pos, camera, flags=flags)
+			self.sprite.draw_at_pos(display, self.pos, camera, draw_pos="midbottom", flags=flags)
 		else:
-			self.sprite.draw(display, camera.world_to_screen(self.pos), flags=flags)
+			self.sprite.draw(display, camera.world_to_screen(self.pos), draw_pos="midbottom", flags=flags)
+
+	# draw_rect_outline(display, "dark green", camera.world_to_screen(self.hitbox.topleft), self.hitbox.size, 2)

@@ -11,7 +11,7 @@ from data.modules.objects.object_loader import GameObject, ObjectLoader
 
 class ObjectSelectionScreen(pygbase.screen.ControlledScreen):
 	def __init__(self, object_selection_info: ObjectSelectionInfo, object_names: list, object_size: tuple, n_cols=1):
-		super().__init__(keep_in=(0, 0, n_cols * object_size[0], math.ceil(len(object_names) / n_cols) * object_size[1]))
+		super().__init__(keep_in=(0, 0, min(n_cols, len(object_names)) * object_size[0], math.ceil(len(object_names) / n_cols) * object_size[1]))
 
 		self.object_selection_info = object_selection_info
 
@@ -24,7 +24,7 @@ class ObjectSelectionScreen(pygbase.screen.ControlledScreen):
 		for index, object_name in enumerate(object_names):
 			x = index % n_cols
 			y = index // n_cols
-			self.objects.append(ObjectLoader.create_object(object_name, (x * object_size[0], y * object_size[1])))
+			self.objects.append(ObjectLoader.create_object(object_name, ((x + 0.5) * object_size[0], (y + 1) * object_size[1]), pixel_pos=True))
 
 		self._tiled_mouse_pos = (0, 0)
 
@@ -43,12 +43,7 @@ class ObjectSelectionScreen(pygbase.screen.ControlledScreen):
 
 					selected_object = self.objects[self.selected_object_index]
 
-					if selected_object.is_editor_object:
-						self.object_selection_info.current_object_name = self.objects[self.selected_object_index].object_name
-						self.object_selection_info.current_editor_object_name = self.objects[self.selected_object_index].name
-					else:
-						self.object_selection_info.current_object_name = self.objects[self.selected_object_index].name
-						self.object_selection_info.current_editor_object_name = None
+					self.object_selection_info.set_object(selected_object)
 
 		# Animate objects
 		for game_object in self.objects:
@@ -67,3 +62,5 @@ class ObjectSelectionScreen(pygbase.screen.ControlledScreen):
 			self.object_size,
 			2
 		)
+
+		draw_rect_outline(display, "yellow", self._camera.world_to_screen((self.keep_in[0], self.keep_in[1])), (self.keep_in[2], self.keep_in[3]), 1)

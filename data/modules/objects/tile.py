@@ -12,4 +12,4 @@ class Tile:
 		self.rect: pygame.Rect = self.image.get_image().get_rect(bottomleft=pos)
 
 	def draw(self, screen: pygame.Surface, camera: Camera, flag: int = 0):
-		self.image.draw(screen, pygame.Rect(camera.world_to_screen(self.rect.topleft), self.rect.size), flags=flag)
+		self.image.draw(screen, camera.world_to_screen(self.rect.topleft), flags=flag)
