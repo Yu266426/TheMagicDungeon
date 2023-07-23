@@ -245,10 +245,10 @@ class Room(BaseRoom):
 			object_name = object_data["name"]
 			pos = object_data["pos"]
 
-			game_object = ObjectLoader.create_object(object_name, (pos[0] + self.tile_offset[0], pos[1] + self.tile_offset[1]))
+			game_object, tags = ObjectLoader.create_object(object_name, (pos[0] + self.tile_offset[0], pos[1] + self.tile_offset[1]))
 			game_object.added()
 
-			entity_manager.add_entity(game_object, ("object",))
+			entity_manager.add_entity(game_object, ("object",) + tags)
 			self.objects.append(game_object)
 
 
@@ -313,7 +313,7 @@ class EditorRoom(BaseRoom):
 			object_type = game_object["name"]
 			pos = game_object["pos"]
 
-			game_object = ObjectLoader.create_object(object_type, pos)
+			game_object, tags = ObjectLoader.create_object(object_type, pos)
 			game_object.added()
 
 			self.objects.append(game_object)

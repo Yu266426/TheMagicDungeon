@@ -3,7 +3,6 @@ import pygbase
 from pygbase import Camera
 
 from data.modules.base.constants import TILE_SIZE
-from data.modules.base.utils import draw_rect_outline
 from data.modules.entities.entity import Entity
 
 
@@ -39,6 +38,10 @@ class GameObject(Entity):
 	def removed(self):
 		pass
 
+	def set_sprite(self, sprite: pygbase.Image | pygbase.Animation):
+		self.sprite = sprite
+		self.is_animated = isinstance(self.sprite, pygbase.Animation)
+
 	def animate(self, frame_time: float):
 		if self.is_animated:
 			self.sprite.change_frame(frame_time)
@@ -52,4 +55,4 @@ class GameObject(Entity):
 		else:
 			self.sprite.draw(display, camera.world_to_screen(self.pos), draw_pos="midbottom", flags=flags)
 
-	# draw_rect_outline(display, "dark green", camera.world_to_screen(self.hitbox.topleft), self.hitbox.size, 2)
+# draw_rect_outline(display, "dark green", camera.world_to_screen(self.hitbox.topleft), self.hitbox.size, 2)

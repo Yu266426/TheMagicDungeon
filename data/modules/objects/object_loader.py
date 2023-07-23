@@ -30,16 +30,19 @@ class ObjectLoader:
 			data = json.load(json_file)
 
 		# Shared optional data
+		hitbox = None
+		behaviour = None
+		tags = ()
+
 		if "hitbox" in data:
 			hitbox = data["custom_hitbox"]
-		else:
-			hitbox = None
 
 		# TODO: Make behaviour do something
 		if "behaviour" in data:
 			behaviour = data["behaviour"]
-		else:
-			behaviour = None
+
+		if "tags" in data:
+			tags = tuple(data["tags"])
 
 		# Type-dependent data
 		object_type: str = data["type"]
@@ -50,7 +53,8 @@ class ObjectLoader:
 				object_type,
 				pygbase.ResourceManager.get_resource("sprite_sheet", sprite_sheet_name).get_image(data["image_index"]),
 				hitbox,
-				behaviour
+				behaviour,
+				tags
 			)
 		elif object_type == "animated":
 			sprite_sheet_name = data["sprite_sheet_name"]
@@ -59,22 +63,24 @@ class ObjectLoader:
 				object_type,
 				("sprite_sheet", sprite_sheet_name, data["animation_start_index"], data["animation_length"], data["animation_looping"]),
 				hitbox,
-				behaviour
+				behaviour,
+				tags
 			)
 		elif object_type == "custom":
 			cls.objects[data["name"]] = (
 				object_type,
-				ObjectRegistry.get_object_type(data["name"])
+				ObjectRegistry.get_object_type(data["name"]),
+				tags
 			)
 		else:
 			raise ValueError(f"{object_name} object file has invalid type <{type}>")
 
 	@classmethod
-	def create_object(cls, name: str, pos: pygame.Vector2 | tuple, pixel_pos: bool = False) -> GameObject:
+	def create_object(cls, name: str, pos: pygame.Vector2 | tuple, pixel_pos: bool = False) -> tuple[GameObject, tuple[str, ...]]:
 		object_data = cls.objects[name]
 		if object_data[0] == "static":
-			return GameObject(name, pos, pixel_pos, object_data[1], custom_hitbox=object_data[2])
+			return GameObject(name, pos, pixel_pos, object_data[1], custom_hitbox=object_data[2]), object_data[4]
 		elif object_data[0] == "animated":
-			return GameObject(name, pos, pixel_pos, pygbase.Animation(*object_data[1]), custom_hitbox=object_data[2])
+			return GameObject(name, pos, pixel_pos, pygbase.Animation(*object_data[1]), custom_hitbox=object_data[2]), object_data[4]
 		elif object_data[0] == "custom":
-			return object_data[1](pos, pixel_pos)
+			return object_data[1](pos, pixel_pos), object_data[2]

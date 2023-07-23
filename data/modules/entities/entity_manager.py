@@ -12,7 +12,7 @@ class EntityManager:
 
 		self.entities_to_remove = set()
 
-	def add_entity(self, entity, tags: tuple[str] = None):
+	def add_entity(self, entity, tags: tuple[str, ...] = None):
 		entity_tags = () if tags is None else tags
 
 		self.entities.append(entity)
@@ -63,7 +63,8 @@ class EntityManager:
 				self.add_entity_to_remove(entity)
 
 		for entity in self.entities:
-			entity.update(delta)
+			if entity.active:
+				entity.update(delta)
 
 			y_pos = get_1d_tile_pos(entity.pos.y, TILE_SIZE)
 

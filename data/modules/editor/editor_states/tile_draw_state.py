@@ -35,7 +35,7 @@ class TileDrawState(EditorState):
 
 		self.tiled_mouse_pos = get_tile_pos(self._shared_state.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
 
-		self.layer_text = pygbase.ui.text.Text((SCREEN_WIDTH - 10, 7), "arial", 60, (200, 200, 200), text="1", use_sys=True)
+		self.layer_text = pygbase.ui.text.Text((SCREEN_WIDTH - 10, 7), "arial", 60, (200, 200, 200), text="1", use_sys=True, anchor=pygbase.UIAnchors.TOP_RIGHT )
 
 		self.tool_highlight_index = 0
 
@@ -99,7 +99,7 @@ class TileDrawState(EditorState):
 		# Tool Selection Outline
 		pygame.draw.rect(screen, (47, 186, 224), (((self.button_size.x + 10) * self.tool_highlight_index + 10, SCREEN_HEIGHT - 80), self.button_size), width=2)
 
-		self.layer_text.draw(screen, "r")
+		self.layer_text.draw(screen)
 
 	def next_state(self, mode_index: int):
 		if mode_index == 0:

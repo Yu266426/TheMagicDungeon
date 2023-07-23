@@ -43,7 +43,7 @@
     "rows": 1,
     "columns": 4,
     "tile_width": 32,
-    "tile_height": 48,
+    "tile_height": 36,
     "scale": 0,
     "rotatable": false
   },

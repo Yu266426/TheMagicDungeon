@@ -1,3 +1,4 @@
+import json
 import os
 import random
 from collections import deque
@@ -14,25 +15,80 @@ from data.modules.entities.entity_manager import EntityManager
 
 
 class Level:
-	def __init__(self, entity_manager: EntityManager):
+	def __init__(self, entity_manager: EntityManager, room_size: int):
 		self.entity_manager = entity_manager
 		self.particle_manager = pygbase.Common.get_value("particle_manager")
 
 		self.rooms: dict[int, dict[int, Room]] = {}
 		self.connections = {}
 
-		self.room_size = 20
-		self.generate_level(3)
+		self.room_size = room_size
+
+	def add_room(self, pos: tuple[int, int], room_name: str, connections: tuple[bool, bool, bool, bool]):
+		if pos[1] not in self.rooms:
+			self.rooms[pos[1]] = {}
+
+		room = Room(room_name, self.entity_manager, self.particle_manager, offset=(pos[0] * self.room_size * TILE_SIZE, pos[1] * self.room_size * TILE_SIZE), connections=connections)
+		self.rooms[pos[1]][pos[0]] = room
+		return room
+
+	def get_room(self, pos: tuple[float, float]) -> Room | None:
+		"""
+		:param pos: Position in pixels
+		:return: Room | None
+		"""
+		room_pos = get_tile_pos(pos, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
+
+		if room_pos[1] in self.rooms and room_pos[0] in self.rooms[room_pos[1]]:
+			return self.rooms[room_pos[1]][room_pos[0]]
+		return None
+
+	def get_tile(self, pos: pygame.Vector2 | tuple[float, float]):
+		room = self.get_room(pos)
+		if room is not None:
+			return room.get_tile(1, get_tile_pos(pos, (TILE_SIZE, TILE_SIZE)))
+		return None
+
+	def draw_tile(self, level: int, pos: tuple[int, int], display: pygame.Surface, camera: Camera):
+		room = self.get_room((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE))
+
+		if room is not None:
+			room.draw_tile(level, pos[1], pos[0], display, camera, with_offset=True)
+
+	def draw(self, display: pygame.Surface, camera: Camera):
+		top_left = get_tile_pos(camera.pos, (TILE_SIZE, TILE_SIZE))
+		bottom_right = get_tile_pos(camera.pos + pygame.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), (TILE_SIZE, TILE_SIZE))
+		top_left = top_left[0], top_left[1]
+		bottom_right = bottom_right[0] + 2, bottom_right[1] + 2
+
+		for level in range(0, 3):
+			for row in range(top_left[1], bottom_right[1]):
+				for col in range(top_left[0], bottom_right[0]):
+					self.draw_tile(level, (col, row), display, camera)
+
+				if level == 1:
+					entities = self.entity_manager.get_entities(row)
+					for entity in entities:
+						entity.draw(display, camera)
+
+
+class LevelGenerator:
+	def __init__(self, depth: int, entity_manager: EntityManager, room_size: int):
+		self.depth: int = depth
+		self.entity_manager = entity_manager
+		self.room_size = room_size
 
 	# TODO: Redo generation to be over multiple frames
-	def generate_level(self, depth=20):
+	def generate_level(self):
+		level = Level(self.entity_manager, self.room_size)
+
 		# Reset level
-		for row in self.rooms.values():
+		for row in level.rooms.values():
 			for room in row.values():
 				room.remove_objects()
 
-		self.rooms.clear()
-		self.connections.clear()
+		level.rooms.clear()
+		level.connections.clear()
 
 		def add_connection(start: tuple[int, int], end: tuple[int, int]):
 			if start not in connections:
@@ -69,6 +125,13 @@ class Level:
 		for _, _, file_names in os.walk(ROOM_DIR):
 			for file_name in file_names:
 				name = file_name[:-5]
+
+				# Ensure only rooms of correct size
+				with open(ROOM_DIR / file_name) as room_file:
+					room_data = json.load(room_file)
+					if room_data["rows"] != self.room_size or room_data["cols"] != self.room_size:
+						continue
+
 				if name != "start":
 					room_names.append(name)
 
@@ -94,7 +157,7 @@ class Level:
 			room_pos = room_info[0]
 			room_depth = room_info[1]
 
-			if room_depth < depth:
+			if room_depth < self.depth:
 				# Get available directions
 				available_directions = []
 				for direction in directions:
@@ -105,12 +168,12 @@ class Level:
 				# If direction available
 				if len(available_directions) != 0:
 					# Have a chance to spread, with the end trying to decrease the change the further the room
-					if random.random() < 0.85 - room_depth * 0.03:
+					if random.random() < 0.85 - room_depth * (1 / self.depth) * 0.5:
 						# Find direction to spread
 						direction = random.choice(available_directions)
 
 						new_pos = room_pos[0] + direction[0], room_pos[1] + direction[1]
-						if self.get_room((new_pos[0] * self.room_size * TILE_SIZE, new_pos[1] * self.room_size * TILE_SIZE)) is None:
+						if level.get_room((new_pos[0] * self.room_size * TILE_SIZE, new_pos[1] * self.room_size * TILE_SIZE)) is None:
 							generated_rooms.add(new_pos)
 							add_connection(room_pos, new_pos)
 							room_queue.append((new_pos, room_depth + 1))
@@ -125,47 +188,6 @@ class Level:
 		for room_pos in generated_rooms:
 			room_name = random.choice(room_names) if room_pos != (0, 0) else "start"
 
-			self.add_room(room_pos, room_name, get_connections(room_pos))
+			level.add_room(room_pos, room_name, get_connections(room_pos))
 
-	def add_room(self, pos: tuple[int, int], room_name: str, connections: tuple[bool, bool, bool, bool]):
-		if pos[1] not in self.rooms:
-			self.rooms[pos[1]] = {}
-
-		room = Room(room_name, self.entity_manager, self.particle_manager, offset=(pos[0] * self.room_size * TILE_SIZE, pos[1] * self.room_size * TILE_SIZE), connections=connections)
-		self.rooms[pos[1]][pos[0]] = room
-		return room
-
-	def get_room(self, pos: tuple[float, float]) -> Room | None:
-		room_pos = get_tile_pos(pos, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
-
-		if room_pos[1] in self.rooms and room_pos[0] in self.rooms[room_pos[1]]:
-			return self.rooms[room_pos[1]][room_pos[0]]
-		return None
-
-	def get_tile(self, pos: pygame.Vector2 | tuple[float, float]):
-		room = self.get_room(pos)
-		if room is not None:
-			return room.get_tile(1, get_tile_pos(pos, (TILE_SIZE, TILE_SIZE)))
-		return None
-
-	def draw_tile(self, level: int, pos: tuple[int, int], display: pygame.Surface, camera: Camera):
-		room = self.get_room((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE))
-
-		if room is not None:
-			room.draw_tile(level, pos[1], pos[0], display, camera, with_offset=True)
-
-	def draw(self, display: pygame.Surface, camera: Camera):
-		top_left = get_tile_pos(camera.pos, (TILE_SIZE, TILE_SIZE))
-		bottom_right = get_tile_pos(camera.pos + pygame.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), (TILE_SIZE, TILE_SIZE))
-		top_left = top_left[0], top_left[1]
-		bottom_right = bottom_right[0] + 2, bottom_right[1] + 2
-
-		for level in range(0, 3):
-			for row in range(top_left[1], bottom_right[1]):
-				for col in range(top_left[0], bottom_right[0]):
-					self.draw_tile(level, (col, row), display, camera)
-
-				if level == 1:
-					entities = self.entity_manager.get_entities(row)
-					for entity in entities:
-						entity.draw(display, camera)
+		return level

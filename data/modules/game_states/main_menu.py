@@ -25,6 +25,7 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 
 		from data.modules.game_states.game import Game
 		from data.modules.game_states.test_state import TestState
+		from data.modules.game_states.lobby import Lobby
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
 			(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),

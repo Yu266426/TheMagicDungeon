@@ -5,7 +5,7 @@ from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.entities.enemy import Enemy
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.player import Player
-from data.modules.map.level import Level
+from data.modules.map.level import Level, LevelGenerator
 
 
 class Game(pygbase.GameState, name="game"):
@@ -15,7 +15,7 @@ class Game(pygbase.GameState, name="game"):
 		self.particle_manager = pygbase.Common.get_value("particle_manager")
 		self.lighting_manager = pygbase.Common.get_value("lighting_manager")
 
-		self.level = Level(self.entity_manager)
+		self.level: Level = LevelGenerator(20, self.entity_manager, 20).generate_level()
 
 		self.camera = pygbase.Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
 
@@ -34,9 +34,6 @@ class Game(pygbase.GameState, name="game"):
 
 		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
 			pygbase.EventManager.post_event(pygame.QUIT)
-
-		if pygbase.InputManager.get_key_just_pressed(pygame.K_SPACE):
-			self.level.generate_level()
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill((0, 0, 0))

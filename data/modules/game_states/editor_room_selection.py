@@ -120,7 +120,10 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 			self.set_next_state(Editor(self.selected_room))
 
 	def add_room_button_callback(self):
-		self.set_next_state(Editor(EditorRoom("start_room")))
+		if self.selected_room is not None:
+			self.selected_room.remove_objects()
+
+		self.set_next_state(Editor(EditorRoom("lobby", n_rows=9, n_cols=9)))  # TODO: Allow users to specify room
 
 	def update(self, delta: float):
 		self.ui.update(delta)

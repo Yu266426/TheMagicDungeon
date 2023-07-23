@@ -1,4 +1,7 @@
 {
   "type": "custom",
-  "name": "rune_altar"
+  "name": "rune_altar",
+  "tags": [
+    "interactable"
+  ]
 }

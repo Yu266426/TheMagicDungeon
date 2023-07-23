@@ -41,7 +41,8 @@ class Editor(pygbase.GameState, name="editor"):
 				(pygbase.UIValue(0.02, False), pygbase.UIValue(0.02, False)),
 				(pygbase.UIValue(0.35, False), pygbase.UIValue(0.08, False)),
 				"image",
-				["Tile", "Object"]
+				["Tile", "Object"],
+				self.ui.base_container
 			)
 		)
 

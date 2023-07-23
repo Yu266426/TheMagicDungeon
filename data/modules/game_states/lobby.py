@@ -1,0 +1,53 @@
+import logging
+
+import pygame
+import pygbase
+
+from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from data.modules.entities.entity_manager import EntityManager
+from data.modules.entities.player import Player
+from data.modules.map.level import Level
+
+
+class Lobby(pygbase.GameState, name="lobby"):
+	def __init__(self):
+		super().__init__()
+
+		self.entity_manager = EntityManager()
+		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
+		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
+		self.dialogue_manager: pygbase.DialogueManager = pygbase.Common.get_value("dialogue_manager")
+
+		self.camera = pygbase.Camera()
+
+		self.level = Level(self.entity_manager, 30)
+		self.level.add_room((0, 0), "lobby", (False, False, False, False))
+
+		self.player = Player((450, 700), self.camera, self.entity_manager, self.level)
+		self.entity_manager.add_entity(self.player)
+
+	def update(self, delta: float):
+		self.particle_manager.update(delta)
+		self.lighting_manager.update(delta)
+		self.dialogue_manager.update(delta)
+		self.entity_manager.update(delta)
+
+		if self.dialogue_manager.current_node != "":
+			self.player.disable()
+		else:
+			self.player.enable()
+
+		self.camera.lerp_to_target(self.player.collider.rect.center - pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), delta * 5)
+
+		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
+			pygbase.EventManager.post_event(pygame.QUIT)
+
+	def draw(self, surface: pygame.Surface):
+		surface.fill((0, 0, 0))
+
+		self.level.draw(surface, self.camera)
+		self.lighting_manager.draw(surface, self.camera)
+
+		self.particle_manager.draw(surface, self.camera)
+
+		self.dialogue_manager.draw(surface)
