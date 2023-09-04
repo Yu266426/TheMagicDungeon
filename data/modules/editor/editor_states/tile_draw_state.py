@@ -33,7 +33,7 @@ class TileDrawState(EditorState):
 			TileTools.FILL: TileFillTool(self._room, self._shared_state, self._action_queue)
 		}
 
-		self.tiled_mouse_pos = get_tile_pos(self._shared_state.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
+		self.tiled_mouse_pos = get_tile_pos(self._shared_state.camera_controller.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
 
 		self.layer_text = pygbase.ui.text.Text((SCREEN_WIDTH - 10, 7), "arial", 60, (200, 200, 200), text="1", use_sys=True, anchor=pygbase.UIAnchors.TOP_RIGHT )
 
@@ -77,8 +77,8 @@ class TileDrawState(EditorState):
 		self._shared_state.show_global_ui = True
 		self.ui.update(delta)
 
-		self._shared_state.controlled_screen.update(delta)
-		self.tiled_mouse_pos = get_tile_pos(self._shared_state.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
+		self._shared_state.camera_controller.update(delta)
+		self.tiled_mouse_pos = get_tile_pos(self._shared_state.camera_controller.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
 
 		self.check_draw_layer()
 
@@ -86,13 +86,13 @@ class TileDrawState(EditorState):
 			self.tools[self.current_tool].update(self.tiled_mouse_pos, self.tile_selection_info)
 
 	def draw(self, screen: pygame.Surface):
-		draw_rect_outline(screen, (255, 255, 0), -self._shared_state.controlled_screen.camera.pos, (self._room.n_cols * TILE_SIZE, self._room.n_rows * TILE_SIZE), 2)
-		self._room.draw(screen, self._shared_state.controlled_screen.camera, {})
+		draw_rect_outline(screen, (255, 255, 0), -self._shared_state.camera_controller.camera.pos, (self._room.n_cols * TILE_SIZE, self._room.n_rows * TILE_SIZE), 2)
+		self._room.draw(screen, self._shared_state.camera_controller.camera, {})
 
-		self.particle_manager.draw(screen, self._shared_state.controlled_screen.camera)
+		self.particle_manager.draw(screen, self._shared_state.camera_controller.camera)
 
 		if not self._shared_state.on_global_ui and self._shared_state.should_draw_tool and not self.ui.on_ui():
-			self.tools[self.current_tool].draw(screen, self._shared_state.controlled_screen.camera, self.tiled_mouse_pos, self.tile_selection_info)
+			self.tools[self.current_tool].draw(screen, self._shared_state.camera_controller.camera, self.tiled_mouse_pos, self.tile_selection_info)
 
 		self.ui.draw(screen)
 

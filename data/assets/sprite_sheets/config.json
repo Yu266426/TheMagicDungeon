@@ -8,8 +8,8 @@
     "rotatable": true
   },
   "energy_sword_summon": {
-    "rows": 6,
-    "columns": 1,
+    "rows": 1,
+    "columns": 6,
     "tile_width": 6,
     "tile_height": 12,
     "scale": 0,

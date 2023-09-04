@@ -1,4 +1,4 @@
-from pygbase.screen import ControlledScreen
+import pygbase
 
 from data.modules.base.constants import TILE_SIZE
 from data.modules.map.room import EditorRoom
@@ -13,4 +13,4 @@ class SharedEditorState:
 		self.should_draw_tool = True
 
 		# Room Screen
-		self.controlled_screen = ControlledScreen(keep_in=(0, 0, room.n_cols * TILE_SIZE, room.n_rows * TILE_SIZE))
+		self.camera_controller = pygbase.CameraController(keep_in=(0, 0, room.n_cols * TILE_SIZE, room.n_rows * TILE_SIZE))

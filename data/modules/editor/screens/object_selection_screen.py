@@ -2,14 +2,13 @@ import math
 
 import pygame
 import pygbase
-import pygbase.screen
 
 from data.modules.base.utils import draw_rect_outline, get_tile_pos
 from data.modules.editor.editor_selection_info import ObjectSelectionInfo
 from data.modules.objects.object_loader import GameObject, ObjectLoader
 
 
-class ObjectSelectionScreen(pygbase.screen.ControlledScreen):
+class ObjectSelectionScreen(pygbase.CameraController):
 	def __init__(self, object_selection_info: ObjectSelectionInfo, object_names: list, object_size: tuple, n_cols=1):
 		super().__init__(keep_in=(0, 0, min(n_cols, len(object_names)) * object_size[0], math.ceil(len(object_names) / n_cols) * object_size[1]))
 

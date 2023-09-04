@@ -24,6 +24,15 @@ class Level:
 
 		self.room_size = room_size
 
+	def cleanup(self):
+		"""
+		Removes objects from rooms
+		"""
+
+		for row in self.rooms.values():
+			for room in row.values():
+				room.remove_objects()
+
 	def add_room(self, pos: tuple[int, int], room_name: str, connections: tuple[bool, bool, bool, bool]):
 		if pos[1] not in self.rooms:
 			self.rooms[pos[1]] = {}

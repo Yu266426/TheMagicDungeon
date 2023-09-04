@@ -26,6 +26,14 @@ class Lobby(pygbase.GameState, name="lobby"):
 		self.player = Player((450, 700), self.camera, self.entity_manager, self.level)
 		self.entity_manager.add_entity(self.player)
 
+		pygbase.EventManager.add_handler("lobby", "start_game", self.start_game_callback)
+
+	def start_game_callback(self, event: pygame.Event):
+		from data.modules.game_states.game import Game
+
+		self.level.cleanup()
+		self.set_next_state(Game())
+
 	def update(self, delta: float):
 		self.particle_manager.update(delta)
 		self.lighting_manager.update(delta)

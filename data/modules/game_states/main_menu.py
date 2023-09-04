@@ -33,7 +33,7 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 			"button",
 			self.button_frame,
 			self.set_next_state_type,
-			callback_args=(Game, ()),
+			callback_args=(Lobby, ()),
 			text="Start"
 		))
 

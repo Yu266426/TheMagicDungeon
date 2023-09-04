@@ -13,6 +13,8 @@ if __name__ == '__main__':
 
 	pygbase.init((SCREEN_WIDTH, SCREEN_HEIGHT), logging_level=logging.DEBUG, light_radius_interval=3)
 
+	pygbase.EventManager.create_custom_event("start_game")
+
 	pygbase.add_image_resource("image", 1, str(IMAGE_DIR))
 	pygbase.add_sprite_sheet_resource("sprite_sheet", 2, str(SPRITE_SHEET_DIR), default_scale=TILE_SCALE)
 

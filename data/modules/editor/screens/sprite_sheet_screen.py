@@ -1,12 +1,11 @@
 import pygame
 import pygbase
-import pygbase.screen
 
 from data.modules.base.utils import draw_rect_outline, abs_tuple, get_tile_pos
 from data.modules.editor.editor_selection_info import TileSelectionInfo
 
 
-class SpriteSheetScreen(pygbase.screen.ControlledScreen):
+class SpriteSheetScreen(pygbase.CameraController):
 	def __init__(self, selection_info: TileSelectionInfo, sprite_sheet_name: str):
 		self.selection_info = selection_info
 

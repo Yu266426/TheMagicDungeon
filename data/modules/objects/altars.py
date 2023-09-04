@@ -31,7 +31,7 @@ class RuneAltar(GameObject):
 			self.set_sprite(self.transition_animation)
 
 		if self.state == 2:
-			print("interacted")
+			pygbase.EventManager.post_event("start_game")
 
 	def removed(self):
 		self.particle_manager.remove_spawner(self.altar_flames)

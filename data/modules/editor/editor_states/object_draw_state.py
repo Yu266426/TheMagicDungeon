@@ -29,7 +29,7 @@ class ObjectDrawState(EditorState):
 			ObjectTools.DRAW: ObjectDrawTool(self._room, self._shared_state, self._action_queue)
 		}
 
-		self.tiled_mouse_pos = get_tile_pos(self._shared_state.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
+		self.tiled_mouse_pos = get_tile_pos(self._shared_state.camera_controller.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
 
 		self.ui = pygbase.UIManager()
 		self.button_frame = self.ui.add_frame(pygbase.Frame((pygbase.UIValue(0, False), pygbase.UIValue(SCREEN_HEIGHT - 90)), (pygbase.UIValue(1, False), pygbase.UIValue(90)), bg_colour=(20, 20, 20, 150)))
@@ -51,20 +51,20 @@ class ObjectDrawState(EditorState):
 		self._shared_state.show_global_ui = True
 		self.ui.update(delta)
 
-		self._shared_state.controlled_screen.update(delta)
-		self.tiled_mouse_pos = get_tile_pos(self._shared_state.controlled_screen.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
+		self._shared_state.camera_controller.update(delta)
+		self.tiled_mouse_pos = get_tile_pos(self._shared_state.camera_controller.world_mouse_pos, (TILE_SIZE, TILE_SIZE))
 
 		if not self._shared_state.on_global_ui and not self.ui.on_ui():
 			self.tools[self.current_tool].update(self.tiled_mouse_pos, self.object_selection_info)
 
 	def draw(self, screen: pygame.Surface):
-		draw_rect_outline(screen, (255, 255, 0), -self._shared_state.controlled_screen.camera.pos, (self._room.n_cols * TILE_SIZE, self._room.n_rows * TILE_SIZE), 2)
-		self._room.draw(screen, self._shared_state.controlled_screen.camera, {})
+		draw_rect_outline(screen, (255, 255, 0), -self._shared_state.camera_controller.camera.pos, (self._room.n_cols * TILE_SIZE, self._room.n_rows * TILE_SIZE), 2)
+		self._room.draw(screen, self._shared_state.camera_controller.camera, {})
 
-		self.particle_manager.draw(screen, self._shared_state.controlled_screen.camera)
+		self.particle_manager.draw(screen, self._shared_state.camera_controller.camera)
 
 		if not self._shared_state.on_global_ui and self._shared_state.should_draw_tool and not self.ui.on_ui():
-			self.tools[self.current_tool].draw(screen, self._shared_state.controlled_screen.camera, self.tiled_mouse_pos, self.object_selection_info)
+			self.tools[self.current_tool].draw(screen, self._shared_state.camera_controller.camera, self.tiled_mouse_pos, self.object_selection_info)
 
 		self.ui.draw(screen)
 
