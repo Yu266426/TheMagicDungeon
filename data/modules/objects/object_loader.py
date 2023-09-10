@@ -77,6 +77,14 @@ class ObjectLoader:
 
 	@classmethod
 	def create_object(cls, name: str, pos: pygame.Vector2 | tuple, pixel_pos: bool = False) -> tuple[GameObject, tuple[str, ...]]:
+		"""
+		Creates an object based on inputs
+
+		:param name: Name of object
+		:param pos: Position to spawn object at
+		:param pixel_pos: If position is in tiles or pixels
+		:return: tuple[object, tags]
+		"""
 		object_data = cls.objects[name]
 		if object_data[0] == "static":
 			return GameObject(name, pos, pixel_pos, object_data[1], custom_hitbox=object_data[2]), object_data[4]

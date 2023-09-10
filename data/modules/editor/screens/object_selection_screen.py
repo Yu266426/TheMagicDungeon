@@ -23,7 +23,7 @@ class ObjectSelectionScreen(pygbase.CameraController):
 		for index, object_name in enumerate(object_names):
 			x = index % n_cols
 			y = index // n_cols
-			self.objects.append(ObjectLoader.create_object(object_name, ((x + 0.5) * object_size[0], (y + 1) * object_size[1]), pixel_pos=True))
+			self.objects.append(ObjectLoader.create_object(object_name, ((x + 0.5) * object_size[0], (y + 1) * object_size[1]), pixel_pos=True)[0])
 
 		self._tiled_mouse_pos = (0, 0)
 

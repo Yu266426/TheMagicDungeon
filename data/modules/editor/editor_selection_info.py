@@ -29,4 +29,4 @@ class ObjectSelectionInfo:
 		return self.current_object_name
 
 	def get_object(self, pos: tuple) -> GameObject:
-		return ObjectLoader.create_object(self.current_object_name, pos)
+		return ObjectLoader.create_object(self.current_object_name, pos)[0]

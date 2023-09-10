@@ -63,4 +63,4 @@ class ObjectDrawTool(EditorTool):
 		# Draw selected object if not deleting
 		if not InputManager.get_mouse_pressed(2):
 			if selection_info.has_object():
-				ObjectLoader.create_object(selection_info.get_object_name(), mouse_tile_pos).draw(screen, camera, flags=pygame.BLEND_ADD)
+				ObjectLoader.create_object(selection_info.get_object_name(), mouse_tile_pos)[0].draw(screen, camera, flags=pygame.BLEND_ADD)
