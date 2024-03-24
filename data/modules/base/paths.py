@@ -11,3 +11,5 @@ GAME_DATA_DIR = DATA_DIR / "game_data"
 
 ROOM_DIR = GAME_DATA_DIR / "rooms"
 OBJECT_DIR = GAME_DATA_DIR / "objects"
+
+BATTLE_DIR = GAME_DATA_DIR / "battles"

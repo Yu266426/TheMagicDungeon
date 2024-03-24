@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import random
+from typing import TYPE_CHECKING
 
 import pygame
 import pygbase
@@ -10,9 +11,13 @@ from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import ROOM_DIR
 from data.modules.base.utils import get_tile_pos, generate_3d_list
 from data.modules.entities.entity_manager import EntityManager
+from data.modules.level.battle import Battle
 from data.modules.objects.game_object import GameObject
 from data.modules.objects.object_loader import ObjectLoader
 from data.modules.objects.tile import Tile
+
+if TYPE_CHECKING:
+	from data.modules.level.level import Level
 
 
 class BaseRoom:
@@ -104,8 +109,11 @@ class BaseRoom:
 
 
 class Room(BaseRoom):
-	def __init__(self, name: str, entity_manager: EntityManager, n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0), connections=(False, False, False, False), random_floor=True):
+	def __init__(self, name: str, entity_manager: EntityManager, battle_name: str, level: "Level", n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0), connections=(False, False, False, False), random_floor=True):
 		super().__init__(n_rows, n_cols, offset)
+
+		self.battle_in_progress = False
+		self.battle = Battle(battle_name, level, self, entity_manager) if battle_name != "" else None
 
 		# New room
 		self.save_path = ROOM_DIR / f"{name}.json"
@@ -129,7 +137,7 @@ class Room(BaseRoom):
 		Generates walls with gaps
 
 		:param connections: Up, Down, Left, Right
-		:param gap_radius: Size of gap
+		:param gap_radius: Radius of gap
 		"""
 
 		wall_sheet = pygbase.ResourceManager.get_resource("sprite_sheet", "walls")
@@ -251,35 +259,29 @@ class Room(BaseRoom):
 			entity_manager.add_entity(game_object, ("object",) + tags)
 			self.objects.append(game_object)
 
+	def is_valid_spawn(self, tile_pos: tuple[int, int]):
+		return self.tiles[1][tile_pos[1]][tile_pos[0]] is None
 
-# def save(self):
-# 	data = {
-# 		"rows": self.n_rows,
-# 		"cols": self.n_cols,
-# 		"tiles": [[], [], []],
-# 		"objects": []
-# 	}
-#
-# 	for level, level_data in enumerate(self.tiles):
-# 		for row, row_data in enumerate(level_data):
-# 			for col, tile in enumerate(row_data):
-# 				if tile is not None:
-# 					tile_data = {
-# 						"pos": [row, col],
-# 						"image_info": [tile.sprite_sheet_name, tile.image_index],
-# 					}
-# 					data["tiles"][level].append(tile_data)
-#
-# 	for game_object in self.objects:
-# 		data["objects"].append({
-# 			"name": game_object.name,
-# 			"pos": [int(game_object.pos.x / TILE_SIZE), int(game_object.pos.y / TILE_SIZE)]
-# 		})
-#
-# 	with open(self.save_path, "w") as file:
-# 		file.write(json.dumps(data))
-#
-# 	print("Level saved")
+	def generate_spawn_pos(self):
+		for _ in range(10):
+			row = random.randrange(0, self.n_rows)
+			col = random.randrange(0, self.n_cols)
+
+			if self.is_valid_spawn((col, row)):
+				# Find location close to middle of tile
+				return (col + 0.5) * TILE_SIZE + self.offset[0], (row + 0.8) * TILE_SIZE + self.offset[1]
+
+	def entered(self):
+		if self.battle:
+			if not self.battle.completed:
+				self.battle_in_progress = True
+
+	def exited(self):
+		pass
+
+	def update(self):
+		if self.battle_in_progress:
+			self.battle.update()
 
 
 class EditorRoom(BaseRoom):

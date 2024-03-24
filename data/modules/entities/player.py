@@ -8,7 +8,7 @@ from data.modules.entities.items.energy_sword import EnergySword
 from data.modules.entities.components.movement import Movement
 from data.modules.entities.entity import Entity
 from data.modules.entities.entity_manager import EntityManager
-from data.modules.map.level import Level
+from data.modules.level.level import Level
 
 
 class Player(Entity):

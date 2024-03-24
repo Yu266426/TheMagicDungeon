@@ -4,7 +4,7 @@ import pygbase
 from data.modules.entities.attacks.explosion import Explosion
 from data.modules.entities.entity import Entity
 from data.modules.entities.entity_manager import EntityManager
-from data.modules.map.level import Level
+from data.modules.level.level import Level
 
 
 class Fireball(Entity):

@@ -9,6 +9,10 @@ def get_1d_tile_pos(pos: int | float, tile_size: int | float):
 	return int(pos // tile_size)
 
 
+def get_pixel_pos(tile_pos: tuple[int, int], tile_size: tuple[int | float, int | float]):
+	return tile_pos[0] * tile_size[0], tile_pos[1] * tile_size[1]
+
+
 def generate_3d_list(levels: int, n_rows: int, n_cols: int, fill_data=None):
 	data = []
 

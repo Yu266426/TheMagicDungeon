@@ -5,7 +5,7 @@ from data.modules.entities.attacks.fireball import Fireball
 from data.modules.entities.attacks.sword_swing import SwordSwing
 from data.modules.entities.items.item import Item
 from data.modules.entities.entity_manager import EntityManager
-from data.modules.map.level import Level
+from data.modules.level.level import Level
 
 
 class EnergySword(Item):

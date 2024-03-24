@@ -10,7 +10,7 @@ from data.modules.editor.editor_states.object_selection_state import ObjectSelec
 from data.modules.editor.editor_states.tile_draw_state import TileDrawState
 from data.modules.editor.editor_states.tile_selection_state import TileSelectionState
 from data.modules.editor.shared_editor_state import SharedEditorState
-from data.modules.map.room import EditorRoom
+from data.modules.level.room import EditorRoom
 
 
 class Editor(pygbase.GameState, name="editor"):

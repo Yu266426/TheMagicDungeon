@@ -3,7 +3,7 @@ import pygbase
 
 
 class Entity:
-	def __init__(self, pos):
+	def __init__(self, pos: tuple | pygame.Vector2):
 		self.pos = pygame.Vector2(pos)
 		self.active = True
 

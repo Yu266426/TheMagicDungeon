@@ -8,21 +8,23 @@ import pygbase
 from pygbase import Camera
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
-from data.modules.base.paths import ROOM_DIR
-from data.modules.map.room import Room
-from data.modules.base.utils import get_tile_pos
+from data.modules.base.paths import ROOM_DIR, BATTLE_DIR
+from data.modules.level.room import Room
+from data.modules.base.utils import get_tile_pos, get_pixel_pos
 from data.modules.entities.entity_manager import EntityManager
 
 
 class Level:
 	def __init__(self, entity_manager: EntityManager, room_size: int):
 		self.entity_manager = entity_manager
-		self.particle_manager = pygbase.Common.get_value("particle_manager")
+		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
 
 		self.rooms: dict[int, dict[int, Room]] = {}
 		self.connections = {}
 
 		self.room_size = room_size
+
+		self.prev_player_room_pos = None
 
 	def cleanup(self):
 		"""
@@ -33,11 +35,11 @@ class Level:
 			for room in row.values():
 				room.remove_objects()
 
-	def add_room(self, pos: tuple[int, int], room_name: str, connections: tuple[bool, bool, bool, bool]):
+	def add_room(self, pos: tuple[int, int], room_name: str, connections: tuple[bool, bool, bool, bool], battle_name: str):
 		if pos[1] not in self.rooms:
 			self.rooms[pos[1]] = {}
 
-		room = Room(room_name, self.entity_manager, self.particle_manager, offset=(pos[0] * self.room_size * TILE_SIZE, pos[1] * self.room_size * TILE_SIZE), connections=connections)
+		room = Room(room_name, self.entity_manager, battle_name, self, offset=(pos[0] * self.room_size * TILE_SIZE, pos[1] * self.room_size * TILE_SIZE), connections=connections)
 		self.rooms[pos[1]][pos[0]] = room
 		return room
 
@@ -57,6 +59,21 @@ class Level:
 		if room is not None:
 			return room.get_tile(1, get_tile_pos(pos, (TILE_SIZE, TILE_SIZE)))
 		return None
+
+	def update(self, player_pos):
+		player_room_pos = get_tile_pos(player_pos, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
+
+		if not self.prev_player_room_pos:
+			self.prev_player_room_pos = player_room_pos
+
+			self.get_room(player_pos).entered()
+		elif self.prev_player_room_pos != player_room_pos:
+			self.get_room(player_pos).entered()
+			self.get_room(get_pixel_pos(self.prev_player_room_pos, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))).exited()
+
+			self.prev_player_room_pos = player_room_pos
+
+		self.get_room(player_pos).update()
 
 	def draw_tile(self, level: int, pos: tuple[int, int], display: pygame.Surface, camera: Camera):
 		room = self.get_room((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE))
@@ -133,7 +150,7 @@ class LevelGenerator:
 		room_names = []
 		for _, _, file_names in os.walk(ROOM_DIR):
 			for file_name in file_names:
-				name = file_name[:-5]
+				name = file_name[:-5]  # Remove .json
 
 				# Ensure only rooms of correct size
 				with open(ROOM_DIR / file_name) as room_file:
@@ -141,8 +158,17 @@ class LevelGenerator:
 					if room_data["rows"] != self.room_size or room_data["cols"] != self.room_size:
 						continue
 
+				# Ignore special rooms
 				if name != "start":
 					room_names.append(name)
+
+		# Load available battles
+		battle_names = []
+		for _, _, file_names in os.walk(BATTLE_DIR):
+			for file_name in file_names:
+				name = file_name[:-5]  # Remove .json
+
+				battle_names.append(name)
 
 		# Room generation
 		generated_rooms: set[tuple[int, int]] = set()
@@ -197,6 +223,9 @@ class LevelGenerator:
 		for room_pos in generated_rooms:
 			room_name = random.choice(room_names) if room_pos != (0, 0) else "start"
 
-			level.add_room(room_pos, room_name, get_connections(room_pos))
+			if room_name != "start":
+				level.add_room(room_pos, room_name, get_connections(room_pos), random.choice(battle_names))
+			else:
+				level.add_room(room_pos, room_name, get_connections(room_pos), "")
 
 		return level

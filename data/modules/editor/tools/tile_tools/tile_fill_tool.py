@@ -5,7 +5,7 @@ import pygame
 from pygbase import InputManager, Camera
 
 from data.modules.base.constants import TILE_SIZE
-from data.modules.map.room import EditorRoom
+from data.modules.level.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue, EditorActionBatch
 from data.modules.editor.actions.tile_actions import PlaceTileAction, RemoveTileAction
 from data.modules.editor.editor_selection_info import TileSelectionInfo

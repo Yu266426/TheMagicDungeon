@@ -1,7 +1,7 @@
 import pygbase
 
 from data.modules.base.constants import TILE_SIZE
-from data.modules.map.room import EditorRoom
+from data.modules.level.room import EditorRoom
 
 
 class SharedEditorState:

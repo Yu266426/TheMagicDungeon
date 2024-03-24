@@ -7,7 +7,7 @@ import pygbase
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import ROOM_DIR
 from data.modules.game_states.editor import Editor
-from data.modules.map.room import EditorRoom
+from data.modules.level.room import EditorRoom
 
 
 class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):

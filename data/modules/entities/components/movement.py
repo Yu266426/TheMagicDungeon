@@ -1,6 +1,6 @@
 import pygame
 from data.modules.base.constants import TILE_SIZE
-from data.modules.map.level import Level
+from data.modules.level.level import Level
 from data.modules.base.utils import get_1d_tile_pos
 from data.modules.entities.components.box_collider import BoxCollider
 

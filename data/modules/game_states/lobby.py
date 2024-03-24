@@ -4,7 +4,7 @@ import pygbase
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.player import Player
-from data.modules.map.level import Level
+from data.modules.level.level import Level
 
 
 class Lobby(pygbase.GameState, name="lobby"):
@@ -19,9 +19,10 @@ class Lobby(pygbase.GameState, name="lobby"):
 		self.camera = pygbase.Camera()
 
 		self.level = Level(self.entity_manager, 30)
-		self.level.add_room((0, 0), "lobby", (False, False, False, False))
+		self.level.add_room((0, 0), "lobby", (False, False, False, False), "")
 
 		self.player = Player((450, 700), self.camera, self.entity_manager, self.level)
+		# self.player = Player((150, 150), self.camera, self.entity_manager, self.level)
 		self.entity_manager.add_entity(self.player)
 
 		pygbase.EventManager.add_handler("lobby", "start_game", self.start_game_callback)

@@ -24,6 +24,8 @@ class RuneAltar(GameObject):
 		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
 		self.light = pygbase.Light(self.pos + pygame.Vector2(0, -176), 0.6, 80, 5, 0.5, tint=(0, 100, 255))
 
+		self.activate()
+
 	def interact(self, other: "Entity"):
 		if self.state == 0:
 			self.dialogue_manager.set_current_node("rune_altar_start")
@@ -33,6 +35,13 @@ class RuneAltar(GameObject):
 		if self.state == 2:
 			pygbase.EventManager.post_event("start_game")
 
+	def activate(self):
+		self.state = 2
+		self.set_sprite(self.active_image)
+
+		self.particle_manager.add_spawner(self.altar_flames)
+		self.lighting_manager.add_light(self.light)
+
 	def removed(self):
 		self.particle_manager.remove_spawner(self.altar_flames)
 		self.lighting_manager.remove_light(self.light)
@@ -41,8 +50,4 @@ class RuneAltar(GameObject):
 		if self.state == 1:
 			self.transition_animation.change_frame(1 * delta)
 			if self.transition_animation.done():
-				self.state = 2
-				self.set_sprite(self.active_image)
-
-				self.particle_manager.add_spawner(self.altar_flames)
-				self.lighting_manager.add_light(self.light)
+				self.activate()

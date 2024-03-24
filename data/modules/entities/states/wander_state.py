@@ -4,9 +4,9 @@ import pygame
 import pygbase
 
 from data.modules.base.constants import TILE_SIZE
-from data.modules.map.level import Level
 from data.modules.entities.components.movement import Movement
 from data.modules.entities.states.entity_state import EntityState
+from data.modules.level.level import Level
 
 
 class WanderState(EntityState):
@@ -16,7 +16,7 @@ class WanderState(EntityState):
 
 		self.movement = movement
 
-		self.wander_range = (-wander_range * TILE_SIZE, wander_range * TILE_SIZE)
+		self.wander_range = (int(-wander_range * TILE_SIZE), int(wander_range * TILE_SIZE))
 
 		self.target = None
 		self.find_target()
