@@ -18,7 +18,7 @@ class Editor(pygbase.GameState, name="editor"):
 		super().__init__()
 
 		self.room = room
-		self.particle_manager = pygbase.Common.get_value("particle_manager")
+		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
 
 		self.shared_state = SharedEditorState(self.room)
 		self.action_queue = EditorActionQueue()
@@ -81,6 +81,9 @@ class Editor(pygbase.GameState, name="editor"):
 			pygbase.EventManager.post_event, callback_args=(pygame.QUIT,),
 			text="Quit", alignment="c"
 		), align_with_previous=(True, False), add_on_to_previous=(False, True))
+
+	def enter(self):
+		self.particle_manager.clear()
 
 	def back_to_main_menu(self):
 		from data.modules.game_states.main_menu import MainMenu

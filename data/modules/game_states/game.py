@@ -2,7 +2,6 @@ import pygame
 import pygbase
 
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
-from data.modules.entities.enemies.enemy import Enemy
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.player import Player
 from data.modules.level.level import Level, LevelGenerator
@@ -12,8 +11,8 @@ class Game(pygbase.GameState, name="game"):
 	def __init__(self):
 		super().__init__()
 		self.entity_manager = EntityManager()
-		self.particle_manager = pygbase.Common.get_value("particle_manager")
-		self.lighting_manager = pygbase.Common.get_value("lighting_manager")
+		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
+		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
 
 		self.level: Level = LevelGenerator(20, self.entity_manager, 20).generate_level()
 
@@ -22,8 +21,13 @@ class Game(pygbase.GameState, name="game"):
 		self.player = Player((400, 400), self.camera, self.entity_manager, self.level)
 		self.entity_manager.add_entity(self.player)
 
-		# for _ in range(100):
-		# 	self.entity_manager.add_entity(Enemy.create_enemy("test", (500, 400), self.level, self.entity_manager))
+		self.camera.set_pos(self.player.pos + (-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
+
+	def enter(self):
+		self.particle_manager.clear()
+
+	def exit(self):
+		self.entity_manager.clear_entities()
 
 	def update(self, delta: float):
 		self.entity_manager.update(delta)

@@ -41,6 +41,8 @@ def generate_2d_list(n_rows: int, n_cols: int, fill: bool = False):
 
 
 def abs_tuple(tup1: tuple[int, int], tup2: tuple[int, int]):
+	# TODO: Make name more descriptive
+
 	new_tup1 = min(tup1[0], tup2[0]), min(tup1[1], tup2[1])
 	new_tup2 = max(tup1[0], tup2[0]), max(tup1[1], tup2[1])
 

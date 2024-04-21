@@ -4,11 +4,10 @@ import pygbase
 
 from data.modules.base.constants import TILE_SCALE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import IMAGE_DIR, SPRITE_SHEET_DIR
+from data.modules.entities.enemies.enemy_builder import EnemyBuilder
 from data.modules.entities.enemies.test_enemy import TestEnemy
 from data.modules.game_states.main_menu import MainMenu
 from data.modules.objects.object_loader import ObjectLoader
-
-from data.modules.entities.enemies.enemy import Enemy
 
 if __name__ == '__main__':
 	# profiler = cProfile.Profile()
@@ -32,7 +31,8 @@ if __name__ == '__main__':
 		(6, 10),
 		(0, 2),
 		(0, -1),
-		False
+		False,
+		((0, 0), (0, 0))
 	)
 
 	pygbase.add_particle_setting(
@@ -42,11 +42,12 @@ if __name__ == '__main__':
 		(6, 10),
 		(0, 2),
 		(0, -1),
-		False
+		False,
+		((0, 0), (0, 0))
 	)
 
 	# Register Enemies
-	Enemy.register_enemy("test", TestEnemy)
+	EnemyBuilder.register_enemy("test", TestEnemy)
 
 	# Run app
 	app = pygbase.App(MainMenu, run_on_load_complete=(ObjectLoader.init,))

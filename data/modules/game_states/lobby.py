@@ -27,6 +27,12 @@ class Lobby(pygbase.GameState, name="lobby"):
 
 		pygbase.EventManager.add_handler("lobby", "start_game", self.start_game_callback)
 
+	def enter(self):
+		self.particle_manager.clear()
+
+	def exit(self):
+		self.entity_manager.clear_entities()
+
 	def start_game_callback(self, event: pygame.Event):
 		from data.modules.game_states.game import Game
 

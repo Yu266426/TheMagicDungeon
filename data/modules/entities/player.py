@@ -34,11 +34,19 @@ class Player(Entity):
 
 		self.camera = camera
 
-		lighting_manager = pygbase.Common.get_value("lighting_manager")
-		self.light = lighting_manager.add_light(pygbase.Light(self.pos, 0.2, 300, 10, 1.2).link_pos(self.pos))
-		self.light2 = lighting_manager.add_light(pygbase.Light(self.pos, 0.5, 500, 20, 1.2).link_pos(self.pos))
+		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
+		self.light = pygbase.Light(self.pos, 0.2, 300, 10, 1.2).link_pos(self.pos)
+		self.light2 = pygbase.Light(self.pos, 0.5, 500, 20, 1.2).link_pos(self.pos)
 
 		self.interaction_controller = InteractionController(250, self)
+
+	def added(self):
+		self.lighting_manager.add_light(self.light)
+		self.lighting_manager.add_light(self.light2)
+
+	def removed(self):
+		self.lighting_manager.remove_light(self.light)
+		self.lighting_manager.remove_light(self.light2)
 
 	def get_inputs(self):
 		self.input.x = pygbase.InputManager.get_key_pressed(pygame.K_d) - pygbase.InputManager.get_key_pressed(pygame.K_a)

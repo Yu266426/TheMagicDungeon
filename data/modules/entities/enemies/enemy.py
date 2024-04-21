@@ -12,19 +12,6 @@ from data.modules.level.level import Level
 
 
 class Enemy(Entity):
-	ENEMY_TYPES: dict[str, type] = {}
-
-	@classmethod
-	def register_enemy(cls, enemy_type: str, enemy_class: type):
-		if enemy_type in cls.ENEMY_TYPES:
-			raise ValueError("Enemy type already exists")
-
-		cls.ENEMY_TYPES[enemy_type] = enemy_class
-
-	@classmethod
-	def create_enemy(cls, enemy_type: str, pos: tuple | pygame.Vector2, level: Level, entity_manager: EntityManager):
-		return cls.ENEMY_TYPES[enemy_type](pos, level, entity_manager)
-
 	def __init__(self, pos: tuple | pygame.Vector2, level: Level, entity_manager: EntityManager, collider_size: tuple[int, int], health: int):
 		super().__init__(pos)
 

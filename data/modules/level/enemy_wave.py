@@ -17,12 +17,12 @@ class EnemyWave:
 		self.wave_in_progress = False
 
 	def spawn_wave(self, level: "Level", room: "Room"):
-		from data.modules.entities.enemies.enemy import Enemy
+		from data.modules.entities.enemies.enemy_builder import EnemyBuilder
 
 		if not self.wave_in_progress:
 			for enemy_type, num_enemies in self.wave_data.items():
 				for _ in range(num_enemies):
-					enemy = Enemy.create_enemy(enemy_type, room.generate_spawn_pos(), level, self.entity_manager)
+					enemy = EnemyBuilder.create_enemy(enemy_type, room.generate_spawn_pos(), level, self.entity_manager)
 
 					self.enemies.append(enemy)
 					self.entity_manager.add_entity(enemy)

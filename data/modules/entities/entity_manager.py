@@ -12,10 +12,18 @@ class EntityManager:
 
 		self.entities_to_remove = set()
 
+	def clear_entities(self):
+		for entity in self.entities:
+			self.entities_to_remove.add(entity)
+
+		self._remove_entities()
+
 	def add_entity(self, entity, tags: tuple[str, ...] = None):
 		entity_tags = () if tags is None else tags
 
 		self.entities.append(entity)
+		entity.added()
+
 		self.entity_tags[entity] = set()
 
 		for tag in entity_tags:
@@ -49,6 +57,7 @@ class EntityManager:
 
 		for entity in self.entities_to_remove:
 			self.entities.remove(entity)
+			entity.removed()
 
 			for tag in self.entity_tags[entity]:
 				self.tagged_entities[tag].remove(entity)

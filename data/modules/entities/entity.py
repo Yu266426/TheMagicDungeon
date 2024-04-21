@@ -7,6 +7,12 @@ class Entity:
 		self.pos = pygame.Vector2(pos)
 		self.active = True
 
+	def added(self):
+		pass
+
+	def removed(self):
+		pass
+
 	def interact(self, other: "Entity"):
 		pass
 

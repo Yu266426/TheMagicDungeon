@@ -11,8 +11,8 @@ from data.modules.objects.object_registry import ObjectRegistry
 
 
 class ObjectLoader:
-	# object_name: (object_type, sprite, hitbox, behaviour) for static and animated
-	# object_name: (object_type, object_class) for custom
+	# object_name: (object_type, sprite, hitbox, behaviour, tags) for static and animated
+	# object_name: (object_type, object_class, tags) for custom
 	objects: dict[str, tuple] = {}
 
 	@classmethod
