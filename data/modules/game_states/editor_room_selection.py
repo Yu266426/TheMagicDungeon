@@ -105,6 +105,10 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 			self.info_frame
 		), add_on_to_previous=(False, True))
 
+	def exit(self):
+		if self.selected_room is not None:
+			self.selected_room.remove_objects()
+
 	def select_room(self, index, room_name):
 		if self.selected_room is not None:
 			self.selected_room.remove_objects()

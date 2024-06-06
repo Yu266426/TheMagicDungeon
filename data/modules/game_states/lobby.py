@@ -32,6 +32,7 @@ class Lobby(pygbase.GameState, name="lobby"):
 
 	def exit(self):
 		self.entity_manager.clear_entities()
+		self.level.cleanup()
 
 	def start_game_callback(self, event: pygame.Event):
 		from data.modules.game_states.game import Game
