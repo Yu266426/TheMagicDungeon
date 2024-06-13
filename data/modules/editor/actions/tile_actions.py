@@ -21,7 +21,8 @@ class PlaceTileAction(EditorAction):
 
 	def undo(self):
 		self._room.remove_tile(self._level, (self._col, self._row))
-		self._room.add_tile(self._level, (self._col, self._row), self._prev_tile)
+		if self._prev_tile is not None:
+			self._room.add_tile(self._level, (self._col, self._row), self._prev_tile)
 
 
 class RemoveTileAction(EditorAction):
@@ -39,4 +40,5 @@ class RemoveTileAction(EditorAction):
 		self._room.remove_tile(self._level, (self._col, self._row))
 
 	def undo(self):
-		self._room.add_tile(self._level, (self._col, self._row), self._prev_tile)
+		if self._prev_tile is not None:
+			self._room.add_tile(self._level, (self._col, self._row), self._prev_tile)

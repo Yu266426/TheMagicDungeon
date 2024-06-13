@@ -51,12 +51,17 @@ class BaseRoom:
 		return None
 
 	def add_tile(self, layer: int, pos: tuple[int, int], tile: Tile):
+		assert tile is not None
+
 		if self.check_bounds(pos):
 			self.tiles.setdefault(layer, {})[pos] = tile
 
 	def remove_tile(self, layer: int, pos: tuple[int, int]):
 		if self.check_is_tile(layer, pos):
-			del self.tiles[layer]
+			del self.tiles[layer][pos]
+
+			if len(self.tiles[layer].values()) == 0:
+				del self.tiles[layer]
 
 	def get_object(self, pos: tuple, with_hitbox: bool = False):
 		if not with_hitbox:
@@ -89,6 +94,7 @@ class BaseRoom:
 		if with_offset:
 			pos = pos[0] - self.tile_offset[0], pos[1] - self.tile_offset[1]
 
+		# print(pos, self.check_is_tile(layer, pos), self.get_tile(layer, pos))
 		if self.check_is_tile(layer, pos):
 			self.get_tile(layer, pos, with_offset=False).draw(display, camera)
 
@@ -138,8 +144,6 @@ class Room(BaseRoom):
 			if random_floor:
 				self.generate_floor()
 			self.generate_walls(connections)
-
-		print(self.tiles)
 
 	def generate_walls(self, connections, gap_radius: int = 1):
 		"""
