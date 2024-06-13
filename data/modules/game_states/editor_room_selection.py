@@ -121,7 +121,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 
 	def edit_button_callback(self):
 		if self.selected_room is not None:
-			self.set_next_state(Editor(self.selected_room))
+			self.set_next_state(Editor(EditorRoom(self.selected_room.name)))
 
 	def add_room_button_callback(self):
 		if self.selected_room is not None:

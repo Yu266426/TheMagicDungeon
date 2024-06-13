@@ -1,7 +1,7 @@
 import pygame
 import pygbase
 
-from data.modules.base.utils import draw_rect_outline, abs_tuple, get_tile_pos
+from data.modules.base.utils import draw_rect_outline, sort_tuple, get_tile_pos
 from data.modules.editor.editor_selection_info import TileSelectionInfo
 
 
@@ -32,7 +32,7 @@ class SpriteSheetScreen(pygbase.CameraController):
 		return ids
 
 	def update_state(self):
-		selected_topleft, selected_bottomright = abs_tuple(self.selected_topleft, self.selected_bottomright)
+		selected_topleft, selected_bottomright = sort_tuple(self.selected_topleft, self.selected_bottomright)
 
 		self.selected_topleft = selected_topleft
 		self.selected_bottomright = selected_bottomright
@@ -73,7 +73,7 @@ class SpriteSheetScreen(pygbase.CameraController):
 	def draw(self, screen: pygame.Surface):
 		self.sprite_sheet.draw_sheet(screen, self._camera)
 
-		selected_topleft, selected_bottomright = abs_tuple(self.selected_topleft, self.selected_bottomright)
+		selected_topleft, selected_bottomright = sort_tuple(self.selected_topleft, self.selected_bottomright)
 
 		draw_rect_outline(
 			screen, (255, 255, 255),

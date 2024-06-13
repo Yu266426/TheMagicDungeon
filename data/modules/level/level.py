@@ -79,7 +79,7 @@ class Level:
 		room = self.get_room((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE))
 
 		if room is not None:
-			room.draw_tile(level, pos[1], pos[0], display, camera, with_offset=True)
+			room.draw_tile(level, pos, display, camera, with_offset=True)
 
 	def draw(self, display: pygame.Surface, camera: Camera):
 		top_left = get_tile_pos(camera.pos, (TILE_SIZE, TILE_SIZE))
