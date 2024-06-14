@@ -314,7 +314,7 @@ class Room(BaseRoom):
 		Run when player enters more than 1 tile into the room (outer tiles are walls)
 		"""
 
-		if self.battle:
+		if self.battle is not None and not self.battle.completed:
 			if not self.battle.completed:
 				self.battle_in_progress = True
 

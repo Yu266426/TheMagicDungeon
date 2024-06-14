@@ -38,6 +38,8 @@ class Battle:
 
 		:return: True if battle done else False
 		"""
+		if self.completed:
+			return True
 
 		current_wave = self.waves[self.current_wave]
 
@@ -49,6 +51,7 @@ class Battle:
 			self.current_wave += 1
 
 			if self.current_wave == self.num_waves:
+				self.completed = True
 				return True
 
 		return False
