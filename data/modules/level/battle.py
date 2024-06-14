@@ -34,6 +34,21 @@ class Battle:
 			self.waves.append(EnemyWave(wave_data, self.entity_manager))
 
 	def update(self):
+		"""
+
+		:return: True if battle done else False
+		"""
+
 		current_wave = self.waves[self.current_wave]
 
-		current_wave.spawn_wave(self.level, self.room)
+		if not current_wave.wave_in_progress:
+			current_wave.spawn_wave(self.level, self.room)
+
+		current_wave_done = current_wave.check_done()
+		if current_wave_done:
+			self.current_wave += 1
+
+			if self.current_wave == self.num_waves:
+				return True
+
+		return False

@@ -14,7 +14,7 @@ class Game(pygbase.GameState, name="game"):
 		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
 		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
 
-		self.level: Level = LevelGenerator(20, self.entity_manager, 20).generate_level()
+		self.level: Level = LevelGenerator(20, self.entity_manager, 9).generate_level()
 
 		self.camera = pygbase.Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
 
@@ -28,6 +28,7 @@ class Game(pygbase.GameState, name="game"):
 
 	def exit(self):
 		self.entity_manager.clear_entities()
+		self.level.cleanup()
 
 	def update(self, delta: float):
 		self.entity_manager.update(delta)
@@ -36,10 +37,12 @@ class Game(pygbase.GameState, name="game"):
 
 		self.camera.lerp_to_target(self.player.collider.rect.center - pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), delta * 5)
 
-		self.level.update(self.player.pos)
+		self.level.update(delta, self.player.pos)
 
 		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
-			pygbase.EventManager.post_event(pygame.QUIT)
+			# pygbase.EventManager.post_event(pygame.QUIT)
+			from data.modules.game_states.main_menu import MainMenu
+			self.set_next_state(MainMenu())
 
 	def draw(self, surface: pygame.Surface):
 		surface.fill((0, 0, 0))

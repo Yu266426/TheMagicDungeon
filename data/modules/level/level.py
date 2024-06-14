@@ -19,7 +19,7 @@ class Level:
 		self.entity_manager = entity_manager
 		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
 
-		self.rooms: dict[int, dict[int, Room]] = {}
+		self.rooms: dict[tuple[int, int], Room] = {}
 		self.connections = {}
 
 		self.room_size = room_size
@@ -31,28 +31,25 @@ class Level:
 		Removes objects from rooms
 		"""
 
-		for row in self.rooms.values():
-			for room in row.values():
-				room.remove_objects()
+		for room in self.rooms.values():
+			room.remove_objects()
 
 	def add_room(self, pos: tuple[int, int], room_name: str, connections: tuple[bool, bool, bool, bool], battle_name: str):
-		if pos[1] not in self.rooms:
-			self.rooms[pos[1]] = {}
-
 		room = Room(room_name, self.entity_manager, battle_name, self, offset=(pos[0] * self.room_size * TILE_SIZE, pos[1] * self.room_size * TILE_SIZE), connections=connections)
-		self.rooms[pos[1]][pos[0]] = room
+		self.rooms[pos] = room
 		return room
 
-	def get_room(self, pos: tuple[float, float]) -> Room | None:
+	def get_room(self, pos: tuple[float, float] | pygame.Vector2) -> Room | None:
 		"""
 		:param pos: Position in pixels
 		:return: Room | None
 		"""
 		room_pos = get_tile_pos(pos, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
 
-		if room_pos[1] in self.rooms and room_pos[0] in self.rooms[room_pos[1]]:
-			return self.rooms[room_pos[1]][room_pos[0]]
-		return None
+		return self.rooms.get(room_pos)
+
+	def get_room_from_room_pos(self, room_pos: tuple[int, int]) -> Room | None:
+		return self.rooms.get(room_pos)
 
 	def get_tile(self, pos: pygame.Vector2 | tuple[float, float]):
 		room = self.get_room(pos)
@@ -60,20 +57,26 @@ class Level:
 			return room.get_tile(1, get_tile_pos(pos, (TILE_SIZE, TILE_SIZE)))
 		return None
 
-	def update(self, player_pos):
+	def update(self, delta: float, player_pos: pygame.Vector2):
 		player_room_pos = get_tile_pos(player_pos, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
+		current_room = self.get_room_from_room_pos(player_room_pos)
 
-		if not self.prev_player_room_pos:
+		player_room_tile_pos = get_tile_pos(player_pos, (TILE_SIZE, TILE_SIZE))
+		player_room_tile_pos = player_room_tile_pos[0] - current_room.tile_offset[0], player_room_tile_pos[1] - current_room.tile_offset[1]
+
+		# print(player_room_tile_pos, current_room.n_cols, current_room.n_rows)
+
+		if not self.prev_player_room_pos and 1 <= player_room_tile_pos[0] < current_room.n_cols and 1 <= player_room_tile_pos[1] < current_room.n_rows - 1:
 			self.prev_player_room_pos = player_room_pos
 
-			self.get_room(player_pos).entered()
-		elif self.prev_player_room_pos != player_room_pos:
-			self.get_room(player_pos).entered()
-			self.get_room(get_pixel_pos(self.prev_player_room_pos, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))).exited()
+			current_room.entered()
+		elif self.prev_player_room_pos != player_room_pos and 1 <= player_room_tile_pos[0] < current_room.n_cols - 1 and 1 <= player_room_tile_pos[1] < current_room.n_rows - 1:
+			current_room.entered()
+			self.get_room_from_room_pos(self.prev_player_room_pos).exited()
 
 			self.prev_player_room_pos = player_room_pos
 
-		self.get_room(player_pos).update()
+		self.get_room(player_pos).update(delta)
 
 	def draw_tile(self, level: int, pos: tuple[int, int], display: pygame.Surface, camera: Camera):
 		room = self.get_room((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE))
@@ -109,9 +112,8 @@ class LevelGenerator:
 		level = Level(self.entity_manager, self.room_size)
 
 		# Reset level
-		for row in level.rooms.values():
-			for room in row.values():
-				room.remove_objects()
+		for room in level.rooms.values():
+			room.remove_objects()
 
 		level.rooms.clear()
 		level.connections.clear()
@@ -148,6 +150,7 @@ class LevelGenerator:
 
 		# All the rooms available
 		room_names = []
+
 		for _, _, file_names in os.walk(ROOM_DIR):
 			for file_name in file_names:
 				name = file_name[:-5]  # Remove .json
@@ -159,7 +162,7 @@ class LevelGenerator:
 						continue
 
 				# Ignore special rooms
-				if name != "start":
+				if name not in ("lobby", "start2"):
 					room_names.append(name)
 
 		# Load available battles
@@ -221,9 +224,9 @@ class LevelGenerator:
 		# Finalize generation
 		# TODO: Add hallways when needed
 		for room_pos in generated_rooms:
-			room_name = random.choice(room_names) if room_pos != (0, 0) else "start"
+			room_name = random.choice(room_names) if room_pos != (0, 0) else "start2"
 
-			if room_name != "start":
+			if room_name != "start2":
 				level.add_room(room_pos, room_name, get_connections(room_pos), random.choice(battle_names))
 			else:
 				level.add_room(room_pos, room_name, get_connections(room_pos), "")

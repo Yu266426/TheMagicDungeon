@@ -47,7 +47,7 @@ class GameObject(Entity):
 			self.sprite.change_frame(frame_time)
 
 	def update(self, delta: float):
-		pass
+		self.animate(delta)
 
 	def draw(self, display: pygame.Surface, camera: Camera, flags=0):
 		if self.is_animated:

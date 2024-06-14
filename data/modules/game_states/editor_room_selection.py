@@ -127,7 +127,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 		if self.selected_room is not None:
 			self.selected_room.remove_objects()
 
-		self.set_next_state(Editor(EditorRoom("lobby", n_rows=9, n_cols=9)))  # TODO: Allow users to specify room
+		self.set_next_state(Editor(EditorRoom("start2", n_rows=9, n_cols=9)))  # TODO: Allow users to specify room
 
 	def update(self, delta: float):
 		self.ui.update(delta)

@@ -128,6 +128,8 @@ class Room(BaseRoom):
 		self.battle_in_progress = False
 		self.battle = Battle(battle_name, level, self, entity_manager) if battle_name != "" else None
 
+		self.hallway_connection_tiles: list[tuple[int, int]] = []
+
 		# New room
 		self.save_path = ROOM_DIR / f"{name}.json"
 		if not os.path.isfile(self.save_path):
@@ -166,6 +168,7 @@ class Room(BaseRoom):
 						self.add_tile(1, (col, 0), Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1])))
 					else:
 						self.remove_tile(1, (col, 0))
+						self.hallway_connection_tiles.append((col, 0))
 				else:
 					self.add_tile(1, (col, 0), Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1])))
 
@@ -174,6 +177,7 @@ class Room(BaseRoom):
 						self.add_tile(1, (col, self.n_rows - 1), Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1])))
 					else:
 						self.remove_tile(1, (col, self.n_rows - 1))
+						self.hallway_connection_tiles.append((col, self.n_rows - 1))
 				else:
 					self.add_tile(1, (col, self.n_rows - 1), Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1])))
 		else:
@@ -186,6 +190,7 @@ class Room(BaseRoom):
 						self.add_tile(1, (col, 0), Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1])))
 					else:
 						self.remove_tile(1, (col, 0))
+						self.hallway_connection_tiles.append((col, 0))
 				else:
 					self.add_tile(1, (col, 0), Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1])))
 
@@ -194,6 +199,8 @@ class Room(BaseRoom):
 						self.add_tile(1, (col, self.n_rows - 1), Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1])))
 					else:
 						self.remove_tile(1, (col, self.n_rows - 1))
+						self.hallway_connection_tiles.append((col, self.n_rows - 1))
+
 				else:
 					self.add_tile(1, (col, self.n_rows - 1), Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1])))
 
@@ -207,6 +214,7 @@ class Room(BaseRoom):
 						self.add_tile(1, (0, row), Tile("walls", random.randrange(0, wall_sheet.length), (self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])))
 					else:
 						self.remove_tile(1, (0, row))
+						self.hallway_connection_tiles.append((0, row))
 				else:
 					self.add_tile(1, (0, row), Tile("walls", random.randrange(0, wall_sheet.length), (self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])))
 
@@ -215,6 +223,7 @@ class Room(BaseRoom):
 						self.add_tile(1, (self.n_cols - 1, row), Tile("walls", random.randrange(0, wall_sheet.length), ((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])))
 					else:
 						self.remove_tile(1, (self.n_cols - 1, row))
+						self.hallway_connection_tiles.append((self.n_cols - 1, row))
 				else:
 					self.add_tile(1, (self.n_cols - 1, row), Tile("walls", random.randrange(0, wall_sheet.length), ((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])))
 		else:
@@ -227,6 +236,7 @@ class Room(BaseRoom):
 						self.add_tile(1, (0, row), Tile("walls", random.randrange(0, wall_sheet.length), (self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])))
 					else:
 						self.remove_tile(1, (0, row))
+						self.hallway_connection_tiles.append((0, row))
 				else:
 					self.add_tile(1, (0, row), Tile("walls", random.randrange(0, wall_sheet.length), (self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])))
 
@@ -235,6 +245,7 @@ class Room(BaseRoom):
 						self.add_tile(1, (self.n_cols - 1, row), Tile("walls", random.randrange(0, wall_sheet.length), ((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])))
 					else:
 						self.remove_tile(1, (self.n_cols - 1, row))
+						self.hallway_connection_tiles.append((self.n_cols - 1, row))
 				else:
 					self.add_tile(1, (self.n_cols - 1, row), Tile("walls", random.randrange(0, wall_sheet.length), ((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])))
 
@@ -288,17 +299,40 @@ class Room(BaseRoom):
 				# Find location close to middle of tile
 				return (col + 0.5) * TILE_SIZE + self.offset[0], (row + 0.8) * TILE_SIZE + self.offset[1]
 
+	def activate_walls(self):
+		wall_sheet = pygbase.ResourceManager.get_resource("sprite_sheet", "walls")
+
+		for tile_pos in self.hallway_connection_tiles:
+			self.add_tile(1, tile_pos, Tile("walls", random.randrange(0, wall_sheet.length), (tile_pos[0] * TILE_SIZE + self.offset[0], (tile_pos[1] + 1) * TILE_SIZE + self.offset[1])))
+
+	def deactivate_walls(self):
+		for tile_pos in self.hallway_connection_tiles:
+			self.remove_tile(1, tile_pos)
+
 	def entered(self):
+		"""
+		Run when player enters more than 1 tile into the room (outer tiles are walls)
+		"""
+
 		if self.battle:
 			if not self.battle.completed:
 				self.battle_in_progress = True
 
+				self.activate_walls()
+
 	def exited(self):
 		pass
 
-	def update(self):
+	def update(self, delta: float):
+		for game_object in self.objects:
+			game_object.update(delta)
+
 		if self.battle_in_progress:
-			self.battle.update()
+			battle_done = self.battle.update()
+
+			if battle_done:
+				self.battle_in_progress = False
+				self.deactivate_walls()
 
 
 class EditorRoom(BaseRoom):
