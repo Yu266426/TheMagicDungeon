@@ -1,7 +1,7 @@
 import pygame
 import pygbase
 
-from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.player import Player
 from data.modules.level.level import Level, LevelGenerator
@@ -14,11 +14,11 @@ class Game(pygbase.GameState, name="game"):
 		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
 		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
 
-		self.level: Level = LevelGenerator(20, self.entity_manager, 9).generate_level()
+		self.level: Level = LevelGenerator(20, self.entity_manager, 20, 1).generate_level()
 
 		self.camera = pygbase.Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
 
-		self.player = Player((400, 400), self.camera, self.entity_manager, self.level)
+		self.player = Player((9.5 * TILE_SIZE, 10 * TILE_SIZE), self.camera, self.entity_manager, self.level)
 		self.entity_manager.add_entity(self.player)
 
 		self.camera.set_pos(self.player.pos + (-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
@@ -27,8 +27,8 @@ class Game(pygbase.GameState, name="game"):
 		self.particle_manager.clear()
 
 	def exit(self):
-		self.entity_manager.clear_entities()
 		self.level.cleanup()
+		self.entity_manager.clear_entities()
 
 	def update(self, delta: float):
 		self.entity_manager.update(delta)
@@ -43,6 +43,8 @@ class Game(pygbase.GameState, name="game"):
 			# pygbase.EventManager.post_event(pygame.QUIT)
 			from data.modules.game_states.main_menu import MainMenu
 			self.set_next_state(MainMenu())
+
+		# pygbase.EventManager.post_event(pygame.MOUSEBUTTONDOWN, button=1)
 
 	def draw(self, surface: pygame.Surface):
 		surface.fill((0, 0, 0))

@@ -22,5 +22,4 @@ class Torch(GameObject):
 
 	def removed(self):
 		self.particle_manager.remove_spawner(self.fire)
-
 		self.lighting_manager.remove_light(self.light)

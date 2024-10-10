@@ -18,8 +18,8 @@ class Lobby(pygbase.GameState, name="lobby"):
 
 		self.camera = pygbase.Camera()
 
-		self.level = Level(self.entity_manager, 30)
-		self.level.add_room((0, 0), "lobby", (False, False, False, False), "")
+		self.level = Level(self.entity_manager, 30, 0)
+		self.level.add_room((0, 0), "lobby")
 
 		self.player = Player((450, 700), self.camera, self.entity_manager, self.level)
 		# self.player = Player((150, 150), self.camera, self.entity_manager, self.level)
@@ -31,13 +31,15 @@ class Lobby(pygbase.GameState, name="lobby"):
 		self.particle_manager.clear()
 
 	def exit(self):
-		self.entity_manager.clear_entities()
 		self.level.cleanup()
+		self.entity_manager.clear_entities()
+
+		pygbase.EventManager.remove_handler(self.start_game_callback, "lobby", "start_game")
 
 	def start_game_callback(self, event: pygame.Event):
 		from data.modules.game_states.game import Game
 
-		self.level.cleanup()
+		# self.level.cleanup()
 		self.set_next_state(Game())
 
 	def update(self, delta: float):

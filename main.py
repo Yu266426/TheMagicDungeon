@@ -14,6 +14,7 @@ if __name__ == '__main__':
 	# profiler.enable()
 
 	pygbase.init((SCREEN_WIDTH, SCREEN_HEIGHT), logging_level=logging.DEBUG, light_radius_interval=3)
+	# pygbase.DebugDisplay.show()
 
 	pygbase.EventManager.create_custom_event("start_game")
 

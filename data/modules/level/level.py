@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import random
 from collections import deque
@@ -9,20 +10,26 @@ from pygbase import Camera
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import ROOM_DIR, BATTLE_DIR
-from data.modules.level.room import Room
-from data.modules.base.utils import get_tile_pos, get_pixel_pos
+from data.modules.base.utils import get_tile_pos
 from data.modules.entities.entity_manager import EntityManager
+from data.modules.level.room import Room, Hallway
 
 
 class Level:
-	def __init__(self, entity_manager: EntityManager, room_size: int):
+	def __init__(self, entity_manager: EntityManager, room_separation: int, wall_gap_radius: int):
 		self.entity_manager = entity_manager
 		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
+
+		# TODO: Rework to separate tiles from rooms
+		# A game room is responsible for its location, loading the tiles, and special tiles
+		# The level is responsible for feeding collision data, rendering tiles, etc.
+
+		self.tiles: dict[int, dict[tuple[int, int]]] = {}
 
 		self.rooms: dict[tuple[int, int], Room] = {}
 		self.connections = {}
 
-		self.room_size = room_size
+		self.room_separation = room_separation
 
 		self.prev_player_room_pos = None
 
@@ -34,17 +41,41 @@ class Level:
 		for room in self.rooms.values():
 			room.remove_objects()
 
-	def add_room(self, pos: tuple[int, int], room_name: str, connections: tuple[bool, bool, bool, bool], battle_name: str):
-		room = Room(room_name, self.entity_manager, battle_name, self, offset=(pos[0] * self.room_size * TILE_SIZE, pos[1] * self.room_size * TILE_SIZE), connections=connections)
-		self.rooms[pos] = room
+	def add_room(self, room_pos: tuple[int, int], room_name: str, battle_name: str = ""):
+		room = Room(room_name, self.entity_manager, battle_name, self, offset=(room_pos[0] * self.room_separation * TILE_SIZE, room_pos[1] * self.room_separation * TILE_SIZE))
+		self.rooms[room_pos] = room
 		return room
+
+	def add_room_ex(self, room_pos: tuple[int, int], room_name: str, connections: tuple[bool, bool, bool, bool], battle_name: str, room_data: dict):
+		offset = (self.room_separation - room_data["cols"]) // 2, (self.room_separation - room_data["rows"]) // 2
+
+		room = Room(room_name, self.entity_manager, battle_name, self, offset=(room_pos[0] * self.room_separation * TILE_SIZE + offset[0] * TILE_SIZE, room_pos[1] * self.room_separation * TILE_SIZE + offset[1] * TILE_SIZE), connections=connections)
+		self.rooms[room_pos] = room
+		return room
+
+	def add_hallway(self, room_pos: tuple[int, int], connected_room_pos: tuple[int, int], room_data: dict, connected_room_data: dict):
+		room_size = room_data["cols"], room_data["rows"]
+		connected_room_size = connected_room_data["cols"], connected_room_data["rows"]
+
+		# Horizontal connection
+		if room_pos[1] == connected_room_pos[1]:
+			center_x = int((room_pos[0] + 0.5) + self.room_separation)
+			center_y = int((room_pos[1] + 0.5) + self.room_separation)
+
+			# Left
+			if connected_room_pos[0] < room_pos[0]:
+				room_left_x = center_x - room_size[0] // 2
+
+			# Right
+			if room_pos[0] < connected_room_pos[0]:
+				room_left_x = center_x + room_size[0] // 2
 
 	def get_room(self, pos: tuple[float, float] | pygame.Vector2) -> Room | None:
 		"""
 		:param pos: Position in pixels
 		:return: Room | None
 		"""
-		room_pos = get_tile_pos(pos, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
+		room_pos = get_tile_pos(pos, (self.room_separation * TILE_SIZE, self.room_separation * TILE_SIZE))
 
 		return self.rooms.get(room_pos)
 
@@ -58,7 +89,7 @@ class Level:
 		return None
 
 	def update(self, delta: float, player_pos: pygame.Vector2):
-		player_room_pos = get_tile_pos(player_pos, (self.room_size * TILE_SIZE, self.room_size * TILE_SIZE))
+		player_room_pos = get_tile_pos(player_pos, (self.room_separation * TILE_SIZE, self.room_separation * TILE_SIZE))
 		current_room = self.get_room_from_room_pos(player_room_pos)
 
 		player_room_tile_pos = get_tile_pos(player_pos, (TILE_SIZE, TILE_SIZE))
@@ -102,16 +133,18 @@ class Level:
 
 
 class LevelGenerator:
-	def __init__(self, depth: int, entity_manager: EntityManager, room_size: int):
+	def __init__(self, depth: int, entity_manager: EntityManager, room_separation: int, wall_gap_radius: int):
 		self.depth: int = depth
 		self.entity_manager = entity_manager
-		self.room_size = room_size
+		self.room_separation = room_separation
+		self.wall_gap_radius = wall_gap_radius
 
 	# TODO: Redo generation to be over multiple frames
 	def generate_level(self):
-		level = Level(self.entity_manager, self.room_size)
+		level = Level(self.entity_manager, self.room_separation, self.wall_gap_radius)
 
 		# Reset level
+		# TODO: Why?
 		for room in level.rooms.values():
 			room.remove_objects()
 
@@ -149,6 +182,7 @@ class LevelGenerator:
 		]
 
 		# All the rooms available
+		rooms: dict[str, dict] = {}
 		room_names = []
 
 		for _, _, file_names in os.walk(ROOM_DIR):
@@ -158,11 +192,13 @@ class LevelGenerator:
 				# Ensure only rooms of correct size
 				with open(ROOM_DIR / file_name) as room_file:
 					room_data = json.load(room_file)
-					if room_data["rows"] != self.room_size or room_data["cols"] != self.room_size:
+					if room_data["rows"] > self.room_separation or room_data["cols"] > self.room_separation:
 						continue
 
+					rooms[name] = room_data
+
 				# Ignore special rooms
-				if name not in ("lobby", "start2"):
+				if name not in ("lobby", "start", "start2"):
 					room_names.append(name)
 
 		# Load available battles
@@ -174,18 +210,18 @@ class LevelGenerator:
 				battle_names.append(name)
 
 		# Room generation
-		generated_rooms: set[tuple[int, int]] = set()
+		rooms_to_generate: set[tuple[int, int]] = set()
 		connections: dict[tuple[int, int], list[tuple[int, int]]] = {}  # Start, list[end]
 		end_rooms: list[tuple[int, int]] = []
 
 		room_queue: deque[tuple[tuple[int, int], int]] = deque()  # Position, depth
 
 		# Add start room
-		generated_rooms.add((0, 0))
+		rooms_to_generate.add((0, 0))
 
 		# Start in all directions
 		for direction in directions:
-			generated_rooms.add(direction)
+			rooms_to_generate.add(direction)
 			room_queue.append((direction, 1))
 			add_connection((0, 0), direction)
 
@@ -195,40 +231,62 @@ class LevelGenerator:
 			room_pos = room_info[0]
 			room_depth = room_info[1]
 
-			if room_depth < self.depth:
-				# Get available directions
-				available_directions = []
-				for direction in directions:
-					new_pos = (room_pos[0] + direction[0], room_pos[1] + direction[1])
-					if new_pos not in generated_rooms:
-						available_directions.append(direction)
+			if room_depth > self.depth:
+				continue
 
-				# If direction available
-				if len(available_directions) != 0:
-					# Have a chance to spread, with the end trying to decrease the change the further the room
-					if random.random() < 0.85 - room_depth * (1 / self.depth) * 0.5:
-						# Find direction to spread
-						direction = random.choice(available_directions)
+			# Get available directions
+			available_directions = []
+			for direction in directions:
+				new_pos = (room_pos[0] + direction[0], room_pos[1] + direction[1])
+				if new_pos not in rooms_to_generate:
+					available_directions.append(direction)
 
-						new_pos = room_pos[0] + direction[0], room_pos[1] + direction[1]
-						if level.get_room((new_pos[0] * self.room_size * TILE_SIZE, new_pos[1] * self.room_size * TILE_SIZE)) is None:
-							generated_rooms.add(new_pos)
-							add_connection(room_pos, new_pos)
-							room_queue.append((new_pos, room_depth + 1))
+			# If direction not available, continue
+			if len(available_directions) == 0:
+				continue
 
-						room_queue.append(room_info)  # Current room still active, move to end of queue
-					else:
-						# This room is the final room in its branch
-						end_rooms.append(room_pos)
+			# Have a chance to spread, with the end trying to decrease the change the further the room
+			if random.random() < 0.85 - room_depth * (1 / self.depth) * 0.5:
+				# Find direction to spread
+				direction = random.choice(available_directions)
+				new_pos = room_pos[0] + direction[0], room_pos[1] + direction[1]
+
+				rooms_to_generate.add(new_pos)
+				add_connection(room_pos, new_pos)
+				room_queue.append((new_pos, room_depth + 1))
+
+				room_queue.append(room_info)  # Current room still active, move to end of queue
+			else:
+				# This room is the final room in its branch
+				end_rooms.append(room_pos)
 
 		# Finalize generation
 		# TODO: Add hallways when needed
-		for room_pos in generated_rooms:
+		generated_rooms: dict[tuple[int, int], str] = {}
+		rooms_added = set()
+		for room_pos in rooms_to_generate:
 			room_name = random.choice(room_names) if room_pos != (0, 0) else "start2"
 
+			room_connections = get_connections(room_pos)
+
 			if room_name != "start2":
-				level.add_room(room_pos, room_name, get_connections(room_pos), random.choice(battle_names))
+				if room_pos not in rooms_added:
+					rooms_added.add(room_pos)
+				else:
+					logging.warning("Duplicate")
+				level.add_room_ex(room_pos, room_name, room_connections, random.choice(battle_names), rooms[room_name])
 			else:
-				level.add_room(room_pos, room_name, get_connections(room_pos), "")
+				if room_pos not in rooms_added:
+					rooms_added.add(room_pos)
+				else:
+					logging.warning("Duplicate")
+
+				level.add_room_ex(room_pos, room_name, room_connections, "", rooms[room_name])
+
+			generated_rooms[room_pos] = room_name
+
+		for room_pos, room_name in generated_rooms.items():
+			for connection in connections:
+				level.add_hallway(room_pos, connection, rooms[room_name], rooms[generated_rooms[connection]])
 
 		return level

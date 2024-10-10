@@ -6,6 +6,7 @@ import pygbase
 
 from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import ROOM_DIR
+from data.modules.entities.entity_manager import EntityManager
 from data.modules.game_states.editor import Editor
 from data.modules.level.room import EditorRoom
 
@@ -22,7 +23,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 			bg_colour=(50, 50, 50, 100)
 		))
 
-		self.rooms = os.listdir(ROOM_DIR)
+		self.rooms = sorted(os.listdir(ROOM_DIR))
 
 		# Generate Room Buttons
 		if len(self.rooms) > 0:
@@ -105,6 +106,8 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 			self.info_frame
 		), add_on_to_previous=(False, True))
 
+		self.entity_manager = EntityManager()
+
 	def exit(self):
 		if self.selected_room is not None:
 			self.selected_room.remove_objects()
@@ -113,7 +116,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 		if self.selected_room is not None:
 			self.selected_room.remove_objects()
 
-		self.selected_room = EditorRoom(room_name)
+		self.selected_room = EditorRoom(room_name, self.entity_manager)
 		self.selected_room.draw_room_to_surface(self.selected_room_image)
 
 		self.room_name_text.set_text(f"Name: {room_name}")
@@ -121,13 +124,13 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 
 	def edit_button_callback(self):
 		if self.selected_room is not None:
-			self.set_next_state(Editor(EditorRoom(self.selected_room.name)))
+			self.set_next_state(Editor(EditorRoom(self.selected_room.name, self.entity_manager)))
 
 	def add_room_button_callback(self):
 		if self.selected_room is not None:
 			self.selected_room.remove_objects()
 
-		self.set_next_state(Editor(EditorRoom("start2", n_rows=9, n_cols=9)))  # TODO: Allow users to specify room
+		self.set_next_state(Editor(EditorRoom("start2", self.entity_manager, n_rows=9, n_cols=9)))  # TODO: Allow users to specify room
 
 	def update(self, delta: float):
 		self.ui.update(delta)

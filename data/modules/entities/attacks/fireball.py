@@ -34,6 +34,12 @@ class Fireball(Entity):
 	def is_alive(self):
 		return self.alive
 
+	def removed(self):
+		self.particle_manager.remove_spawner(self.fire_particles)
+		self.lighting_manager.remove_light(self.light)
+		self.lighting_manager.remove_light(self.light2)
+		self.lighting_manager.remove_light(self.light3)
+
 	def update(self, delta: float):
 		next_move = self.movement * delta
 

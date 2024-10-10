@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 
 class BaseRoom:
-	def __init__(self, name: str, n_rows: int, n_cols: int, offset: tuple = (0, 0)):
+	def __init__(self, name: str, entity_manager: EntityManager, n_rows: int, n_cols: int, offset: tuple = (0, 0)):
 		self.name = name
 
 		self.n_rows = n_rows
@@ -30,10 +30,12 @@ class BaseRoom:
 		self.offset = int(offset[0]), int(offset[1])
 		self.tile_offset = get_tile_pos(self.offset, (TILE_SIZE, TILE_SIZE))
 
-		# layer[back, player, front]
+		# layer[0: Ground, 1: Player | Walls, 2: Above]
 		# self.tiles: list[list[list[Tile | None]]] = []
 		self.tiles: dict[int, dict[tuple[int, int], Tile]] = {}
 		self.objects: list[GameObject] = []
+
+		self.entity_manager = entity_manager
 
 	def check_bounds(self, pos: tuple[int, int]) -> bool:
 		return 0 <= pos[0] < self.n_cols and 0 <= pos[1] < self.n_rows
@@ -83,10 +85,12 @@ class BaseRoom:
 		if game_object is not None:
 			game_object.removed()
 			self.objects.remove(game_object)
+			self.entity_manager.add_entity_to_remove(game_object)
 
 	def remove_objects(self):
-		for game_object in self.objects:
-			game_object.removed()
+		# for game_object in self.objects:
+		# 	game_object.removed()
+		# 	self.entity_manager.add_entity_to_remove(game_object)
 
 		self.objects.clear()
 
@@ -123,10 +127,10 @@ class BaseRoom:
 
 class Room(BaseRoom):
 	def __init__(self, name: str, entity_manager: EntityManager, battle_name: str, level: "Level", n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0), connections=(False, False, False, False), random_floor=True):
-		super().__init__(name, n_rows, n_cols, offset)
+		super().__init__(name, entity_manager, n_rows, n_cols, offset)
 
 		self.battle_in_progress = False
-		self.battle = Battle(battle_name, level, self, entity_manager) if battle_name != "" else None
+		self.battle = Battle(battle_name, level, self, self.entity_manager) if battle_name != "" else None
 
 		self.hallway_connection_tiles: list[tuple[int, int]] = []
 
@@ -141,7 +145,7 @@ class Room(BaseRoom):
 				self.generate_floor()
 			self.generate_walls(connections)
 		else:
-			self.load(entity_manager)
+			self.load()
 
 			if random_floor:
 				self.generate_floor()
@@ -164,7 +168,7 @@ class Room(BaseRoom):
 			# Top and bottom
 			for col in range(self.n_cols):
 				if connections[0]:
-					if col < x_mid_point - gap_radius or col > x_mid_point + gap_radius + 1:
+					if col < x_mid_point - gap_radius or col > x_mid_point + gap_radius:
 						self.add_tile(1, (col, 0), Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1])))
 					else:
 						self.remove_tile(1, (col, 0))
@@ -173,7 +177,7 @@ class Room(BaseRoom):
 					self.add_tile(1, (col, 0), Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1])))
 
 				if connections[1]:
-					if col < x_mid_point - gap_radius or col > x_mid_point + gap_radius + 1:
+					if col < x_mid_point - gap_radius or col > x_mid_point + gap_radius:
 						self.add_tile(1, (col, self.n_rows - 1), Tile("walls", random.randrange(0, wall_sheet.length), (col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1])))
 					else:
 						self.remove_tile(1, (col, self.n_rows - 1))
@@ -210,7 +214,7 @@ class Room(BaseRoom):
 			# Left and Right
 			for row in range(self.n_rows):
 				if connections[2]:
-					if row < y_mid_point - gap_radius or row > y_mid_point + gap_radius + 1:
+					if row < y_mid_point - gap_radius or row > y_mid_point + gap_radius:
 						self.add_tile(1, (0, row), Tile("walls", random.randrange(0, wall_sheet.length), (self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])))
 					else:
 						self.remove_tile(1, (0, row))
@@ -219,7 +223,7 @@ class Room(BaseRoom):
 					self.add_tile(1, (0, row), Tile("walls", random.randrange(0, wall_sheet.length), (self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])))
 
 				if connections[3]:
-					if row < y_mid_point - gap_radius or row > y_mid_point + gap_radius + 1:
+					if row < y_mid_point - gap_radius or row > y_mid_point + gap_radius:
 						self.add_tile(1, (self.n_cols - 1, row), Tile("walls", random.randrange(0, wall_sheet.length), ((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])))
 					else:
 						self.remove_tile(1, (self.n_cols - 1, row))
@@ -259,7 +263,7 @@ class Room(BaseRoom):
 					(col * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
 				))
 
-	def load(self, entity_manager: EntityManager):
+	def load(self):
 		with open(self.save_path) as file:
 			room_data: dict = json.load(file)
 
@@ -279,9 +283,8 @@ class Room(BaseRoom):
 			pos = object_data["pos"]
 
 			game_object, tags = ObjectLoader.create_object(object_name, (pos[0] + self.tile_offset[0], pos[1] + self.tile_offset[1]))
-			game_object.added()
 
-			entity_manager.add_entity(game_object, ("object",) + tags)
+			self.entity_manager.add_entity(game_object, ("object",) + tags)
 			self.objects.append(game_object)
 
 	def is_valid_spawn(self, tile_pos: tuple[int, int]):
@@ -336,8 +339,8 @@ class Room(BaseRoom):
 
 
 class EditorRoom(BaseRoom):
-	def __init__(self, name: str, n_rows: int = 10, n_cols: int = 10):
-		super().__init__(name, n_rows, n_cols)
+	def __init__(self, name: str, entity_manager: EntityManager, n_rows: int = 10, n_cols: int = 10):
+		super().__init__(name, entity_manager, n_rows, n_cols)
 
 		# New room
 		self.save_path = os.path.join(ROOM_DIR, f"{name}.json")
@@ -367,7 +370,7 @@ class EditorRoom(BaseRoom):
 			pos = game_object["pos"]
 
 			game_object, tags = ObjectLoader.create_object(object_type, pos)
-			game_object.added()
+			game_object.added()  # TODO: should use entity manager instead?
 
 			self.objects.append(game_object)
 
@@ -413,3 +416,22 @@ class EditorRoom(BaseRoom):
 			game_object.draw(room_surface, temp_camera)
 
 		pygame.transform.scale(room_surface, surface_size, surface)
+
+
+class Hallway(BaseRoom):
+	def __init__(self, entity_manager: EntityManager, n_rows: int, n_cols: int):
+		super().__init__("", entity_manager, n_rows, n_cols)
+
+		self.create()
+
+	def create(self):
+		tiles_sheet = pygbase.ResourceManager.get_resource("sprite_sheet", "tiles")
+
+		# Create floor
+		for row in range(self.n_rows):
+			for col in range(self.n_cols):
+				self.add_tile(0, (col, row), Tile(
+					"tiles",
+					random.randrange(0, tiles_sheet.length),
+					(col * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
+				))

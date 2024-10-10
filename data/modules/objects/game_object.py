@@ -4,6 +4,7 @@ from pygbase import Camera
 
 from data.modules.base.constants import TILE_SIZE
 from data.modules.entities.entity import Entity
+from data.modules.entities.entity_manager import EntityManager
 
 
 class GameObject(Entity):
