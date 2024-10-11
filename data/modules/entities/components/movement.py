@@ -141,3 +141,10 @@ class Movement:
 		self.velocity += (acceleration - self.velocity * self.drag) * delta
 
 		return is_collision
+
+	def add_force(self, direction: pygame.Vector2, force: float):
+		normalized_direction = direction.copy()
+		if normalized_direction.length() != 0:
+			normalized_direction.normalize_ip()
+
+		self.velocity += direction * force

@@ -60,6 +60,9 @@ class Player(Entity):
 	def update(self, delta: float):
 		self.get_inputs()
 
+		if pygbase.InputManager.get_key_just_pressed(pygame.K_SPACE):
+			self.movement.add_force(self.input, 5000)
+
 		self.movement.move_in_direction(self.pos, self.input, delta)
 
 		self.animations.update(delta)

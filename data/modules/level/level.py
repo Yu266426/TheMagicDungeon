@@ -13,6 +13,7 @@ from data.modules.base.paths import ROOM_DIR, BATTLE_DIR
 from data.modules.base.utils import get_tile_pos
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.level.room import Room, Hallway
+from data.modules.objects.tile import Tile
 
 
 class Level:
@@ -24,12 +25,14 @@ class Level:
 		# A game room is responsible for its location, loading the tiles, and special tiles
 		# The level is responsible for feeding collision data, rendering tiles, etc.
 
-		self.tiles: dict[int, dict[tuple[int, int]]] = {}
+		# layer[0: Ground, 1: Player | Walls, 2: Above]
+		self.tiles: dict[int, dict[tuple[int, int], Tile]] = {}
 
 		self.rooms: dict[tuple[int, int], Room] = {}
 		self.connections = {}
 
 		self.room_separation = room_separation
+		self.wall_gap_radius = wall_gap_radius
 
 		self.prev_player_room_pos = None
 
@@ -41,9 +44,39 @@ class Level:
 		for room in self.rooms.values():
 			room.remove_objects()
 
+	def check_is_tile(self, layer: int, pos: tuple[int, int]) -> bool:
+		return layer in self.tiles and pos in self.tiles[layer]
+
+	def add_tile(self, layer: int, tile_pos: tuple[int, int], tile: Tile):
+		assert tile is not None
+		# logging.debug(f"Adding tile at {layer}, {tile_pos} with position {tile.rect}")
+		self.tiles.setdefault(layer, {})[tile_pos] = tile
+
+	def remove_tile(self, layer: int, tile_pos: tuple[int, int]):
+		if self.check_is_tile(layer, tile_pos):
+			del self.tiles[layer][tile_pos]
+
+			if len(self.tiles[layer].values()) == 0:
+				del self.tiles[layer]
+
+	def get_tile(self, pos: pygame.Vector2 | tuple[float, float], layer: int = 1) -> Tile | None:
+		tile_pos = get_tile_pos(pos, (TILE_SIZE, TILE_SIZE))
+
+		if not self.check_is_tile(layer, tile_pos):
+			return None
+
+		return self.tiles[layer][tile_pos]
+
+	def get_tile_at_tile_pos(self, tile_pos: tuple[int, int], layer: int = 1) -> Tile | None:
+		if not self.check_is_tile(layer, tile_pos):
+			return None
+
+		return self.tiles[layer][tile_pos]
+
 	def add_room(self, room_pos: tuple[int, int], room_name: str, battle_name: str = ""):
 		room = Room(room_name, self.entity_manager, battle_name, self, offset=(room_pos[0] * self.room_separation * TILE_SIZE, room_pos[1] * self.room_separation * TILE_SIZE))
 		self.rooms[room_pos] = room
+		room.populate_tiles()
 		return room
 
 	def add_room_ex(self, room_pos: tuple[int, int], room_name: str, connections: tuple[bool, bool, bool, bool], battle_name: str, room_data: dict):
@@ -51,6 +84,7 @@ class Level:
 
 		room = Room(room_name, self.entity_manager, battle_name, self, offset=(room_pos[0] * self.room_separation * TILE_SIZE + offset[0] * TILE_SIZE, room_pos[1] * self.room_separation * TILE_SIZE + offset[1] * TILE_SIZE), connections=connections)
 		self.rooms[room_pos] = room
+		room.populate_tiles()
 		return room
 
 	def add_hallway(self, room_pos: tuple[int, int], connected_room_pos: tuple[int, int], room_data: dict, connected_room_data: dict):
@@ -82,12 +116,6 @@ class Level:
 	def get_room_from_room_pos(self, room_pos: tuple[int, int]) -> Room | None:
 		return self.rooms.get(room_pos)
 
-	def get_tile(self, pos: pygame.Vector2 | tuple[float, float]):
-		room = self.get_room(pos)
-		if room is not None:
-			return room.get_tile(1, get_tile_pos(pos, (TILE_SIZE, TILE_SIZE)))
-		return None
-
 	def update(self, delta: float, player_pos: pygame.Vector2):
 		player_room_pos = get_tile_pos(player_pos, (self.room_separation * TILE_SIZE, self.room_separation * TILE_SIZE))
 		current_room = self.get_room_from_room_pos(player_room_pos)
@@ -109,27 +137,30 @@ class Level:
 
 		self.get_room(player_pos).update(delta)
 
-	def draw_tile(self, level: int, pos: tuple[int, int], display: pygame.Surface, camera: Camera):
-		room = self.get_room((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE))
+	def draw_tile(self, layer: int, tile_pos: tuple[int, int], surface: pygame.Surface, camera: Camera):
+		# room = self.get_room((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE))
+		#
+		# if room is not None:
+		# 	room.draw_tile(level, pos, display, camera, with_offset=True)
+		tile = self.get_tile_at_tile_pos(tile_pos, layer)
+		if tile is not None:
+			tile.draw(surface, camera)
 
-		if room is not None:
-			room.draw_tile(level, pos, display, camera, with_offset=True)
-
-	def draw(self, display: pygame.Surface, camera: Camera):
+	def draw(self, surface: pygame.Surface, camera: Camera):
 		top_left = get_tile_pos(camera.pos, (TILE_SIZE, TILE_SIZE))
 		bottom_right = get_tile_pos(camera.pos + pygame.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), (TILE_SIZE, TILE_SIZE))
 		top_left = top_left[0], top_left[1]
 		bottom_right = bottom_right[0] + 2, bottom_right[1] + 2
 
-		for level in range(0, 3):
+		for layer in range(0, 3):
 			for row in range(top_left[1], bottom_right[1]):
 				for col in range(top_left[0], bottom_right[0]):
-					self.draw_tile(level, (col, row), display, camera)
+					self.draw_tile(layer, (col, row), surface, camera)
 
-				if level == 1:
+				if layer == 1:
 					entities = self.entity_manager.get_entities(row)
 					for entity in entities:
-						entity.draw(display, camera)
+						entity.draw(surface, camera)
 
 
 class LevelGenerator:
@@ -162,14 +193,14 @@ class LevelGenerator:
 
 		def get_connections(pos: tuple[int, int]):
 			top, bottom, left, right = False, False, False, False
-			for connection in connections[pos]:
-				if connection[0] == pos[0] and connection[1] == pos[1] - 1:
+			for _connection in connections[pos]:
+				if _connection[0] == pos[0] and _connection[1] == pos[1] - 1:
 					top = True
-				elif connection[0] == pos[0] and connection[1] == pos[1] + 1:
+				elif _connection[0] == pos[0] and _connection[1] == pos[1] + 1:
 					bottom = True
-				elif connection[0] == pos[0] - 1 and connection[1] == pos[1]:
+				elif _connection[0] == pos[0] - 1 and _connection[1] == pos[1]:
 					left = True
-				elif connection[0] == pos[0] + 1 and connection[1] == pos[1]:
+				elif _connection[0] == pos[0] + 1 and _connection[1] == pos[1]:
 					right = True
 			return top, bottom, left, right
 
@@ -198,7 +229,7 @@ class LevelGenerator:
 					rooms[name] = room_data
 
 				# Ignore special rooms
-				if name not in ("lobby", "start", "start2"):
+				if name not in ("lobby", "start", "start2", "room1"):
 					room_names.append(name)
 
 		# Load available battles

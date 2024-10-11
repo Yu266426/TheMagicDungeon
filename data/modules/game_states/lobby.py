@@ -1,7 +1,7 @@
 import pygame
 import pygbase
 
-from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SCALE, TILE_SIZE
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.player import Player
 from data.modules.level.level import Level
@@ -21,7 +21,7 @@ class Lobby(pygbase.GameState, name="lobby"):
 		self.level = Level(self.entity_manager, 30, 0)
 		self.level.add_room((0, 0), "lobby")
 
-		self.player = Player((450, 700), self.camera, self.entity_manager, self.level)
+		self.player = Player((3 * TILE_SIZE, 3 * TILE_SIZE), self.camera, self.entity_manager, self.level)
 		# self.player = Player((150, 150), self.camera, self.entity_manager, self.level)
 		self.entity_manager.add_entity(self.player)
 
@@ -47,6 +47,8 @@ class Lobby(pygbase.GameState, name="lobby"):
 		self.lighting_manager.update(delta)
 		self.dialogue_manager.update(delta)
 		self.entity_manager.update(delta)
+
+		self.level.update(delta, self.player.pos)
 
 		if self.dialogue_manager.current_node != "":
 			self.player.disable()

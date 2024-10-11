@@ -1,3 +1,5 @@
+import logging
+
 import pygame
 from pygbase import ResourceManager, Camera
 from pygbase.graphics.image import Image
@@ -11,5 +13,5 @@ class Tile:
 		self.image: Image = ResourceManager.get_resource("sprite_sheet", sprite_sheet_name).get_image(image_index)
 		self.rect: pygame.Rect = self.image.get_image().get_rect(bottomleft=pos)
 
-	def draw(self, screen: pygame.Surface, camera: Camera, flag: int = 0):
-		self.image.draw(screen, camera.world_to_screen(self.rect.topleft), flags=flag)
+	def draw(self, surface: pygame.Surface, camera: Camera, flag: int = 0):
+		self.image.draw(surface, camera.world_to_screen(self.rect.topleft), flags=flag)
