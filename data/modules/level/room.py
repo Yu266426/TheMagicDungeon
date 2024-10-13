@@ -9,7 +9,7 @@ import pygbase
 
 from data.modules.base.constants import TILE_SIZE
 from data.modules.base.paths import ROOM_DIR
-from data.modules.base.utils import get_tile_pos
+from data.modules.base.utils import one_if_even
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.level.battle import Battle
 from data.modules.objects.game_object import GameObject
@@ -112,9 +112,21 @@ class LevelRoom(BaseRoom):
 
 
 class Room(LevelRoom):
-	def __init__(self, name: str, entity_manager: EntityManager, battle_name: str, level: "Level", n_rows: int = 10, n_cols: int = 10, offset: tuple = (0, 0), connections=(False, False, False, False), random_floor=True):
+	def __init__(
+			self,
+			name: str,
+			entity_manager: EntityManager,
+			battle_name: str,
+			level: "Level",
+			gap_radius: int,
+			n_rows: int = 10, n_cols: int = 10,
+			offset: tuple = (0, 0),
+			connections=(False, False, False, False),
+			random_floor=True
+	):
 		self.connections = connections
 		self.random_floor = random_floor
+		self.gap_radius = gap_radius
 
 		super().__init__(name, entity_manager, level, n_rows, n_cols, offset)
 
@@ -127,6 +139,11 @@ class Room(LevelRoom):
 		if not os.path.isfile(self.save_path):
 			raise ValueError(f"Room not found at: {self.save_path}")
 
+		self.left_hallway_pos: tuple[int, int] | None = None
+		self.right_hallway_pos: tuple[int, int] | None = None
+		self.top_hallway_pos: tuple[int, int] | None = None
+		self.bottom_hallway_pos: tuple[int, int] | None = None
+
 	def populate_tiles(self):
 		self.load()
 
@@ -135,7 +152,7 @@ class Room(LevelRoom):
 
 		self.generate_walls(self.connections)
 
-	def generate_walls(self, connections, gap_radius: int = 1):
+	def generate_walls(self, connections):
 		"""
 		Generates walls with gaps
 
@@ -145,26 +162,82 @@ class Room(LevelRoom):
 
 		wall_sheet = pygbase.ResourceManager.get_resource("sprite_sheet", "walls")
 
-		# Slightly different midpoints for odd vs even sized rooms
-		if self.n_cols % 2 == 0:
-			x_mid_point = self.n_cols // 2 - 1
+		# Horizontal
+		y_mid_point = self.n_rows // 2 - one_if_even(self.n_rows)  # Slightly different midpoints for odd vs even sized rooms
 
-			# Top and bottom
-			for col in range(self.n_cols):
-				if connections[0]:
-					if col < x_mid_point - gap_radius or col > x_mid_point + gap_radius:
-						self.add_tile(
-							1, (col, 0),
-							Tile(
-								"walls",
-								random.randrange(0, wall_sheet.length),
-								(col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1])
-							)
+		self.left_hallway_pos = (
+			self.tile_offset[0],
+			y_mid_point - self.gap_radius + self.tile_offset[1]
+		)
+		self.right_hallway_pos = (
+			self.n_cols - 1 + self.tile_offset[0],
+			y_mid_point - self.gap_radius + self.tile_offset[1]
+		)
+
+		# Left and Right
+		for row in range(self.n_rows):
+			if connections[2]:
+				if row < y_mid_point - self.gap_radius or row > y_mid_point + self.gap_radius:
+					self.add_tile(
+						1, (0, row),
+						Tile(
+							"walls",
+							random.randrange(0, wall_sheet.length),
+							(self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
 						)
-					else:
-						self.remove_tile(1, (col, 0))
-						self.hallway_connection_tiles.append((col, 0))
+					)
 				else:
+					self.remove_tile(1, (0, row))
+					self.hallway_connection_tiles.append((0, row))
+			else:
+				self.add_tile(
+					1, (0, row),
+					Tile(
+						"walls",
+						random.randrange(0, wall_sheet.length),
+						(self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
+					)
+				)
+
+			if connections[3]:
+				if row < y_mid_point - self.gap_radius or row > y_mid_point + self.gap_radius:
+					self.add_tile(
+						1, (self.n_cols - 1, row),
+						Tile(
+							"walls",
+							random.randrange(0, wall_sheet.length),
+							((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
+						)
+					)
+				else:
+					self.remove_tile(1, (self.n_cols - 1, row))
+					self.hallway_connection_tiles.append((self.n_cols - 1, row))
+			else:
+				self.add_tile(
+					1, (self.n_cols - 1, row),
+					Tile(
+						"walls",
+						random.randrange(0, wall_sheet.length),
+						((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
+					)
+				)
+
+		# Vertical
+		x_mid_point = self.n_cols // 2 - one_if_even(self.n_cols)
+
+		self.top_hallway_pos = (
+			x_mid_point - self.gap_radius + self.tile_offset[0],
+			self.tile_offset[1]
+		)
+		self.bottom_hallway_pos = (
+			x_mid_point - self.gap_radius + self.tile_offset[0],
+			self.n_rows - 1 + self.tile_offset[1]
+		)
+
+		# Top and bottom
+		for col in range(self.n_cols):
+			if connections[0]:
+				if col < x_mid_point - self.gap_radius or col > x_mid_point + self.gap_radius:
 					self.add_tile(
 						1, (col, 0),
 						Tile(
@@ -173,71 +246,21 @@ class Room(LevelRoom):
 							(col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1])
 						)
 					)
-
-				if connections[1]:
-					if col < x_mid_point - gap_radius or col > x_mid_point + gap_radius:
-						self.add_tile(
-							1, (col, self.n_rows - 1),
-							Tile(
-								"walls",
-								random.randrange(0, wall_sheet.length),
-								(col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1])
-							)
-						)
-					else:
-						self.remove_tile(1, (col, self.n_rows - 1))
-						self.hallway_connection_tiles.append((col, self.n_rows - 1))
 				else:
-					self.add_tile(
-						1, (col, self.n_rows - 1),
-						Tile("walls",
-							 random.randrange(0, wall_sheet.length),
-							 (col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1])
-							 )
+					self.remove_tile(1, (col, 0))
+					self.hallway_connection_tiles.append((col, 0))
+			else:
+				self.add_tile(
+					1, (col, 0),
+					Tile(
+						"walls",
+						random.randrange(0, wall_sheet.length),
+						(col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1])
 					)
-		else:
-			x_mid_point = self.n_cols // 2
+				)
 
-			# Top and bottom
-			for col in range(self.n_cols):
-				if connections[0]:
-					if col < x_mid_point - gap_radius or col > x_mid_point + gap_radius:
-						self.add_tile(
-							1, (col, 0),
-							Tile(
-								"walls",
-								random.randrange(0, wall_sheet.length),
-								(col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1])
-							)
-						)
-					else:
-						self.remove_tile(1, (col, 0))
-						self.hallway_connection_tiles.append((col, 0))
-				else:
-					self.add_tile(
-						1, (col, 0),
-						Tile(
-							"walls",
-							random.randrange(0, wall_sheet.length),
-							(col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1])
-						)
-					)
-
-				if connections[1]:
-					if col < x_mid_point - gap_radius or col > x_mid_point + gap_radius:
-						self.add_tile(
-							1, (col, self.n_rows - 1),
-							Tile(
-								"walls",
-								random.randrange(0, wall_sheet.length),
-								(col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1])
-							)
-						)
-					else:
-						self.remove_tile(1, (col, self.n_rows - 1))
-						self.hallway_connection_tiles.append((col, self.n_rows - 1))
-
-				else:
+			if connections[1]:
+				if col < x_mid_point - self.gap_radius or col > x_mid_point + self.gap_radius:
 					self.add_tile(
 						1, (col, self.n_rows - 1),
 						Tile(
@@ -246,107 +269,19 @@ class Room(LevelRoom):
 							(col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1])
 						)
 					)
-
-		if self.n_rows % 2 == 0:
-			y_mid_point = self.n_rows // 2 - 1
-
-			# Left and Right
-			for row in range(self.n_rows):
-				if connections[2]:
-					if row < y_mid_point - gap_radius or row > y_mid_point + gap_radius:
-						self.add_tile(
-							1, (0, row),
-							Tile(
-								"walls",
-								random.randrange(0, wall_sheet.length),
-								(self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
-							)
-						)
-					else:
-						self.remove_tile(1, (0, row))
-						self.hallway_connection_tiles.append((0, row))
 				else:
-					self.add_tile(
-						1, (0, row),
-						Tile(
-							"walls",
-							random.randrange(0, wall_sheet.length),
-							(self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
-						)
-					)
+					self.remove_tile(1, (col, self.n_rows - 1))
+					self.hallway_connection_tiles.append((col, self.n_rows - 1))
 
-				if connections[3]:
-					if row < y_mid_point - gap_radius or row > y_mid_point + gap_radius:
-						self.add_tile(
-							1, (self.n_cols - 1, row),
-							Tile(
-								"walls",
-								random.randrange(0, wall_sheet.length),
-								((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
-							)
-						)
-					else:
-						self.remove_tile(1, (self.n_cols - 1, row))
-						self.hallway_connection_tiles.append((self.n_cols - 1, row))
-				else:
-					self.add_tile(
-						1, (self.n_cols - 1, row),
-						Tile(
-							"walls",
-							random.randrange(0, wall_sheet.length),
-							((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
-						)
+			else:
+				self.add_tile(
+					1, (col, self.n_rows - 1),
+					Tile(
+						"walls",
+						random.randrange(0, wall_sheet.length),
+						(col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1])
 					)
-		else:
-			y_mid_point = self.n_rows // 2
-
-			# Left and Right
-			for row in range(self.n_rows):
-				if connections[2]:
-					if row < y_mid_point - gap_radius or row > y_mid_point + gap_radius:
-						self.add_tile(
-							1, (0, row),
-							Tile(
-								"walls",
-								random.randrange(0, wall_sheet.length),
-								(self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
-							)
-						)
-					else:
-						self.remove_tile(1, (0, row))
-						self.hallway_connection_tiles.append((0, row))
-				else:
-					self.add_tile(
-						1, (0, row),
-						Tile(
-							"walls",
-							random.randrange(0, wall_sheet.length),
-							(self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
-						)
-					)
-
-				if connections[3]:
-					if row < y_mid_point - gap_radius or row > y_mid_point + gap_radius:
-						self.add_tile(
-							1, (self.n_cols - 1, row),
-							Tile(
-								"walls",
-								random.randrange(0, wall_sheet.length),
-								((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
-							)
-						)
-					else:
-						self.remove_tile(1, (self.n_cols - 1, row))
-						self.hallway_connection_tiles.append((self.n_cols - 1, row))
-				else:
-					self.add_tile(
-						1, (self.n_cols - 1, row),
-						Tile(
-							"walls",
-							random.randrange(0, wall_sheet.length),
-							((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
-						)
-					)
+				)
 
 	def generate_floor(self):
 		tiles_sheet = pygbase.ResourceManager.get_resource("sprite_sheet", "tiles")

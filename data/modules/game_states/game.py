@@ -16,8 +16,8 @@ class Game(pygbase.GameState, name="game"):
 		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
 		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
 
-		room_separation = 29
-		self.level: Level = LevelGenerator(30, self.entity_manager, room_separation, 1).generate_level()
+		room_separation = 21
+		self.level: Level = LevelGenerator(100, self.entity_manager, room_separation, 1).generate_level()
 
 		self.camera = pygbase.Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
 
