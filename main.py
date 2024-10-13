@@ -6,6 +6,7 @@ from data.modules.base.constants import TILE_SCALE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import IMAGE_DIR, SPRITE_SHEET_DIR
 from data.modules.entities.enemies.enemy_builder import EnemyBuilder
 from data.modules.entities.enemies.test_enemy import TestEnemy
+from data.modules.game_states.game import Game
 from data.modules.game_states.main_menu import MainMenu
 from data.modules.objects.object_loader import ObjectLoader
 
@@ -51,7 +52,7 @@ if __name__ == '__main__':
 	EnemyBuilder.register_enemy("test", TestEnemy)
 
 	# Run app
-	app = pygbase.App(MainMenu, run_on_load_complete=(ObjectLoader.init,))
+	app = pygbase.App(Game, run_on_load_complete=(ObjectLoader.init,))
 	app.run()
 
 	pygbase.quit()

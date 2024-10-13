@@ -53,3 +53,24 @@ def draw_rect_outline(display: pygame.Surface, colour, pos: tuple[int | float, i
 		(pos, size),
 		width=width
 	)
+
+
+def one_if_even(*nums: int) -> int:
+	for num in nums:
+		if num % 2 != 0:
+			return 0
+	return 1
+
+
+def one_if_odd(*nums: int) -> int:
+	for num in nums:
+		if num % 2 == 0:
+			return 0
+	return 1
+
+
+def even_flipper(num: int):
+	"""
+	:return: 1 if even else -1
+	"""
+	return 1 if num % 2 == 0 else -1

@@ -10,7 +10,7 @@ from pygbase import Camera
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import ROOM_DIR, BATTLE_DIR
-from data.modules.base.utils import get_tile_pos
+from data.modules.base.utils import get_tile_pos, one_if_odd, even_flipper, one_if_even
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.level.room import Room, Hallway
 from data.modules.objects.tile import Tile
@@ -74,35 +74,279 @@ class Level:
 		return self.tiles[layer][tile_pos]
 
 	def add_room(self, room_pos: tuple[int, int], room_name: str, battle_name: str = ""):
-		room = Room(room_name, self.entity_manager, battle_name, self, offset=(room_pos[0] * self.room_separation * TILE_SIZE, room_pos[1] * self.room_separation * TILE_SIZE))
+		room = Room(
+			room_name,
+			self.entity_manager,
+			battle_name,
+			self,
+			offset=(
+				room_pos[0] * self.room_separation,
+				room_pos[1] * self.room_separation
+			)
+		)
+
 		self.rooms[room_pos] = room
 		room.populate_tiles()
 		return room
 
 	def add_room_ex(self, room_pos: tuple[int, int], room_name: str, connections: tuple[bool, bool, bool, bool], battle_name: str, room_data: dict):
-		offset = (self.room_separation - room_data["cols"]) // 2, (self.room_separation - room_data["rows"]) // 2
+		offset = (
+			(self.room_separation - room_data["cols"]) // 2,
+			(self.room_separation - room_data["rows"]) // 2
+		)
 
-		room = Room(room_name, self.entity_manager, battle_name, self, offset=(room_pos[0] * self.room_separation * TILE_SIZE + offset[0] * TILE_SIZE, room_pos[1] * self.room_separation * TILE_SIZE + offset[1] * TILE_SIZE), connections=connections)
+		odd_sep_offset = (0, 0)
+		if self.room_separation % 2 != 0:
+			odd_sep_offset = (
+				one_if_even(room_data["cols"]),
+				one_if_even(room_data["rows"])
+			)
+
+		room = Room(
+			room_name,
+			self.entity_manager,
+			battle_name,
+			self,
+			offset=(
+				room_pos[0] * self.room_separation + offset[0] + odd_sep_offset[0],
+				room_pos[1] * self.room_separation + offset[1] + odd_sep_offset[1]
+			),
+			connections=connections
+		)
+
 		self.rooms[room_pos] = room
 		room.populate_tiles()
 		return room
 
 	def add_hallway(self, room_pos: tuple[int, int], connected_room_pos: tuple[int, int], room_data: dict, connected_room_data: dict):
+		"""
+
+		:param room_pos: Current room tile position
+		:param connected_room_pos: Room tile position of connecting room
+		:param room_data: Data for current room
+		:param connected_room_data: Data of connecting room
+		"""
 		room_size = room_data["cols"], room_data["rows"]
 		connected_room_size = connected_room_data["cols"], connected_room_data["rows"]
 
+		# Room width and sep is even
+		if room_size[0] % 2 == 0 and self.room_separation % 2 == 0:
+			center_x = (
+					int((room_pos[0] + 0.5) * self.room_separation)
+					+ 1
+			)
+
+			room_left = center_x - room_size[0] // 2 + 1
+			room_right = center_x + room_size[0] // 2 - 1
+		elif room_size[0] % 2 == 0 and self.room_separation % 2 != 0:  # Room width even, odd sep
+			center_x = (
+					int((room_pos[0] + 0.5) * self.room_separation)
+					+ one_if_odd(self.room_separation, room_size[0])
+					+ one_if_even(room_size[0])
+			)
+
+			room_left = center_x - room_size[0] // 2
+			room_right = center_x + room_size[0] // 2 - 1
+		elif room_size[0] % 2 != 0 and self.room_separation % 2 == 0:  # Room width odd, even sep
+			center_x = (
+					int((room_pos[0] + 0.5) * self.room_separation)
+					+ one_if_odd(self.room_separation, room_size[0])
+					+ one_if_even(room_size[0])
+			)
+
+			room_left = center_x - room_size[0] // 2
+			room_right = center_x + room_size[0] // 2
+		else:  # Room width and sep odd
+			center_x = (
+					int((room_pos[0] + 0.5) * self.room_separation)
+					+ one_if_odd(self.room_separation, room_size[0])
+					+ one_if_even(room_size[0])
+			)
+
+			room_left = center_x - room_size[0] // 2
+			room_right = center_x + room_size[0] // 2
+
+		# Room height and sep is even
+		if room_size[1] % 2 == 0 and self.room_separation % 2 == 0:
+			center_y = (
+					int((room_pos[1] + 0.5) * self.room_separation)
+					+ one_if_odd(self.room_separation, room_size[1])
+					+ one_if_even(room_size[1])
+			)
+
+			room_top = center_y - room_size[1] // 2 + 1
+			room_bottom = center_y + room_size[1] // 2 - 1
+		elif room_size[1] % 2 == 0 and self.room_separation % 2 != 0:  # Room height even, odd sep
+			center_y = (
+					int((room_pos[1] + 0.5) * self.room_separation)
+					+ one_if_odd(self.room_separation, room_size[1])
+					+ one_if_even(room_size[1])
+			)
+
+			room_top = center_y - room_size[1] // 2 + 1
+			room_bottom = center_y + room_size[1] // 2 - 1
+		elif room_size[1] % 2 != 0 and self.room_separation % 2 == 0:  # Room height odd, even sep
+			center_y = (
+					int((room_pos[1] + 0.5) * self.room_separation)
+					+ one_if_odd(self.room_separation, room_size[1])
+					+ one_if_even(room_size[1])
+			)
+
+			room_top = center_y - room_size[1] // 2
+			room_bottom = center_y + room_size[1] // 2
+		else:  # Room height and sep odd
+			center_y = (
+					int((room_pos[1] + 0.5) * self.room_separation)
+					+ one_if_odd(self.room_separation, room_size[1])
+					+ one_if_even(room_size[1])
+			)
+
+			room_top = center_y - room_size[1] // 2
+			room_bottom = center_y + room_size[1] // 2
+
+		# Connected room width
+		if connected_room_size[0] % 2 == 0 and self.room_separation % 2 == 0:
+			connected_center_x = int((connected_room_pos[0] + 0.5) * self.room_separation) + one_if_odd(self.room_separation)
+
+			connected_room_left = (
+					connected_center_x - connected_room_size[0] // 2
+					+ 1
+			)
+			connected_room_right = (
+					connected_center_x + connected_room_size[0] // 2
+			)
+		elif connected_room_size[0] % 2 == 0 and self.room_separation % 2 != 0:
+			connected_center_x = int((connected_room_pos[0] + 0.5) * self.room_separation) + one_if_odd(self.room_separation)
+
+			connected_room_left = (
+					connected_center_x - connected_room_size[0] // 2
+					+ 1
+			)
+			connected_room_right = (
+					connected_center_x + connected_room_size[0] // 2
+					- 1
+			)
+		elif connected_room_size[0] % 2 != 0 and self.room_separation % 2 == 0:
+			connected_center_x = int((connected_room_pos[0] + 0.5) * self.room_separation) + one_if_odd(self.room_separation)
+
+			connected_room_left = (
+					connected_center_x - connected_room_size[0] // 2
+			)
+			connected_room_right = (
+					connected_center_x + connected_room_size[0] // 2
+			)
+		else:
+			connected_center_x = int((connected_room_pos[0] + 0.5) * self.room_separation) + one_if_odd(self.room_separation)
+
+			connected_room_left = (
+					connected_center_x - connected_room_size[0] // 2
+			)
+			connected_room_right = (
+					connected_center_x + connected_room_size[0] // 2
+					- 1
+			)
+
+		# Connected room height
+		if connected_room_size[1] % 2 == 0 and self.room_separation % 2 == 0:
+			connected_center_y = int((connected_room_pos[1] + 0.5) * self.room_separation) + one_if_odd(self.room_separation)
+
+			connected_room_top = (
+					connected_center_y - connected_room_size[1] // 2
+					+ 1
+			)
+			connected_room_bottom = (
+					connected_center_y + connected_room_size[1] // 2
+			)
+		elif connected_room_size[1] % 2 == 0 and self.room_separation % 2 != 0:
+			connected_center_y = int((connected_room_pos[1] + 0.5) * self.room_separation) + one_if_odd(self.room_separation)
+
+			connected_room_top = (
+					connected_center_y - connected_room_size[1] // 2
+					+ 1
+			)
+			connected_room_bottom = (
+					connected_center_y + connected_room_size[1] // 2
+					- 1
+			)
+		elif connected_room_size[1] % 2 != 0 and self.room_separation % 2 == 0:
+			connected_center_y = int((connected_room_pos[1] + 0.5) * self.room_separation) + one_if_odd(self.room_separation)
+
+			connected_room_top = (
+					connected_center_y - connected_room_size[1] // 2
+			)
+			connected_room_bottom = (
+					connected_center_y + connected_room_size[1] // 2
+			)
+		else:
+			connected_center_y = int((connected_room_pos[1] + 0.5) * self.room_separation) + one_if_odd(self.room_separation)
+
+			connected_room_top = (
+					connected_center_y - connected_room_size[1] // 2
+			)
+			connected_room_bottom = (
+					connected_center_y + connected_room_size[1] // 2
+					- 1
+			)
+
 		# Horizontal connection
 		if room_pos[1] == connected_room_pos[1]:
-			center_x = int((room_pos[0] + 0.5) + self.room_separation)
-			center_y = int((room_pos[1] + 0.5) + self.room_separation)
+			wall_gap = self.wall_gap_radius * 2 + 1
 
 			# Left
 			if connected_room_pos[0] < room_pos[0]:
-				room_left_x = center_x - room_size[0] // 2
+				width = room_left - connected_room_right - 1
+				offset = (connected_room_right, center_y - self.wall_gap_radius - 2)
+				# logging.debug(f"Spawning hallway size {width}, {wall_gap} at {offset}")
+				Hallway(
+					self.entity_manager, self,
+					wall_gap + 2,
+					width,
+					True,
+					offset
+				).populate_tiles()
 
 			# Right
 			if room_pos[0] < connected_room_pos[0]:
-				room_left_x = center_x + room_size[0] // 2
+				width = connected_room_left - room_right - 1
+				offset = (room_right, center_y - self.wall_gap_radius - 2)
+				# logging.debug(f"Spawning hallway size {width}, {wall_gap} at {offset}")
+				Hallway(
+					self.entity_manager, self,
+					wall_gap + 2,
+					width,
+					True,
+					offset
+				).populate_tiles()
+
+		# Vertical Connection
+		if room_pos[0] == connected_room_pos[0]:
+			wall_gap = self.wall_gap_radius * 2 + 1
+
+			# Top
+			if connected_room_pos[1] < room_pos[1]:
+				height = room_top - connected_room_bottom - 1
+				offset = (center_x - self.wall_gap_radius - 2, connected_room_bottom)
+				# logging.debug(f"Spawning hallway size {height}, {wall_gap} at {offset}")
+				Hallway(
+					self.entity_manager, self,
+					height,
+					wall_gap + 2,
+					False,
+					offset
+				).populate_tiles()
+
+			# Bottom
+			if room_pos[1] < connected_room_pos[1]:
+				height = connected_room_top - room_bottom - 1
+				offset = (center_x - self.wall_gap_radius - 2, room_bottom)
+				# logging.debug(f"Spawning hallway size {height}, {wall_gap} at {offset}")
+				Hallway(
+					self.entity_manager, self,
+					height,
+					wall_gap + 2,
+					False,
+					offset
+				).populate_tiles()
 
 	def get_room(self, pos: tuple[float, float] | pygame.Vector2) -> Room | None:
 		"""
@@ -119,12 +363,15 @@ class Level:
 	def update(self, delta: float, player_pos: pygame.Vector2):
 		player_room_pos = get_tile_pos(player_pos, (self.room_separation * TILE_SIZE, self.room_separation * TILE_SIZE))
 		current_room = self.get_room_from_room_pos(player_room_pos)
+		if current_room is None:
+			return
 
 		player_room_tile_pos = get_tile_pos(player_pos, (TILE_SIZE, TILE_SIZE))
 		player_room_tile_pos = player_room_tile_pos[0] - current_room.tile_offset[0], player_room_tile_pos[1] - current_room.tile_offset[1]
 
 		# print(player_room_tile_pos, current_room.n_cols, current_room.n_rows)
 
+		# Call enter or exit for the respective rooms
 		if not self.prev_player_room_pos and 1 <= player_room_tile_pos[0] < current_room.n_cols and 1 <= player_room_tile_pos[1] < current_room.n_rows - 1:
 			self.prev_player_room_pos = player_room_pos
 
@@ -135,7 +382,8 @@ class Level:
 
 			self.prev_player_room_pos = player_room_pos
 
-		self.get_room(player_pos).update(delta)
+		# Update the current room
+		self.get_room(player_pos).update(delta)  # Could replace with current room?
 
 	def draw_tile(self, layer: int, tile_pos: tuple[int, int], surface: pygame.Surface, camera: Camera):
 		# room = self.get_room((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE))
@@ -183,17 +431,21 @@ class LevelGenerator:
 		level.connections.clear()
 
 		def add_connection(start: tuple[int, int], end: tuple[int, int]):
-			if start not in connections:
-				connections[start] = []
-			connections[start].append(end)
+			if start not in connection_data:
+				connection_data[start] = []
+			connection_data[start].append(end)
 
-			if end not in connections:
-				connections[end] = []
-			connections[end].append(start)
+			if end not in connection_data:
+				connection_data[end] = []
+			connection_data[end].append(start)
 
-		def get_connections(pos: tuple[int, int]):
+		def get_connections(pos: tuple[int, int]) -> tuple[bool, bool, bool, bool]:
 			top, bottom, left, right = False, False, False, False
-			for _connection in connections[pos]:
+
+			if pos not in connection_data:
+				return top, bottom, left, right
+
+			for _connection in connection_data[pos]:
 				if _connection[0] == pos[0] and _connection[1] == pos[1] - 1:
 					top = True
 				elif _connection[0] == pos[0] and _connection[1] == pos[1] + 1:
@@ -202,6 +454,7 @@ class LevelGenerator:
 					left = True
 				elif _connection[0] == pos[0] + 1 and _connection[1] == pos[1]:
 					right = True
+
 			return top, bottom, left, right
 
 		# Directions for generation
@@ -229,7 +482,7 @@ class LevelGenerator:
 					rooms[name] = room_data
 
 				# Ignore special rooms
-				if name not in ("lobby", "start", "start2", "room1"):
+				if name not in ("lobby", "start", "start2"):
 					room_names.append(name)
 
 		# Load available battles
@@ -242,7 +495,7 @@ class LevelGenerator:
 
 		# Room generation
 		rooms_to_generate: set[tuple[int, int]] = set()
-		connections: dict[tuple[int, int], list[tuple[int, int]]] = {}  # Start, list[end]
+		connection_data: dict[tuple[int, int], list[tuple[int, int]]] = {}  # Start, list[end]
 		end_rooms: list[tuple[int, int]] = []
 
 		room_queue: deque[tuple[tuple[int, int], int]] = deque()  # Position, depth
@@ -291,9 +544,11 @@ class LevelGenerator:
 				# This room is the final room in its branch
 				end_rooms.append(room_pos)
 
-		# Finalize generation
-		# TODO: Add hallways when needed
+		# Finalize generation through adding rooms and hallways
+		# {room_pos: room_name}
 		generated_rooms: dict[tuple[int, int], str] = {}
+
+		# Add rooms
 		rooms_added = set()
 		for room_pos in rooms_to_generate:
 			room_name = random.choice(room_names) if room_pos != (0, 0) else "start2"
@@ -316,8 +571,36 @@ class LevelGenerator:
 
 			generated_rooms[room_pos] = room_name
 
-		for room_pos, room_name in generated_rooms.items():
+		# Add hallways
+		# Process connection graph to be one directional
+		hallway_connections: dict[tuple[int, int], list[tuple[int, int]]] = {}
+		visited_connections: set[tuple[int, int]] = set()
+
+		connection_graph_start = (0, 0)
+
+		connection_graph_queue = deque()
+		connection_graph_queue.append(connection_graph_start)
+		visited_connections.add(connection_graph_start)
+
+		while len(connection_graph_queue) > 0:
+			current = connection_graph_queue.popleft()
+
+			for connection in connection_data[current]:
+				if connection not in visited_connections:
+					hallway_connections.setdefault(current, []).append(connection)
+					visited_connections.add(connection)
+
+					connection_graph_queue.append(connection)
+
+		# Add hallways
+		# logging.debug(f"{hallway_connections=}")
+		for room_pos, connections in hallway_connections.items():
 			for connection in connections:
-				level.add_hallway(room_pos, connection, rooms[room_name], rooms[generated_rooms[connection]])
+				level.add_hallway(
+					room_pos,
+					connection,
+					rooms[generated_rooms[room_pos]],
+					rooms[generated_rooms[connection]]
+				)
 
 		return level

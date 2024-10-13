@@ -27,8 +27,10 @@ class BaseRoom:
 		self.n_rows = n_rows
 		self.n_cols = n_cols
 
-		self.offset = int(offset[0]), int(offset[1])
-		self.tile_offset = get_tile_pos(self.offset, (TILE_SIZE, TILE_SIZE))
+		self.tile_offset = offset
+		# self.tile_offset = get_tile_pos(self.offset, (TILE_SIZE, TILE_SIZE))
+		# self.offset = int(offset[0]), int(offset[1])
+		self.offset = offset[0] * TILE_SIZE, offset[1] * TILE_SIZE
 
 		self.objects: list[GameObject] = []
 
@@ -552,19 +554,66 @@ class EditorRoom(BaseRoom):
 
 
 class Hallway(LevelRoom):
-	def __init__(self, entity_manager: EntityManager, level: "Level", n_rows: int, n_cols: int, offset: tuple = (0, 0)):
+	def __init__(self, entity_manager: EntityManager, level: "Level", n_rows: int, n_cols: int, horizontal: bool, offset: tuple = (0, 0)):
 		super().__init__("", entity_manager, level, n_rows, n_cols, offset)
 
+		self.horizontal = horizontal
+
+	def populate_tiles(self):
 		self.create()
 
 	def create(self):
 		tiles_sheet = pygbase.ResourceManager.get_resource("sprite_sheet", "tiles")
+		walls_sheet = pygbase.ResourceManager.get_resource("sprite_sheet", "walls")
 
-		# Create floor
-		for row in range(self.n_rows):
+		if self.horizontal:
+			# Create floor
+			for row in range(self.n_rows - 2):
+				row = row + 1
+				for col in range(self.n_cols):
+					self.add_tile(0, (col, row), Tile(
+						"tiles",
+						random.randrange(0, tiles_sheet.length),
+						(col * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
+					))
+
+			# Create walls
 			for col in range(self.n_cols):
-				self.add_tile(0, (col, row), Tile(
-					"tiles",
-					random.randrange(0, tiles_sheet.length),
-					(col * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
+				self.add_tile(1, (col, 0), Tile(
+					"walls",
+					random.randrange(0, walls_sheet.length),
+					(col * TILE_SIZE + self.offset[0], TILE_SIZE + self.offset[1])
+				))
+
+				self.add_tile(1, (col, self.n_rows - 1), Tile(
+					"walls",
+					random.randrange(0, walls_sheet.length),
+					(col * TILE_SIZE + self.offset[0], self.n_rows * TILE_SIZE + self.offset[1])
+				))
+
+
+		else:
+			# Create floor
+			for row in range(self.n_rows):
+				for col in range(self.n_cols - 2):
+					col = col + 1
+
+					self.add_tile(0, (col, row), Tile(
+						"tiles",
+						random.randrange(0, tiles_sheet.length),
+						(col * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
+					))
+
+			# Create walls
+			for row in range(self.n_rows):
+				self.add_tile(1, (0, row), Tile(
+					"walls",
+					random.randrange(0, walls_sheet.length),
+					(self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
+				))
+
+				self.add_tile(1, (self.n_cols - 1, row), Tile(
+					"walls",
+					random.randrange(0, walls_sheet.length),
+					((self.n_cols - 1) * TILE_SIZE + self.offset[0], (row + 1) * TILE_SIZE + self.offset[1])
 				))

@@ -1,5 +1,3 @@
-import logging
-
 import pygame
 from pygbase import ResourceManager, Camera
 from pygbase.graphics.image import Image
