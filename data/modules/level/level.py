@@ -274,57 +274,32 @@ class LevelGenerator:
 		self.room_separation = room_separation
 		self.wall_gap_radius = wall_gap_radius
 
-	# TODO: Redo generation to be over multiple frames
-	def generate_level(self):
-		level = Level(self.entity_manager, self.room_separation, self.wall_gap_radius)
+		# Room data
+		self.rooms: dict[str, dict] = {}
+		self.room_names: list[str] = []
+		self._load_room_data()
 
-		# Reset level
-		# TODO: Why?
-		for room in level.rooms.values():
-			room.remove_objects()
+		# Battle data
+		self.battle_names: list[str] = []
+		self._load_battle_data()
 
-		level.rooms.clear()
-		level.connections.clear()
+		# Room graph
+		self.rooms_to_generate: set[tuple[int, int]] = set()
+		self.connection_data: dict[tuple[int, int], list[tuple[int, int]]] = {}
+		self.end_rooms: list[tuple[int, int]] = []
+		self.room_queue: deque[tuple[tuple[int, int], int]] = deque()  # Position, depth
 
-		def add_connection(start: tuple[int, int], end: tuple[int, int]):
-			if start not in connection_data:
-				connection_data[start] = []
-			connection_data[start].append(end)
+		# Hallway graph
+		self.hallway_connections: dict[tuple[int, int], list[tuple[int, int]]] = {}
+		self.visited_connections: set[tuple[int, int]] = set()
 
-			if end not in connection_data:
-				connection_data[end] = []
-			connection_data[end].append(start)
+		# Rooms
+		self.generated_rooms: dict[tuple[int, int], str] = {}  # {room_pos: room_name}
 
-		def get_connections(pos: tuple[int, int]) -> tuple[bool, bool, bool, bool]:
-			top, bottom, left, right = False, False, False, False
+		# Level
+		self.level = Level(self.entity_manager, self.room_separation, self.wall_gap_radius)
 
-			if pos not in connection_data:
-				return top, bottom, left, right
-
-			for _connection in connection_data[pos]:
-				if _connection[0] == pos[0] and _connection[1] == pos[1] - 1:
-					top = True
-				elif _connection[0] == pos[0] and _connection[1] == pos[1] + 1:
-					bottom = True
-				elif _connection[0] == pos[0] - 1 and _connection[1] == pos[1]:
-					left = True
-				elif _connection[0] == pos[0] + 1 and _connection[1] == pos[1]:
-					right = True
-
-			return top, bottom, left, right
-
-		# Directions for generation
-		directions = [
-			(1, 0),
-			(-1, 0),
-			(0, 1),
-			(0, -1)
-		]
-
-		# All the rooms available
-		rooms: dict[str, dict] = {}
-		room_names = []
-
+	def _load_room_data(self):
 		for _, _, file_names in os.walk(ROOM_DIR):
 			for file_name in file_names:
 				name = file_name[:-5]  # Remove .json
@@ -335,39 +310,68 @@ class LevelGenerator:
 					if room_data["rows"] > self.room_separation or room_data["cols"] > self.room_separation:
 						continue
 
-					rooms[name] = room_data
+					self.rooms[name] = room_data
 
 				# Ignore special rooms
 				if name not in ("lobby", "start", "start2"):
-					room_names.append(name)
+					self.room_names.append(name)
 
-		# Load available battles
-		battle_names = []
+	def _load_battle_data(self):
 		for _, _, file_names in os.walk(BATTLE_DIR):
 			for file_name in file_names:
 				name = file_name[:-5]  # Remove .json
 
-				battle_names.append(name)
+				self.battle_names.append(name)
+
+	def _add_connection(self, start: tuple[int, int], end: tuple[int, int]):
+		if start not in self.connection_data:
+			self.connection_data[start] = []
+		self.connection_data[start].append(end)
+
+		if end not in self.connection_data:
+			self.connection_data[end] = []
+		self.connection_data[end].append(start)
+
+	def _get_connections(self, pos: tuple[int, int]) -> tuple[bool, bool, bool, bool]:
+		top, bottom, left, right = False, False, False, False
+
+		if pos not in self.connection_data:
+			return top, bottom, left, right
+
+		for _connection in self.connection_data[pos]:
+			if _connection[0] == pos[0] and _connection[1] == pos[1] - 1:
+				top = True
+			elif _connection[0] == pos[0] and _connection[1] == pos[1] + 1:
+				bottom = True
+			elif _connection[0] == pos[0] - 1 and _connection[1] == pos[1]:
+				left = True
+			elif _connection[0] == pos[0] + 1 and _connection[1] == pos[1]:
+				right = True
+
+		return top, bottom, left, right
+
+	def _generate_room_graph(self):
+		# Directions for generation
+		directions = [
+			(1, 0),
+			(-1, 0),
+			(0, 1),
+			(0, -1)
+		]
 
 		# Room generation
-		rooms_to_generate: set[tuple[int, int]] = set()
-		connection_data: dict[tuple[int, int], list[tuple[int, int]]] = {}  # Start, list[end]
-		end_rooms: list[tuple[int, int]] = []
-
-		room_queue: deque[tuple[tuple[int, int], int]] = deque()  # Position, depth
-
 		# Add start room
-		rooms_to_generate.add((0, 0))
+		self.rooms_to_generate.add((0, 0))
 
 		# Start in all directions
 		for direction in directions:
-			rooms_to_generate.add(direction)
-			room_queue.append((direction, 1))
-			add_connection((0, 0), direction)
+			self.rooms_to_generate.add(direction)
+			self.room_queue.append((direction, 1))
+			self._add_connection((0, 0), direction)
 
-		while len(room_queue) > 0:
+		while len(self.room_queue) > 0:
 			# Get room info, and move to end of queue
-			room_info = room_queue.popleft()
+			room_info = self.room_queue.popleft()
 			room_pos = room_info[0]
 			room_depth = room_info[1]
 
@@ -378,7 +382,7 @@ class LevelGenerator:
 			available_directions = []
 			for direction in directions:
 				new_pos = (room_pos[0] + direction[0], room_pos[1] + direction[1])
-				if new_pos not in rooms_to_generate:
+				if new_pos not in self.rooms_to_generate:
 					available_directions.append(direction)
 
 			# If direction not available, continue
@@ -391,72 +395,80 @@ class LevelGenerator:
 				direction = random.choice(available_directions)
 				new_pos = room_pos[0] + direction[0], room_pos[1] + direction[1]
 
-				rooms_to_generate.add(new_pos)
-				add_connection(room_pos, new_pos)
-				room_queue.append((new_pos, room_depth + 1))
+				self.rooms_to_generate.add(new_pos)
+				self._add_connection(room_pos, new_pos)
+				self.room_queue.append((new_pos, room_depth + 1))
 
-				room_queue.append(room_info)  # Current room still active, move to end of queue
+				self.room_queue.append(room_info)  # Current room still active, move to end of queue
 			else:
 				# This room is the final room in its branch
-				end_rooms.append(room_pos)
+				self.end_rooms.append(room_pos)
 
-		# Finalize generation through adding rooms and hallways
-		# {room_pos: room_name}
-		generated_rooms: dict[tuple[int, int], str] = {}
-
-		# Add rooms
+	def _generate_rooms_from_graph(self):
 		rooms_added = set()
-		for room_pos in rooms_to_generate:
-			room_name = random.choice(room_names) if room_pos != (0, 0) else "start2"
+		for room_pos in self.rooms_to_generate:
+			room_name = random.choice(self.room_names) if room_pos != (0, 0) else "start2"
 
-			room_connections = get_connections(room_pos)
+			room_connections = self._get_connections(room_pos)
 
 			if room_name != "start2":
 				if room_pos not in rooms_added:
 					rooms_added.add(room_pos)
 				else:
 					logging.warning("Duplicate")
-				level.add_room_ex(room_pos, room_name, room_connections, random.choice(battle_names), rooms[room_name])
+				self.level.add_room_ex(
+					room_pos, room_name,
+					room_connections,
+					random.choice(self.battle_names),
+					self.rooms[room_name]
+				)
 			else:
 				if room_pos not in rooms_added:
 					rooms_added.add(room_pos)
 				else:
 					logging.warning("Duplicate")
 
-				level.add_room_ex(room_pos, room_name, room_connections, "", rooms[room_name])
+				self.level.add_room_ex(room_pos, room_name, room_connections, "", self.rooms[room_name])
 
-			generated_rooms[room_pos] = room_name
+			self.generated_rooms[room_pos] = room_name
 
-		# Add hallways
-		# Process connection graph to be one directional
-		hallway_connections: dict[tuple[int, int], list[tuple[int, int]]] = {}
-		visited_connections: set[tuple[int, int]] = set()
+	def _generate_hallway_graph(self):
+		"""
+		Processes the connection_data graph to be one dimensional
+		"""
 
 		connection_graph_start = (0, 0)
 
 		connection_graph_queue = deque()
 		connection_graph_queue.append(connection_graph_start)
-		visited_connections.add(connection_graph_start)
+		self.visited_connections.add(connection_graph_start)
 
 		while len(connection_graph_queue) > 0:
 			current = connection_graph_queue.popleft()
 
-			for connection in connection_data[current]:
-				if connection not in visited_connections:
-					hallway_connections.setdefault(current, []).append(connection)
-					visited_connections.add(connection)
+			for connection in self.connection_data[current]:
+				if connection not in self.visited_connections:
+					self.hallway_connections.setdefault(current, []).append(connection)
+					self.visited_connections.add(connection)
 
 					connection_graph_queue.append(connection)
 
-		# Add hallways
-		# logging.debug(f"{hallway_connections=}")
-		for room_pos, connections in hallway_connections.items():
+	def _generate_hallways_from_graph(self):
+		for room_pos, connections in self.hallway_connections.items():
 			for connection in connections:
-				level.add_hallway(
+				self.level.add_hallway(
 					room_pos,
 					connection,
-					level.get_room_from_room_pos(room_pos),
-					level.get_room_from_room_pos(connection)
+					self.level.get_room_from_room_pos(room_pos),
+					self.level.get_room_from_room_pos(connection)
 				)
 
-		return level
+	# TODO: Redo generation to be over multiple frames
+	def generate_level(self):
+		self._generate_room_graph()
+		self._generate_rooms_from_graph()
+
+		self._generate_hallway_graph()
+		self._generate_hallways_from_graph()
+
+		return self.level
