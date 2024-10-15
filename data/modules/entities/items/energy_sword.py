@@ -65,11 +65,11 @@ class EnergySword(Item):
 		else:
 			self.angle_offset = 0
 
-	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
+	def draw(self, surface: pygame.Surface, camera: pygbase.Camera):
 		draw_angle = self.angle + (self.starting_angle_offset - self.angle_offset) * self.convert_flip() + (180 if self.flip_x else 0)
 
 		self.animations.draw_at_pos(
-			screen,
+			surface,
 			self.pos,
 			camera,
 			angle=draw_angle,

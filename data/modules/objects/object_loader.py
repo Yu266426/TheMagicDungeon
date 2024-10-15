@@ -13,17 +13,22 @@ from data.modules.objects.object_registry import ObjectRegistry
 class ObjectLoader:
 	# object_name: (object_type, sprite, hitbox, behaviour, tags) for static and animated
 	# object_name: (object_type, object_class, tags) for custom
-	objects: dict[str, tuple] = {}
+	object_data: dict[str, tuple] = {}
 
 	@classmethod
 	def init(cls):
 		for object_file in os.listdir(OBJECT_DIR):
-			cls.load_object(object_file[:-5])
+			name, extension = object_file.split(".")
 
-		logging.info(f"Loaded {len(cls.objects)} objects")
+			if extension == "json":
+				cls._load_object(name)
+			else:
+				logging.warning(f"Non .json file \"{object_file}\" found in objects directory")
+
+		logging.info(f"Loaded {len(cls.object_data)} objects")
 
 	@classmethod
-	def load_object(cls, object_name: str):
+	def _load_object(cls, object_name: str):
 		json_path = OBJECT_DIR / f"{object_name}.json"
 
 		with open(json_path) as json_file:
@@ -47,9 +52,9 @@ class ObjectLoader:
 		# Type-dependent data
 		object_type: str = data["type"]
 		if object_type == "static":
-			sprite_sheet_name = data["sprite_sheet_name"]
+			sprite_sheet_name = data["sprite_sheet"]
 
-			cls.objects[object_name] = (
+			cls.object_data[object_name] = (
 				object_type,
 				pygbase.ResourceManager.get_resource("sprite_sheet", sprite_sheet_name).get_image(data["image_index"]),
 				hitbox,
@@ -57,9 +62,9 @@ class ObjectLoader:
 				tags
 			)
 		elif object_type == "animated":
-			sprite_sheet_name = data["sprite_sheet_name"]
+			sprite_sheet_name = data["sprite_sheet"]
 
-			cls.objects[object_name] = (
+			cls.object_data[object_name] = (
 				object_type,
 				("sprite_sheet", sprite_sheet_name, data["animation_start_index"], data["animation_length"], data["animation_looping"]),
 				hitbox,
@@ -67,7 +72,7 @@ class ObjectLoader:
 				tags
 			)
 		elif object_type == "custom":
-			cls.objects[data["name"]] = (
+			cls.object_data[data["name"]] = (
 				object_type,
 				ObjectRegistry.get_object_type(data["name"]),
 				tags
@@ -76,19 +81,33 @@ class ObjectLoader:
 			raise ValueError(f"{object_name} object file has invalid type <{type}>")
 
 	@classmethod
-	def create_object(cls, name: str, pos: pygame.Vector2 | tuple, pixel_pos: bool = False) -> tuple[GameObject, tuple[str, ...]]:
+	def create_object(cls, name: str, pos: pygame.typing.Point, is_pixel: bool = False) -> tuple[GameObject, tuple[str, ...]]:
 		"""
 		Creates an object based on inputs
 
 		:param name: Name of object
 		:param pos: Position to spawn object at
-		:param pixel_pos: If position is in tiles or pixels
+		:param is_pixel: If position is in tiles or pixels
 		:return: tuple[object, tags]
 		"""
-		object_data = cls.objects[name]
+		object_data = cls.object_data[name]
 		if object_data[0] == "static":
-			return GameObject(name, pos, pixel_pos, object_data[1], custom_hitbox=object_data[2]), object_data[4]
+			return GameObject(
+				name,
+				pos,
+				is_pixel,
+				object_data[1],  # Sprite
+				custom_hitbox=object_data[2]
+			), object_data[4]
+
 		elif object_data[0] == "animated":
-			return GameObject(name, pos, pixel_pos, pygbase.Animation(*object_data[1]), custom_hitbox=object_data[2]), object_data[4]
+			return (GameObject(
+				name,
+				pos,
+				is_pixel,
+				pygbase.Animation(*object_data[1]),  # Animation data
+				custom_hitbox=object_data[2]
+			), object_data[4])
+
 		elif object_data[0] == "custom":
-			return object_data[1](pos, pixel_pos), object_data[2]
+			return object_data[1](pos, is_pixel), object_data[2]

@@ -1,0 +1,30 @@
+{
+  "type": "basic",
+  "health": 10,
+  "hitbox": [
+    70,
+    50
+  ],
+  "animations": {
+    "idle": {
+      "sprite_sheet": "player_idle_animation",
+      "start_index": 0,
+      "length": 1,
+      "speed": 8
+    },
+    "run": {
+      "sprite_sheet": "player_run_animation",
+      "start_index": 0,
+      "length": 2,
+      "speed": 8
+    }
+  },
+  "states": {
+    "wander": {
+      "range": 5
+    },
+    "stunned": {
+      "time": 2
+    }
+  }
+}

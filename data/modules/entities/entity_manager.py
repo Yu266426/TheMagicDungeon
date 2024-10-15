@@ -38,19 +38,17 @@ class EntityManager:
 	def add_entity_to_remove(self, entity):
 		self.entities_to_remove.add(entity)
 
-	def get_entities_of_tag(self, tag: str):
+	def get_entities_of_tag(self, tag: str) -> list[Entity]:
 		if tag in self.tagged_entities:
 			return self.tagged_entities[tag]
 		else:
 			return []
 
-	def get_entities(self, y_pos: int):
-		entities = []
+	def get_entities(self, y_pos: int) -> list[Entity]:
 		if y_pos in self.sorted_entities:
-			for entity in self.sorted_entities[y_pos]:
-				entities.append(entity)
+			return [entity for entity in self.sorted_entities[y_pos]]
 
-		return entities
+		return []
 
 	def _remove_entities(self):
 		self.sorted_entities.clear()

@@ -71,6 +71,6 @@ class Player(Entity):
 
 		self.interaction_controller.update(self.entity_manager)
 
-	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
-		self.animations.draw_at_pos(screen, self.pos, camera, draw_pos="midbottom")
-		self.item_slot.draw(screen, camera)
+	def draw(self, surface: pygame.Surface, camera: pygbase.Camera):
+		self.animations.draw_at_pos(surface, self.pos, camera, draw_pos="midbottom")
+		self.item_slot.draw(surface, camera)

@@ -34,5 +34,5 @@ class Item(Entity):
 	def update(self, delta: float):
 		pass
 
-	def draw(self, screen: pygame.Surface, camera: Camera):
+	def draw(self, surface: pygame.Surface, camera: Camera):
 		pass

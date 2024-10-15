@@ -9,7 +9,7 @@ from data.modules.entities.states.entity_state import EntityState
 from data.modules.level.level import Level
 
 
-class WanderState(EntityState):
+class WanderState(EntityState, requires=(("range", int),)):
 	def __init__(self, pos: pygame.Vector2, movement: Movement, level: Level, wander_range: int, animations: pygbase.AnimationManager):
 		self.pos = pos
 		self.level = level

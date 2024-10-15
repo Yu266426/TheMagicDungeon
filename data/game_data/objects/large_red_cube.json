@@ -1,6 +1,6 @@
 {
   "type": "animated",
-  "sprite_sheet_name": "small_animatable",
+  "sprite_sheet": "small_animatable",
   "animation_start_index": 28,
   "animation_length": 2,
   "animation_looping": true

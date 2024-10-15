@@ -24,7 +24,7 @@ class ObjectSelectionScreen(pygbase.CameraController):
 			x = index % n_cols
 			y = index // n_cols
 
-			game_object = ObjectLoader.create_object(object_name, ((x + 0.5) * object_size[0], (y + 1) * object_size[1]), pixel_pos=True)[0]
+			game_object = ObjectLoader.create_object(object_name, ((x + 0.5) * object_size[0], (y + 1) * object_size[1]), is_pixel=True)[0]
 			game_object.removed()
 			self.objects.append(game_object)
 

@@ -35,14 +35,7 @@ class TestEnemy(Enemy):
 		self.animations.update(delta)
 		self.state_manager.update(delta)
 
-	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
-		# if not self.damage_timer.done():
-		# 	if math.sin(pygame.time.get_ticks() / 25) > 0:
-		# 		self.animations.draw_at_pos(screen, self.pos, camera, draw_pos="midbottom")
-		# else:
-		# 	self.animations.draw_at_pos(screen, self.pos, camera, draw_pos="midbottom")
-		if self.visible:
-			self.animations.draw_at_pos(screen, self.pos, camera, draw_pos="midbottom")
+	def draw(self, surface: pygame.Surface, camera: pygbase.Camera):
+		self.animations.draw_at_pos(surface, self.pos, camera, draw_pos="midbottom")
 
-	def is_alive(self):
-		return self.health.is_alive()
+		pygame.draw.rect(surface, "yellow", camera.world_to_screen_rect(self.collider.rect), width=1)

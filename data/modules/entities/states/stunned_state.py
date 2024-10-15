@@ -5,7 +5,7 @@ from data.modules.entities.components.movement import Movement
 from data.modules.entities.states.entity_state import EntityState
 
 
-class StunnedState(EntityState):
+class StunnedState(EntityState, requires=(("time", int),)):
 	def __init__(self, stunned_time: float, after_state: str, pos: pygame.Vector2, movement: Movement):
 		self.timer = pygbase.Timer(stunned_time, False, False)
 

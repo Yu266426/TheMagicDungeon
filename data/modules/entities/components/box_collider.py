@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 
 class BoxCollider:
 	def __init__(self, hitbox_size: tuple[int, int], pos: tuple = (0, 0)):
+		# Midbottom
 		self.pos = pygame.Vector2(pos)
 		self._hitbox = pygame.FRect(self.pos, hitbox_size)
 

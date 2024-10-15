@@ -34,7 +34,7 @@ class SwordSwing(Entity):
 		if abs(self.collider.angle - self.starting_angle) > self.max_angle:
 			self.alive = False
 
-	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
+	def draw(self, surface: pygame.Surface, camera: pygbase.Camera):
 		# self.collider.draw(screen, camera)
 
 		angle = self.starting_angle
@@ -43,4 +43,4 @@ class SwordSwing(Entity):
 		else:
 			angle += 90 + 180
 
-		self.animation.draw_at_pos(screen, self.parent_pos + pygame.Vector2(0, -70) * self.flip, camera, angle, (-0, 70 * self.flip), flip=(False, self.flip == -1), draw_pos="midbottom")
+		self.animation.draw_at_pos(surface, self.parent_pos + pygame.Vector2(0, -70) * self.flip, camera, angle, (-0, 70 * self.flip), flip=(False, self.flip == -1), draw_pos="midbottom")

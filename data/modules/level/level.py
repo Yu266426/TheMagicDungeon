@@ -264,7 +264,8 @@ class Level:
 				if layer == 1:
 					entities = self.entity_manager.get_entities(row)
 					for entity in entities:
-						entity.draw(surface, camera)
+						if entity.visible:
+							entity.draw(surface, camera)
 
 
 class LevelGenerator:
@@ -464,7 +465,7 @@ class LevelGenerator:
 				)
 
 	# TODO: Redo generation to be over multiple frames
-	def generate_level(self):
+	def generate_level(self) -> Level:
 		self._generate_room_graph()
 		self._generate_rooms_from_graph()
 
