@@ -87,9 +87,7 @@ class TileDrawState(EditorState):
 
 	def draw(self, screen: pygame.Surface):
 		draw_rect_outline(screen, (255, 255, 0), -self._shared_state.camera_controller.camera.pos, (self._room.n_cols * TILE_SIZE, self._room.n_rows * TILE_SIZE), 2)
-		self._room.draw(screen, self._shared_state.camera_controller.camera, {})
-
-		self.particle_manager.draw(screen, self._shared_state.camera_controller.camera)
+		self._room.draw(screen, self._shared_state.camera_controller.camera)
 
 		if not self._shared_state.on_global_ui and self._shared_state.should_draw_tool and not self.ui.on_ui():
 			self.tools[self.current_tool].draw(screen, self._shared_state.camera_controller.camera, self.tiled_mouse_pos, self.tile_selection_info)

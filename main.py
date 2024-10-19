@@ -5,15 +5,14 @@ import pygbase
 
 from data.modules.base.constants import TILE_SCALE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import IMAGE_DIR, SPRITE_SHEET_DIR
+# from data.modules.base.registry import Registry
 from data.modules.entities.enemies.enemy_loader import EnemyLoader
-from data.modules.entities.enemies.enemy_registry import register_enemies
-from data.modules.entities.enemies.test_enemy import TestEnemy
-from data.modules.entities.states.entity_state_registry import register_entity_states
-from data.modules.entities.states.wander_state import WanderState
-from data.modules.game_states.game import Game
+from data.modules.entities.enemies.enemy_registry import EnemyRegistry
+from data.modules.entities.states.entity_state_registry import EntityStateRegistry
+# from data.modules.game_states.game import Game
 from data.modules.game_states.main_menu import MainMenu
 from data.modules.objects.object_loader import ObjectLoader
-from data.modules.objects.object_registry import register_objects
+from data.modules.objects.object_registry import ObjectRegistry
 
 if __name__ == '__main__':
 	# profiler = cProfile.Profile()
@@ -55,11 +54,14 @@ if __name__ == '__main__':
 
 	# Run app
 	app = pygbase.App(
-		Game, flags=pygame.SCALED,
+		MainMenu,
+		# Game,
+		flags=pygame.SCALED,
 		run_on_load_complete=(
-			register_objects,
-			register_enemies,
-			register_entity_states,
+			ObjectRegistry.register_objects,
+			EnemyRegistry.register_enemies,
+			EntityStateRegistry.register_states,
+			# Registry.register,
 			ObjectLoader.init,
 			EnemyLoader.init
 		)

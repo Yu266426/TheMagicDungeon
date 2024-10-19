@@ -6,7 +6,6 @@ from data.modules.entities.entity import Entity
 class EntityManager:
 	def __init__(self):
 		self.entities: list[Entity] = []
-		self.entity_tags: dict[Entity, set[str]] = {}
 		self.sorted_entities: dict[int, list[Entity]] = {}
 		self.tagged_entities: dict[str, list[Entity]] = {}
 
@@ -18,22 +17,15 @@ class EntityManager:
 
 		self._remove_entities()
 
-	def add_entity(self, entity, tags: tuple[str, ...] = None):
-		entity_tags = () if tags is None else tags
-
+	def add_entity(self, entity: "Entity", tags: tuple[str, ...] | None = None):
 		self.entities.append(entity)
 		entity.added()
 
-		self.entity_tags[entity] = set()
+		if tags is not None:
+			entity.entity_tags += tags
 
-		for tag in entity_tags:
-			self.entity_tags[entity].add(tag)
-
-		for tag in entity_tags:
-			if tag not in self.tagged_entities:
-				self.tagged_entities[tag] = []
-
-			self.tagged_entities[tag].append(entity)
+		for tag in entity.entity_tags:
+			self.tagged_entities.setdefault(tag, []).append(entity)
 
 	def add_entity_to_remove(self, entity):
 		self.entities_to_remove.add(entity)
@@ -41,8 +33,8 @@ class EntityManager:
 	def get_entities_of_tag(self, tag: str) -> list[Entity]:
 		if tag in self.tagged_entities:
 			return self.tagged_entities[tag]
-		else:
-			return []
+
+		return []
 
 	def get_entities(self, y_pos: int) -> list[Entity]:
 		if y_pos in self.sorted_entities:
@@ -53,14 +45,18 @@ class EntityManager:
 	def _remove_entities(self):
 		self.sorted_entities.clear()
 
-		for entity in self.entities_to_remove:
+		entities_to_remove = self.entities_to_remove.copy()
+		self.entities_to_remove.clear()
+
+		for entity in entities_to_remove:
 			self.entities.remove(entity)
 			entity.removed()
 
-			for tag in self.entity_tags[entity]:
+			for tag in entity.tags:
 				self.tagged_entities[tag].remove(entity)
 
-		self.entities_to_remove.clear()
+				if len(self.tagged_entities[tag]) == 0:
+					del self.tagged_entities[tag]
 
 	def update(self, delta: float):
 		self._remove_entities()

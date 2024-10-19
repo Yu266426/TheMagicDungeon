@@ -6,8 +6,8 @@ from data.modules.entities.states.entity_state import EntityState
 
 
 class StunnedState(EntityState, requires=(("time", int),)):
-	def __init__(self, stunned_time: float, after_state: str, pos: pygame.Vector2, movement: Movement):
-		self.timer = pygbase.Timer(stunned_time, False, False)
+	def __init__(self, pos: pygame.Vector2, movement: Movement, after_state: str, data: dict[str, ...]):
+		self.timer = pygbase.Timer(data["time"], False, False)
 
 		self.after_state = after_state
 
@@ -25,5 +25,5 @@ class StunnedState(EntityState, requires=(("time", int),)):
 	def next_state(self) -> str:
 		if self.timer.done():
 			return self.after_state
-		else:
-			return ""
+
+		return ""

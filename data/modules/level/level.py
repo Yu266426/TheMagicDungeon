@@ -13,7 +13,7 @@ from data.modules.base.paths import ROOM_DIR, BATTLE_DIR
 from data.modules.base.utils import get_tile_pos, one_if_even
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.level.room import Room, Hallway
-from data.modules.objects.tile import Tile
+from data.modules.level.tile import Tile
 
 
 class Level:

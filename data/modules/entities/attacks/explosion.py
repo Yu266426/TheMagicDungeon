@@ -4,7 +4,7 @@ from data.modules.entities.components.circle_collider import CircleCollider
 from data.modules.entities.entity import Entity
 
 
-class Explosion(Entity):
+class Explosion(Entity, tags=("damage",)):
 	def __init__(self, pos, radius: float, damage: float):
 		super().__init__(pos)
 		self.alive = True

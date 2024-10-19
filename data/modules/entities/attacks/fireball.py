@@ -54,4 +54,4 @@ class Fireball(Entity):
 			self.lighting_manager.remove_light(self.light2)
 			self.lighting_manager.remove_light(self.light3)
 
-			self.entity_manager.add_entity(Explosion(self.pos, self.explosion_radius, self.damage), tags=("damage",))
+			self.entity_manager.add_entity(Explosion(self.pos, self.explosion_radius, self.damage), tags=self.entity_tags)

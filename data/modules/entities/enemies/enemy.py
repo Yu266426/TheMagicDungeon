@@ -12,7 +12,7 @@ from data.modules.entities.entity_manager import EntityManager
 from data.modules.level.level import Level
 
 
-class Enemy(Entity):
+class Enemy(Entity, tags=("enemy",)):
 	REQUIRED_ANIMATIONS = ()
 	REQUIRED_STATES = ()
 
@@ -60,6 +60,9 @@ class Enemy(Entity):
 		if self.damage_timer.done():
 			damage_entities = self.entity_manager.get_entities_of_tag("damage")
 			for entity in damage_entities:
+				if "from_enemy" in entity.entity_tags:
+					continue
+
 				if self.collider.collides_with(entity.collider):
 					# print(entity)
 					self.health.damage(entity.damage)

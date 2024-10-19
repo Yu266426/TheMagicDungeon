@@ -11,7 +11,7 @@ from data.modules.editor.editor_selection_info import ObjectSelectionInfo
 from data.modules.editor.editor_states.editor_state import EditorState, EditorStates
 from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
-from data.modules.editor.tools.object_tools.object_tools import ObjectDrawTool
+from data.modules.editor.tools.object_tools.object_draw_tool import ObjectDrawTool
 
 
 class ObjectTools(enum.Enum):
@@ -59,9 +59,7 @@ class ObjectDrawState(EditorState):
 
 	def draw(self, screen: pygame.Surface):
 		draw_rect_outline(screen, (255, 255, 0), -self._shared_state.camera_controller.camera.pos, (self._room.n_cols * TILE_SIZE, self._room.n_rows * TILE_SIZE), 2)
-		self._room.draw(screen, self._shared_state.camera_controller.camera, {})
-
-		self.particle_manager.draw(screen, self._shared_state.camera_controller.camera)
+		self._room.draw(screen, self._shared_state.camera_controller.camera)
 
 		if not self._shared_state.on_global_ui and self._shared_state.should_draw_tool and not self.ui.on_ui():
 			self.tools[self.current_tool].draw(screen, self._shared_state.camera_controller.camera, self.tiled_mouse_pos, self.object_selection_info)

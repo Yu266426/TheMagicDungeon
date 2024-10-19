@@ -8,6 +8,7 @@ from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import ROOM_DIR
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.game_states.editor import Editor
+from data.modules.game_states.main_menu import MainMenu
 from data.modules.level.room import EditorRoom
 
 
@@ -124,22 +125,26 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 
 	def edit_button_callback(self):
 		if self.selected_room is not None:
-			self.set_next_state(Editor(EditorRoom(self.selected_room.name, self.entity_manager)))
+			self.selected_room.remove_objects()
+
+			self.set_next_state(Editor(EditorRoom(self.selected_room.name, self.entity_manager), self.entity_manager))
 
 	def add_room_button_callback(self):
 		if self.selected_room is not None:
 			self.selected_room.remove_objects()
 
-		self.set_next_state(Editor(EditorRoom("start2", self.entity_manager, n_rows=9, n_cols=9)))  # TODO: Allow users to specify room
+		# TODO: Allow users to specify room
+		self.set_next_state(Editor(EditorRoom("start2", self.entity_manager, n_rows=9, n_cols=9), self.entity_manager))
 
 	def update(self, delta: float):
 		self.ui.update(delta)
+		self.entity_manager.update(delta)
 
 		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
-			pygbase.EventManager.post_event(pygame.QUIT)
+			self.set_next_state_type(MainMenu, ())
 
-	def draw(self, screen: pygame.Surface):
-		screen.fill((30, 30, 30))
-		self.ui.draw(screen)
+	def draw(self, surface: pygame.Surface):
+		surface.fill((30, 30, 30))
+		self.ui.draw(surface)
 
-		screen.blit(self.selected_room_image, (SCREEN_WIDTH * 0.52, SCREEN_HEIGHT * 0.02))
+		surface.blit(self.selected_room_image, (SCREEN_WIDTH * 0.52, SCREEN_HEIGHT * 0.02))

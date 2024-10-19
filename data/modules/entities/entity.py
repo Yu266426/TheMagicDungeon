@@ -3,10 +3,22 @@ import pygbase
 
 
 class Entity:
+	tags: tuple[str, ...] = ()
+
+	def __init_subclass__(cls, **kwargs):
+		if "tags" in kwargs:
+			tags = kwargs["tags"]
+			if not isinstance(tags, tuple):
+				raise TypeError("\"tags\" argument in Entity subclass should by of type tuple[str, ...]")
+
+			cls.tags = tags
+
 	def __init__(self, pos: pygame.typing.Point):
 		self.pos = pygame.Vector2(pos)
 		self.active = True
 		self.visible = True
+
+		self.entity_tags = self.tags
 
 	def added(self):
 		pass

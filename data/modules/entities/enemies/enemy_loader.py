@@ -21,6 +21,9 @@ class EnemyLoader:
 	@classmethod
 	def init(cls):
 		for enemy_file in os.listdir(ENEMY_DIR):
+			if "." not in enemy_file:
+				continue
+
 			name, extension = enemy_file.split(".")
 
 			if extension == "start":

@@ -7,14 +7,14 @@ from typing import TYPE_CHECKING
 import pygame
 import pygbase
 
-from data.modules.base.constants import TILE_SIZE
+from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import ROOM_DIR
-from data.modules.base.utils import one_if_even
+from data.modules.base.utils import one_if_even, get_tile_pos
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.level.battle import Battle
+from data.modules.level.tile import Tile
 from data.modules.objects.game_object import GameObject
 from data.modules.objects.object_loader import ObjectLoader
-from data.modules.objects.tile import Tile
 
 if TYPE_CHECKING:
 	from data.modules.level.level import Level
@@ -51,45 +51,21 @@ class BaseRoom:
 
 		return None
 
-	def add_object(self, game_object: GameObject):
-		game_object.added()
+	def add_object(self, game_object: GameObject, tags: tuple[str, ...]):
+		self.entity_manager.add_entity(game_object, tags=tags)
 		self.objects.append(game_object)
 
 	def remove_object(self, game_object: GameObject):
 		if game_object is not None:
-			game_object.removed()
+			# game_object.removed()
 			self.objects.remove(game_object)
 			self.entity_manager.add_entity_to_remove(game_object)
 
 	def remove_objects(self):
-		# for game_object in self.objects:
-		# 	game_object.removed()
-		# 	self.entity_manager.add_entity_to_remove(game_object)
+		for game_object in self.objects:
+			self.entity_manager.add_entity_to_remove(game_object)
 
 		self.objects.clear()
-
-	# def draw(self, screen: pygame.Surface, camera: pygbase.Camera, entities: dict[int, dict]):
-	# 	top_left: tuple[int, int] = get_tile_pos((camera.pos.x - self.offset[0], camera.pos.y - self.offset[1]), (TILE_SIZE, TILE_SIZE))
-	# 	bottom_right: tuple[int, int] = get_tile_pos((camera.pos.x + SCREEN_WIDTH - self.offset[0], camera.pos.y + SCREEN_HEIGHT - self.offset[1]), (TILE_SIZE, TILE_SIZE))
-	#
-	# 	y_offset = int(self.offset[1] // TILE_SIZE)
-	#
-	# 	top_left = top_left[0], top_left[1]
-	# 	bottom_right = bottom_right[0] + 1, bottom_right[1] + 2
-	#
-	# 	for layer in self.tiles.keys():
-	# 		for row in range(top_left[1], bottom_right[1]):
-	# 			for col in range(top_left[0], bottom_right[0]):
-	# 				self.draw_tile(layer, (col, row), screen, camera)
-	#
-	# 			if layer == 1:
-	# 				if row + y_offset in entities:
-	# 					for entity in entities[row + y_offset].values():
-	# 						entity.draw(screen, camera)
-	#
-	# 	for game_object in self.objects:
-	# 		game_object.draw(screen, camera)
-	...
 
 
 class LevelRoom(BaseRoom):
@@ -157,7 +133,6 @@ class Room(LevelRoom):
 		Generates walls with gaps
 
 		:param connections: Up, Down, Left, Right
-		:param gap_radius: Radius of gap
 		"""
 
 		wall_sheet = pygbase.ResourceManager.get_resource("sprite_sheet", "walls")
@@ -321,8 +296,7 @@ class Room(LevelRoom):
 
 			game_object, tags = ObjectLoader.create_object(object_name, (pos[0] + self.tile_offset[0], pos[1] + self.tile_offset[1]))
 
-			self.entity_manager.add_entity(game_object, ("object",) + tags)
-			self.objects.append(game_object)
+			self.add_object(game_object, tags=tags)
 
 	def is_valid_spawn(self, tile_pos: tuple[int, int]):
 		# TODO: Replace with a list of valid spawns that room tracks?
@@ -432,9 +406,7 @@ class EditorRoom(BaseRoom):
 			pos = game_object["pos"]
 
 			game_object, tags = ObjectLoader.create_object(object_type, pos)
-			game_object.added()  # TODO: should use entity manager instead?
-
-			self.objects.append(game_object)
+			self.add_object(game_object, tags)
 
 	def save(self):
 		data = {
@@ -486,6 +458,21 @@ class EditorRoom(BaseRoom):
 			game_object.draw(room_surface, temp_camera)
 
 		pygame.transform.scale(room_surface, surface_size, surface)
+
+	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
+		top_left: tuple[int, int] = get_tile_pos((camera.pos.x - self.offset[0], camera.pos.y - self.offset[1]), (TILE_SIZE, TILE_SIZE))
+		bottom_right: tuple[int, int] = get_tile_pos((camera.pos.x + SCREEN_WIDTH - self.offset[0], camera.pos.y + SCREEN_HEIGHT - self.offset[1]), (TILE_SIZE, TILE_SIZE))
+
+		top_left = top_left[0], top_left[1]
+		bottom_right = bottom_right[0] + 1, bottom_right[1] + 2
+
+		for layer in self.tiles.keys():
+			for row in range(top_left[1], bottom_right[1]):
+				for col in range(top_left[0], bottom_right[0]):
+					self.draw_tile(layer, (col, row), screen, camera)
+
+		for game_object in self.objects:
+			game_object.draw(screen, camera)
 
 
 class Hallway(LevelRoom):

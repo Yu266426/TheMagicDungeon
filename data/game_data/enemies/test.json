@@ -1,5 +1,5 @@
 {
-  "type": "basic",
+  "type": "melee",
   "health": 10,
   "hitbox": [
     70,
@@ -21,10 +21,16 @@
   },
   "states": {
     "wander": {
-      "range": 5
+      "range": 5,
+      "detection_radius": 3
     },
     "stunned": {
       "time": 2
+    },
+    "melee_attack": {
+      "max_radius": 5,
+      "attack_cooldown": 3,
+      "attack_range": 1
     }
   }
 }

@@ -1,6 +1,6 @@
 from data.modules.level.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorAction
-from data.modules.objects.tile import Tile
+from data.modules.level.tile import Tile
 
 
 class PlaceTileAction(EditorAction):

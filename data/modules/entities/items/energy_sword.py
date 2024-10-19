@@ -37,12 +37,9 @@ class EnergySword(Item):
 	def added_to_slot(self, pos: pygame.Vector2):
 		super().added_to_slot(pos)
 
-	def update(self, delta: float):
-		self.animations.update(delta)
-		self.attack_cooldown.tick(delta)
-
-		if pygbase.InputManager.get_mouse_just_pressed(0) and self.attack_cooldown.done():
-			self.entity_manager.add_entity(SwordSwing(self.pos, self.angle + (180 if self.flip_x else 0), self.attack_length, self.attack_damage, self.convert_flip()), tags=("damage",))
+	def use(self):
+		if self.attack_cooldown.done():
+			self.entity_manager.add_entity(SwordSwing(self.pos, self.angle + (180 if self.flip_x else 0), self.attack_length, self.attack_damage, self.convert_flip()), tags=self.entity_tags)
 			# self.entity_manager.add_entity(Fireball(self.pos, self.angle, 800, 400, 30, 70, 10, self.level, self.entity_manager))
 			# self.entity_manager.add_entity(Fireball(self.pos, self.angle + 10, 800, 400, 30, 70, 10, self.level, self.entity_manager))
 			# self.entity_manager.add_entity(Fireball(self.pos, self.angle - 10, 800, 400, 30, 70, 10, self.level, self.entity_manager))
@@ -52,6 +49,11 @@ class EnergySword(Item):
 			self.attack_cooldown.start()
 
 			self.swinging_down = True
+
+	def update(self, delta: float):
+		self.animations.update(delta)
+		self.attack_cooldown.tick(delta)
+
 		if not self.attack_cooldown.done():
 			if self.swinging_down:
 				self.angle_offset += 800 * delta

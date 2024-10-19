@@ -4,7 +4,15 @@ from pygbase import Camera
 from data.modules.entities.entity import Entity
 
 
-class Item(Entity):
+class Item(Entity, tags=("item",)):
+	def __init_subclass__(cls, **kwargs):
+		if "tags" in kwargs:
+			tags = kwargs["tags"]
+			if not isinstance(tags, tuple):
+				raise TypeError("\"tags\" argument in Item subclass should by of type tuple[str, ...]")
+
+			cls.tags = cls.tags + tags
+
 	def __init__(self, durability: int):
 		super().__init__((0, 0))
 
@@ -30,6 +38,9 @@ class Item(Entity):
 
 	def convert_flip(self):
 		return -1 if self.flip_x else 1
+
+	def use(self):
+		pass
 
 	def update(self, delta: float):
 		pass

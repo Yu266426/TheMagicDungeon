@@ -66,6 +66,6 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
 			pygbase.EventManager.run_handlers("all", pygame.QUIT)
 
-	def draw(self, screen: pygame.Surface):
-		screen.fill((30, 30, 30))
-		self.ui.draw(screen)
+	def draw(self, surface: pygame.Surface):
+		surface.fill((30, 30, 30))
+		self.ui.draw(surface)

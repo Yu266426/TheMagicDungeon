@@ -10,14 +10,16 @@ from data.modules.editor.editor_states.object_selection_state import ObjectSelec
 from data.modules.editor.editor_states.tile_draw_state import TileDrawState
 from data.modules.editor.editor_states.tile_selection_state import TileSelectionState
 from data.modules.editor.shared_editor_state import SharedEditorState
+from data.modules.entities.entity_manager import EntityManager
 from data.modules.level.room import EditorRoom
 
 
 class Editor(pygbase.GameState, name="editor"):
-	def __init__(self, room: EditorRoom):
+	def __init__(self, room: EditorRoom, entity_manager: EntityManager):
 		super().__init__()
 
 		self.room = room
+		self.entity_manager = entity_manager
 		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
 
 		self.shared_state = SharedEditorState(self.room)
@@ -90,6 +92,7 @@ class Editor(pygbase.GameState, name="editor"):
 		self.set_next_state_type(MainMenu, ())
 
 		self.room.remove_objects()
+		self.entity_manager.clear_entities()
 
 	def update(self, delta: float):
 		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
@@ -105,6 +108,7 @@ class Editor(pygbase.GameState, name="editor"):
 
 			self.states[self.current_state].update(delta)
 
+			# Undo / Redo
 			if pygbase.InputManager.get_key_just_pressed(pygame.K_z):
 				if pygbase.InputManager.check_modifiers(pygame.KMOD_CTRL) and not pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
 					self.action_queue.undo_action()
@@ -124,14 +128,14 @@ class Editor(pygbase.GameState, name="editor"):
 		else:
 			self.overlay_ui.update(delta)
 
-	def draw(self, screen: pygame.Surface):
-		screen.fill((30, 30, 30))
+	def draw(self, surface: pygame.Surface):
+		surface.fill((30, 30, 30))
 
-		self.states[self.current_state].draw(screen)
+		self.states[self.current_state].draw(surface)
 
 		if self.shared_state.show_global_ui and not self.show_overlay:
-			self.ui.draw(screen)
+			self.ui.draw(surface)
 
 		if self.show_overlay:
-			screen.blit(self.overlay_darken, (0, 0))
-			self.overlay_ui.draw(screen)
+			surface.blit(self.overlay_darken, (0, 0))
+			self.overlay_ui.draw(surface)

@@ -22,6 +22,8 @@ class ObjectDrawTool(EditorTool):
 
 	def update(self, mouse_tile_pos: tuple[int, int], selection_info: ObjectSelectionInfo):
 		if InputManager.get_mouse_pressed(0):
+			self._shared_state.show_global_ui = False
+
 			x_pos = (mouse_tile_pos[0] + 0.5) * TILE_SIZE
 			y_pos = (mouse_tile_pos[1] + 1) * TILE_SIZE
 
@@ -35,6 +37,8 @@ class ObjectDrawTool(EditorTool):
 				self.current_batch.add_action(action)
 
 		if InputManager.get_mouse_pressed(2):
+			self._shared_state.show_global_ui = False
+
 			x_pos = (mouse_tile_pos[0] + 0.5) * TILE_SIZE
 			y_pos = (mouse_tile_pos[1]) * TILE_SIZE
 
@@ -48,6 +52,8 @@ class ObjectDrawTool(EditorTool):
 				self.current_batch.add_action(action)
 
 		if InputManager.get_mouse_just_released(0) or InputManager.get_mouse_just_released(2):
+			self._shared_state.show_global_ui = True
+
 			if self.current_batch is not None:
 				self._action_queue.add_action(self.current_batch)
 				self.current_batch = None

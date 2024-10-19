@@ -5,7 +5,7 @@ from data.modules.entities.components.line_collider import LineCollider
 from data.modules.entities.entity import Entity
 
 
-class SwordSwing(Entity):
+class SwordSwing(Entity, tags=("damage",)):
 	def __init__(self, pos: pygame.Vector2, angle: float, length: float, damage: int, flip: int):
 		super().__init__(pos)
 		self.parent_pos = pos
@@ -35,7 +35,7 @@ class SwordSwing(Entity):
 			self.alive = False
 
 	def draw(self, surface: pygame.Surface, camera: pygbase.Camera):
-		# self.collider.draw(screen, camera)
+		self.collider.draw_debug(camera)
 
 		angle = self.starting_angle
 		if self.flip == 1:

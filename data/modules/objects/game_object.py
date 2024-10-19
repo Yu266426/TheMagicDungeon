@@ -6,9 +6,25 @@ from data.modules.base.constants import TILE_SIZE
 from data.modules.entities.entity import Entity
 
 
-class GameObject(Entity):
-	def __init__(self, name: str, pos: pygame.typing.Point, pixel_pos: bool, sprite: pygbase.Image | pygbase.Animation, custom_hitbox: pygame.Rect | None = None, is_editor_object: bool = False):
-		if pixel_pos:
+class GameObject(Entity, tags=("object",)):
+	def __init_subclass__(cls, **kwargs):
+		if "tags" in kwargs:
+			tags = kwargs["tags"]
+			if not isinstance(tags, tuple):
+				raise TypeError("\"tags\" argument in GameObject subclass should by of type tuple[str, ...]")
+
+			cls.tags = cls.tags + tags
+
+	def __init__(
+			self,
+			name: str,
+			pos: pygame.typing.Point,
+			use_pixel: bool,
+			sprite: pygbase.Image | pygbase.Animation,
+			custom_hitbox: pygame.Rect | None = None,
+			is_editor_object: bool = False
+	):
+		if use_pixel:
 			super().__init__(pos)
 			self.tile_pos = int(pos[0] / TILE_SIZE), int(pos[1] / TILE_SIZE)
 		else:
@@ -55,4 +71,4 @@ class GameObject(Entity):
 		else:
 			self.sprite.draw(surface, camera.world_to_screen(self.pos), draw_pos="midbottom", flags=flags)
 
-		pygbase.DebugDisplay.draw_rect(camera.world_to_screen_rect(self.hitbox), "dark_green", 2)
+		pygbase.DebugDisplay.draw_rect(camera.world_to_screen_rect(self.hitbox), "dark green", 2)

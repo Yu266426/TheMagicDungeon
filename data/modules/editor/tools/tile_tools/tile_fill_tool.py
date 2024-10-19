@@ -11,7 +11,7 @@ from data.modules.editor.actions.tile_actions import PlaceTileAction, RemoveTile
 from data.modules.editor.editor_selection_info import TileSelectionInfo
 from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
-from data.modules.objects.tile import Tile
+from data.modules.level.tile import Tile
 
 
 class TileFillTool(EditorTool):

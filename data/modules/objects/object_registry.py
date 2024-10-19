@@ -9,7 +9,14 @@ class ObjectRegistry:
 	_registered_objects: dict[str, type[GameObject]] = {}
 
 	@classmethod
-	def register_object(cls, object_name: str, game_object: type[GameObject]):
+	def register_objects(cls):
+		logging.info("Registering objects")
+
+		cls._register_object("torch", Torch)
+		cls._register_object("rune_altar", RuneAltar)
+
+	@classmethod
+	def _register_object(cls, object_name: str, game_object: type[GameObject]):
 		if not issubclass(game_object, GameObject):
 			raise TypeError(f"Provided type <{game_object} not subclass of <GameObject>")
 
@@ -24,9 +31,3 @@ class ObjectRegistry:
 			raise ValueError(f"Object <{object_name}> not in registered objects")
 
 		return cls._registered_objects[object_name]
-
-def register_objects():
-	logging.info("Registering objects")
-
-	ObjectRegistry.register_object("torch", Torch)
-	ObjectRegistry.register_object("rune_altar", RuneAltar)

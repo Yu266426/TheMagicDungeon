@@ -43,13 +43,13 @@ class TestState(pygbase.GameState, name="testing"):
 		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
 			pygbase.EventManager.post_event(pygame.QUIT)
 
-	def draw(self, screen: pygame.Surface):
-		screen.fill((0, 0, 0))
+	def draw(self, surface: pygame.Surface):
+		surface.fill((0, 0, 0))
 
-		pygame.draw.rect(screen, "white", self.box.rect)
-		self.line.draw(screen, pygbase.Camera())
+		pygame.draw.rect(surface, "white", self.box.rect)
+		self.line.draw_debug(pygbase.Camera())
 
 		for box_line in self.box_lines:
-			pygame.draw.line(screen, "green", box_line.start_pos, box_line.end_pos, width=5)
+			pygame.draw.line(surface, "green", box_line.start_pos, box_line.end_pos, width=5)
 
-		pygame.draw.circle(screen, "blue", self.circle.pos, self.circle.radius, width=2)
+		pygame.draw.circle(surface, "blue", self.circle.pos, self.circle.radius, width=2)
