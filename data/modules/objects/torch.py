@@ -4,12 +4,17 @@ import random
 import pygame
 import pygbase
 
+from data.modules.base.registrable import Registrable
 from data.modules.objects.game_object import GameObject
 
 
-class Torch(GameObject):
+class Torch(GameObject, Registrable):
+	@staticmethod
+	def get_name() -> str:
+		return "torch"
+
 	def __init__(self, pos: tuple, use_pixel: bool):
-		super().__init__("torch", pos, use_pixel, pygbase.ResourceManager.get_resource("sprite_sheet", "objects").get_image(1))
+		GameObject.__init__(self, "torch", pos, use_pixel, pygbase.ResourceManager.get_resource("sprite_sheet", "objects").get_image(1))
 
 		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
 		self.fire = pygbase.CircleSpawner(self.pos + pygame.Vector2(0, -92), 0.05, 3, 20, True, "fire", self.particle_manager)

@@ -1,11 +1,20 @@
 import pygame
 import pygbase
 
+from data.modules.base.registrable import Registrable
 from data.modules.entities.components.movement import Movement
 from data.modules.entities.states.entity_state import EntityState
 
 
-class StunnedState(EntityState, requires=(("time", int),)):
+class StunnedState(EntityState, Registrable):
+	@staticmethod
+	def get_name() -> str:
+		return "stunned"
+
+	@staticmethod
+	def get_required_component() -> tuple[tuple[str, type] | tuple[str, type, tuple[str, ...]], ...]:
+		return ("time", int),
+
 	def __init__(self, pos: pygame.Vector2, movement: Movement, after_state: str, data: dict[str, ...]):
 		self.timer = pygbase.Timer(data["time"], False, False)
 

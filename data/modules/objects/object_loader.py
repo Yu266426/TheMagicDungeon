@@ -6,8 +6,8 @@ import pygame
 import pygbase
 
 from data.modules.base.paths import OBJECT_DIR
+from data.modules.base.registry import Registry
 from data.modules.objects.game_object import GameObject
-from data.modules.objects.object_registry import ObjectRegistry
 
 
 class ObjectLoader:
@@ -74,7 +74,7 @@ class ObjectLoader:
 		elif object_type == "custom":
 			cls.object_data[data["name"]] = (
 				object_type,
-				ObjectRegistry.get_object_type(data["name"]),
+				Registry.get_type(data["name"], GameObject),
 				tags
 			)
 		else:

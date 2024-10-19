@@ -1,23 +1,35 @@
 import random
+from typing import TYPE_CHECKING
 
 import pygame
 import pygbase.utils
 
 from data.modules.base.constants import TILE_SIZE
+from data.modules.base.registrable import Registrable
 from data.modules.entities.attacks.sword_swing import SwordSwing
-from data.modules.entities.components.item_slot import ItemSlot
-from data.modules.entities.components.movement import Movement
-from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.states.entity_state import EntityState
 
+if TYPE_CHECKING:
+	from data.modules.entities.components.item_slot import ItemSlot
+	from data.modules.entities.components.movement import Movement
+	from data.modules.entities.entity_manager import EntityManager
 
-class MeleeAttackState(EntityState, requires=(("max_radius", int), ("attack_cooldown", float), ("attack_range", int))):
+
+class MeleeAttackState(EntityState, Registrable):
+	@staticmethod
+	def get_name() -> str:
+		return "melee_attack"
+
+	@staticmethod
+	def get_required_component() -> tuple[tuple[str, type] | tuple[str, type, tuple[str, ...]], ...]:
+		return ("max_radius", int), ("attack_cooldown", float), ("attack_range", int)
+
 	def __init__(
 			self,
 			pos: pygame.Vector2,
-			movement: Movement,
-			entity_manager: EntityManager,
-			item_slot: ItemSlot,
+			movement: "Movement",
+			entity_manager: "EntityManager",
+			item_slot: "ItemSlot",
 			y_offset: float,
 			data: dict[str, ...]
 	):

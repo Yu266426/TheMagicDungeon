@@ -6,15 +6,8 @@ from data.modules.base.constants import TILE_SIZE
 from data.modules.entities.entity import Entity
 
 
+# TODO: Separate basic game object from base class (more subtypes, like how enemies work)
 class GameObject(Entity, tags=("object",)):
-	def __init_subclass__(cls, **kwargs):
-		if "tags" in kwargs:
-			tags = kwargs["tags"]
-			if not isinstance(tags, tuple):
-				raise TypeError("\"tags\" argument in GameObject subclass should by of type tuple[str, ...]")
-
-			cls.tags = cls.tags + tags
-
 	def __init__(
 			self,
 			name: str,

@@ -5,14 +5,34 @@ import pygbase
 
 from data.modules.base.constants import TILE_SCALE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import IMAGE_DIR, SPRITE_SHEET_DIR
-# from data.modules.base.registry import Registry
+from data.modules.base.registry import Registry
 from data.modules.entities.enemies.enemy_loader import EnemyLoader
-from data.modules.entities.enemies.enemy_registry import EnemyRegistry
-from data.modules.entities.states.entity_state_registry import EntityStateRegistry
-# from data.modules.game_states.game import Game
+from data.modules.entities.enemies.melee_enemy import MeleeEnemy
+from data.modules.entities.states.melee_attack_state import MeleeAttackState
+from data.modules.entities.states.stunned_state import StunnedState
+from data.modules.entities.states.wander_state import WanderState
 from data.modules.game_states.main_menu import MainMenu
+from data.modules.objects.altars import RuneAltar
 from data.modules.objects.object_loader import ObjectLoader
-from data.modules.objects.object_registry import ObjectRegistry
+from data.modules.objects.torch import Torch
+
+
+def register_types():
+	logging.info("Registering objects")
+
+	Registry.register_type(Torch)
+	Registry.register_type(RuneAltar)
+
+	logging.info("Registering entity states")
+
+	Registry.register_type(WanderState)
+	Registry.register_type(StunnedState)
+	Registry.register_type(MeleeAttackState)
+
+	logging.info("Registering enemies")
+
+	Registry.register_type(MeleeEnemy)
+
 
 if __name__ == '__main__':
 	# profiler = cProfile.Profile()
@@ -58,10 +78,8 @@ if __name__ == '__main__':
 		# Game,
 		flags=pygame.SCALED,
 		run_on_load_complete=(
-			ObjectRegistry.register_objects,
-			EnemyRegistry.register_enemies,
-			EntityStateRegistry.register_states,
-			# Registry.register,
+			Registry.init,
+			register_types,
 			ObjectLoader.init,
 			EnemyLoader.init
 		)

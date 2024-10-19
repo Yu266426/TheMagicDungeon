@@ -2,7 +2,6 @@ import math
 
 import pygame
 import pygbase
-from pyglet.resource import animation
 
 from data.modules.entities.components.box_collider import BoxCollider
 from data.modules.entities.components.health import Health
@@ -13,24 +12,6 @@ from data.modules.level.level import Level
 
 
 class Enemy(Entity, tags=("enemy",)):
-	REQUIRED_ANIMATIONS = ()
-	REQUIRED_STATES = ()
-
-	def __init_subclass__(cls, **kwargs):
-		if "animations" in kwargs:
-			animations = kwargs["animations"]
-			if not isinstance(animations, tuple):
-				raise TypeError("\"animations\" argument in Enemy subclass should by of type tuple[str, ...]")
-
-			cls.REQUIRED_ANIMATIONS = animations
-
-		if "states" in kwargs:
-			states = kwargs["states"]
-			if not isinstance(states, tuple):
-				raise TypeError("\"states\" argument in Enemy subclass should by of type tuple[str, ...]")
-
-			cls.REQUIRED_STATES = states
-
 	def __init__(
 			self,
 			pos: pygame.typing.Point,
@@ -38,8 +19,7 @@ class Enemy(Entity, tags=("enemy",)):
 			entity_manager: EntityManager,
 			collider_size: tuple[int, int],
 			health: int,
-			animation_data: dict[str, tuple[str, int, int, int]],  # Used by subclasses
-			state_data: dict[str, dict[str, ...]]  # Used by subclasses
+			data: dict[str, ...]  # Used by subclasses
 	):
 		super().__init__(pos)
 

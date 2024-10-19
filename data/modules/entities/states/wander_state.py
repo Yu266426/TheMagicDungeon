@@ -1,21 +1,33 @@
 import random
+from typing import TYPE_CHECKING
 
 import pygame
 import pygbase
 
 from data.modules.base.constants import TILE_SIZE
+from data.modules.base.registrable import Registrable
 from data.modules.entities.components.movement import Movement
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.states.entity_state import EntityState
-from data.modules.level.level import Level
+
+if TYPE_CHECKING:
+	from data.modules.level.level import Level
 
 
-class WanderState(EntityState, requires=(("range", int), ("detection_radius", int))):
+class WanderState(EntityState, Registrable):
+	@staticmethod
+	def get_name() -> str:
+		return "wander"
+
+	@staticmethod
+	def get_required_component() -> tuple[tuple[str, type] | tuple[str, type, tuple[str, ...]], ...]:
+		return ("range", int), ("detection_radius", int)
+
 	def __init__(
 			self,
 			pos: pygame.Vector2,
 			movement: Movement,
-			level: Level,
+			level: "Level",
 			entity_manager: EntityManager,
 			animations: pygbase.AnimationManager,
 			data: dict[str, ...]

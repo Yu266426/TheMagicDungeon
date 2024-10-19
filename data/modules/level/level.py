@@ -6,7 +6,6 @@ from collections import deque
 
 import pygame
 import pygbase
-from pygbase import Camera
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import ROOM_DIR, BATTLE_DIR
@@ -241,7 +240,7 @@ class Level:
 		# Update the current room
 		self.get_room(player_pos).update(delta)  # Could replace with current room?
 
-	def draw_tile(self, layer: int, tile_pos: tuple[int, int], surface: pygame.Surface, camera: Camera):
+	def draw_tile(self, layer: int, tile_pos: tuple[int, int], surface: pygame.Surface, camera: pygbase.Camera):
 		# room = self.get_room((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE))
 		#
 		# if room is not None:
@@ -250,7 +249,7 @@ class Level:
 		if tile is not None:
 			tile.draw(surface, camera)
 
-	def draw(self, surface: pygame.Surface, camera: Camera):
+	def draw(self, surface: pygame.Surface, camera: pygbase.Camera):
 		top_left = get_tile_pos(camera.pos, (TILE_SIZE, TILE_SIZE))
 		bottom_right = get_tile_pos(camera.pos + pygame.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), (TILE_SIZE, TILE_SIZE))
 		top_left = top_left[0], top_left[1]

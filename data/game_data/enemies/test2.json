@@ -1,6 +1,6 @@
 {
   "type": "melee",
-  "health": 10,
+  "health": 2,
   "hitbox": [
     70,
     50
@@ -10,13 +10,13 @@
       "sprite_sheet": "player_idle_animation",
       "start_index": 0,
       "length": 1,
-      "speed": 8
+      "speed": 0
     },
     "run": {
       "sprite_sheet": "player_run_animation",
       "start_index": 0,
       "length": 2,
-      "speed": 8
+      "speed": 0
     }
   },
   "states": {
