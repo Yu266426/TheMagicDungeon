@@ -2,14 +2,22 @@ import logging
 
 from typing_extensions import get_origin
 
-from data.modules.base.animation_data import AnimationData
-from data.modules.base.registrable import Registrable
+from data.modules.base.registry.animation_data import AnimationData
+from data.modules.base.registry.registrable import Registrable
 
 
 class Registry[T: Registrable]:
 	_registered_types: dict[type, dict[str, type[T]]] = {}
-	_pure_registered_types: set[type] = set()
+	_registered_data_types: set[type] = set()
 	_required_data: dict[type, dict[str, dict[str, ...]]] = {}
+
+	_default_for_single_type: dict[type | str, ...] = {
+		int: 0,
+		float: 0.0,
+		str: "",
+		# Custom defaults
+		"point": (0, 0),
+	}
 
 	@classmethod
 	def init(cls):
@@ -18,10 +26,12 @@ class Registry[T: Registrable]:
 	@classmethod
 	def register_type(cls, type_to_register: type[T]):
 		# Pure type (Used only to provide data)
-		if type_to_register.get_is_pure():
+		if type_to_register.get_is_data():
+			# Use itself as category
 			base_class = type_to_register
-			cls._pure_registered_types.add(type_to_register)
+			cls._registered_data_types.add(type_to_register)
 		else:
+			# Otherwise, use the base class as a category
 			base_class = type_to_register.__bases__[0]
 
 		if base_class not in cls._registered_types:
@@ -38,39 +48,45 @@ class Registry[T: Registrable]:
 
 	@classmethod
 	def get_required_data(cls, type_name: str, base_class: type) -> dict[str, ...]:
-		return cls._required_data[base_class][type_name]
+		"""
+		:return: Shallow copy of data
+		"""
+		return cls._required_data[base_class][type_name].copy()
 
 	@classmethod
-	def _check_pure_type(cls, base_class: type) -> bool:
-		return base_class in cls._pure_registered_types
+	def _check_is_data_type(cls, base_class: type) -> bool:
+		return base_class in cls._registered_data_types
 
 	@classmethod
-	def _generate_required_data(cls, type_name: str, base_class: type, required_data: tuple[tuple[str, type], ...]):
+	def _generate_required_data(cls, type_name: str, base_class: type, required_data: tuple[tuple[str, type | str], ...]):
 		required_components = {}
 
 		for required_tuple in required_data:
 			required_component = required_tuple[0]
-			component_type = required_tuple[1]
+			component_type: type | str = required_tuple[1]
 
-			if component_type is int:
-				default_value = 0
-			elif component_type is float:
-				default_value = 0.0
-			elif component_type is str:
-				default_value = ""
-			elif get_origin(component_type) is tuple:
+			# Special handling for tuple type
+			if get_origin(component_type) is tuple:
 				default_value = {}
 
 				# When type is a tuple, give (name, tuple[tuple_type], (str, ...))
 				tuple_type = component_type.__args__[0]  # NoQA
-				is_pure_type = cls._check_pure_type(tuple_type)
+
+				is_primitive_type = tuple_type in cls._default_for_single_type.keys()
+				is_data_type = cls._check_is_data_type(tuple_type)
 
 				tuple_data = required_tuple[2]
 				for name in tuple_data:
-					if is_pure_type:
+					if is_primitive_type:
+						default_value[name] = cls._default_for_single_type[tuple_type]
+					elif is_data_type:
 						default_value[name] = cls.get_required_data(tuple_type.get_name(), tuple_type)
 					else:
 						default_value[name] = cls.get_required_data(name, tuple_type)
+			elif component_type in cls._default_for_single_type:
+				default_value = cls._default_for_single_type[component_type]
+			elif type(component_type) is str:
+				default_value = component_type
 			else:
 				default_value = ""
 				logging.warning(f"Unknown type <{component_type}> in REQUIRED_DATA for {type_name}")

@@ -19,6 +19,7 @@ class Level:
 	def __init__(self, entity_manager: EntityManager, room_separation: int, wall_gap_radius: int):
 		self.entity_manager = entity_manager
 		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
+		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
 
 		# TODO: Rework to separate tiles from rooms
 		# A game room is responsible for its location, loading the tiles, and special tiles
@@ -266,6 +267,11 @@ class Level:
 						if entity.visible:
 							entity.draw(surface, camera)
 
+			if layer == 0:
+				self.lighting_manager.draw_shadows(surface, camera)
+
+		self.lighting_manager.draw_lights(surface, camera)
+
 
 class LevelGenerator:
 	def __init__(self, depth: int, entity_manager: EntityManager, room_separation: int, wall_gap_radius: int):
@@ -416,6 +422,7 @@ class LevelGenerator:
 					rooms_added.add(room_pos)
 				else:
 					logging.warning("Duplicate")
+
 				self.level.add_room_ex(
 					room_pos, room_name,
 					room_connections,

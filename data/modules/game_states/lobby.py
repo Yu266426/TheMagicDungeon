@@ -66,7 +66,6 @@ class Lobby(pygbase.GameState, name="lobby"):
 		surface.fill((0, 0, 0))
 
 		self.level.draw(surface, self.camera)
-		self.lighting_manager.draw(surface, self.camera)
 
 		self.particle_manager.draw(surface, self.camera)
 

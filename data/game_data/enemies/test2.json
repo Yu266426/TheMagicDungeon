@@ -1,22 +1,22 @@
 {
   "type": "melee",
-  "health": 2,
+  "health": 10,
   "hitbox": [
     70,
     50
   ],
   "animations": {
     "idle": {
-      "sprite_sheet": "player_idle_animation",
+      "sprite_sheet": "goblin_idle",
       "start_index": 0,
       "length": 1,
-      "speed": 0
+      "speed": 8
     },
     "run": {
-      "sprite_sheet": "player_run_animation",
+      "sprite_sheet": "goblin_idle",
       "start_index": 0,
-      "length": 2,
-      "speed": 0
+      "length": 1,
+      "speed": 8
     }
   },
   "states": {
@@ -32,5 +32,6 @@
       "attack_cooldown": 3.0,
       "attack_range": 1
     }
-  }
+  },
+  "weapon": "energy_sword"
 }

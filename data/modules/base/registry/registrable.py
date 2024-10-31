@@ -8,9 +8,9 @@ class Registrable(ABC):
 		pass
 
 	@staticmethod
-	def get_required_component() -> tuple[tuple[str, type] | tuple[str, type, tuple[str, ...]], ...]:
+	def get_required_component() -> tuple[tuple[str, type | str] | tuple[str, type, tuple[str, ...]], ...]:
 		return ()
 
 	@staticmethod
-	def get_is_pure():
+	def get_is_data():
 		return False

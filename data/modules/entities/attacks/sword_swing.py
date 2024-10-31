@@ -21,7 +21,7 @@ class SwordSwing(Entity, tags=("damage",)):
 		self.collider = LineCollider(self.pos, self.starting_angle, length, start_offset=50).link_pos(pos)
 
 		self.flip = flip
-		self.animation = pygbase.Animation("sprite_sheet", "sword_swing_1", 0, 9, False)
+		self.animation = pygbase.Animation("sprite_sheets", "sword_swing_1", 0, 9, False)
 
 	def is_alive(self):
 		return self.alive

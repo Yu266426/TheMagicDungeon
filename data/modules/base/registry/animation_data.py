@@ -1,4 +1,4 @@
-from data.modules.base.registrable import Registrable
+from data.modules.base.registry.registrable import Registrable
 
 
 class AnimationData(Registrable):
@@ -7,12 +7,9 @@ class AnimationData(Registrable):
 		return "animation"
 
 	@staticmethod
-	def get_required_component() -> tuple[tuple[str, type] | tuple[str, type, tuple[str, ...]], ...]:
+	def get_required_component() -> tuple[tuple[str, type | str] | tuple[str, type, tuple[str, ...]], ...]:
 		return ("sprite_sheet", str), ("start_index", int), ("length", int), ("speed", int)
 
 	@staticmethod
-	def get_is_pure():
+	def get_is_data():
 		return True
-
-	def __init__(self):
-		pass

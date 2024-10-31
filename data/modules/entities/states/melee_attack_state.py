@@ -5,7 +5,7 @@ import pygame
 import pygbase.utils
 
 from data.modules.base.constants import TILE_SIZE
-from data.modules.base.registrable import Registrable
+from data.modules.base.registry.registrable import Registrable
 from data.modules.entities.attacks.sword_swing import SwordSwing
 from data.modules.entities.states.entity_state import EntityState
 

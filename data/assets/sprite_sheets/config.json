@@ -15,6 +15,14 @@
     "scale": 0,
     "rotatable": true
   },
+  "goblin_idle": {
+    "rows": 1,
+    "columns": 1,
+    "tile_width": 24,
+    "tile_height": 24,
+    "scale": 0,
+    "rotatable": false
+  },
   "objects": {
     "rows": 4,
     "columns": 4,
@@ -23,19 +31,19 @@
     "scale": 0,
     "rotatable": false
   },
-  "player_idle_animation": {
+  "player_idle": {
     "rows": 1,
-    "columns": 1,
-    "tile_width": 12,
-    "tile_height": 18,
+    "columns": 2,
+    "tile_width": 16,
+    "tile_height": 24,
     "scale": 0,
     "rotatable": false
   },
-  "player_run_animation": {
+  "player_run": {
     "rows": 1,
     "columns": 2,
-    "tile_width": 12,
-    "tile_height": 18,
+    "tile_width": 16,
+    "tile_height": 24,
     "scale": 0,
     "rotatable": false
   },

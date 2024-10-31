@@ -1,7 +1,7 @@
 import pygame
 import pygbase
 
-from data.modules.base.registrable import Registrable
+from data.modules.base.registry.registrable import Registrable
 from data.modules.entities.entity import Entity
 from data.modules.objects.game_object import GameObject
 
@@ -12,9 +12,9 @@ class RuneAltar(GameObject, Registrable):
 		return "rune_altar"
 
 	def __init__(self, pos: tuple, use_pixel: bool):
-		self.inactive_image = pygbase.ResourceManager.get_resource("sprite_sheet", "rune_altar").get_image(0)
-		self.transition_animation = pygbase.Animation("sprite_sheet", "rune_altar", 1, 2, looping=False)
-		self.active_image = pygbase.ResourceManager.get_resource("sprite_sheet", "rune_altar").get_image(3)
+		self.inactive_image = pygbase.ResourceManager.get_resource("sprite_sheets", "rune_altar").get_image(0)
+		self.transition_animation = pygbase.Animation("sprite_sheets", "rune_altar", 1, 2, looping=False)
+		self.active_image = pygbase.ResourceManager.get_resource("sprite_sheets", "rune_altar").get_image(3)
 
 		super().__init__("rune_altar", pos, use_pixel, self.inactive_image)
 

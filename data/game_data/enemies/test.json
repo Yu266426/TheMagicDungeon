@@ -7,16 +7,16 @@
   ],
   "animations": {
     "idle": {
-      "sprite_sheet": "player_idle_animation",
-      "start_index": 0,
-      "length": 1,
-      "speed": 8
-    },
-    "run": {
-      "sprite_sheet": "player_run_animation",
+      "sprite_sheet": "player_idle",
       "start_index": 0,
       "length": 2,
-      "speed": 8
+      "speed": 4
+    },
+    "run": {
+      "sprite_sheet": "player_run",
+      "start_index": 0,
+      "length": 2,
+      "speed": 4
     }
   },
   "states": {
@@ -32,5 +32,6 @@
       "attack_cooldown": 3.0,
       "attack_range": 1
     }
-  }
+  },
+  "weapon": "energy_sword"
 }

@@ -19,6 +19,14 @@
     "rotatable": false,
     "scale": 2
   },
+  "player_body": {
+    "scale": 0,
+    "rotatable": false
+  },
+  "player_leg": {
+    "scale": 0,
+    "rotatable": true
+  },
   "plus_button": {
     "scale": 1,
     "rotatable": false

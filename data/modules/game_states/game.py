@@ -60,17 +60,9 @@ class Game(pygbase.GameState, name="game"):
 
 			pygbase.EventManager.post_event(pygame.QUIT)
 
-		# Toggle Debug
-		if pygbase.InputManager.get_key_just_pressed(pygame.K_F5):
-			if pygbase.DebugDisplay.is_active():
-				pygbase.DebugDisplay.hide()
-			else:
-				pygbase.DebugDisplay.show()
-
 	def draw(self, surface: pygame.Surface):
 		surface.fill((0, 0, 0))
 
 		self.level.draw(surface, self.camera)
-		self.lighting_manager.draw(surface, self.camera)
 
 		self.particle_manager.draw(surface, self.camera)

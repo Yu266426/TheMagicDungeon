@@ -8,7 +8,7 @@ class Tile:
 		self.sprite_sheet_name = sprite_sheet_name
 		self.image_index = image_index
 
-		self.image: Image = ResourceManager.get_resource("sprite_sheet", sprite_sheet_name).get_image(image_index)
+		self.image: Image = ResourceManager.get_resource("sprite_sheets", sprite_sheet_name).get_image(image_index)
 		self.rect: pygame.Rect = self.image.get_image().get_rect(bottomleft=pos)
 
 	def draw(self, surface: pygame.Surface, camera: Camera, flag: int = 0):

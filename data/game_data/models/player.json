@@ -1,0 +1,33 @@
+{
+  "type": "humanoid",
+  "parts": {
+    "body": {
+      "type": "static",
+      "image": "player_body",
+      "offset": [
+        0,
+        -0.7
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "parent": "",
+      "layer": 2
+    },
+    "leg": {
+      "type": "static",
+      "image": "player_leg",
+      "offset": [
+        0.15,
+        0.55
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "parent": "body",
+      "layer": 1
+    }
+  }
+}

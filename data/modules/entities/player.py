@@ -12,6 +12,8 @@ from data.modules.entities.items.energy_sword import EnergySword
 from data.modules.entities.components.movement import Movement
 from data.modules.entities.entity import Entity
 from data.modules.entities.entity_manager import EntityManager
+from data.modules.entities.models.humanoid_model import HumanoidModel
+from data.modules.entities.models.model_loader import ModelLoader
 from data.modules.level.level import Level
 
 
@@ -21,12 +23,16 @@ class Player(Entity, tags=("player",)):
 		self.entity_manager = entity_manager
 		self.level = level
 
-		self.current_state = "idle"
+		self.flip_x = False
 
+		self.y_offset = 0
+		self.run_start_time = 0
+
+		self.character_model: HumanoidModel = ModelLoader.create_model("player", self.pos)
 		self.animations = pygbase.AnimationManager([
-			("idle", pygbase.Animation("sprite_sheet", "player_idle_animation", 0, 1), 8),
-			("run", pygbase.Animation("sprite_sheet", "player_run_animation", 0, 2), 8)
-		], "player_idle")
+			("idle", pygbase.Animation("sprite_sheets", "player_idle", 0, 2), 4),
+			("run", pygbase.Animation("sprite_sheets", "player_run", 0, 2), 4)
+		], "idle")
 
 		self.collider = BoxCollider((70, 50)).link_pos(self.pos)
 
@@ -38,22 +44,25 @@ class Player(Entity, tags=("player",)):
 		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
 		self.light = pygbase.Light(self.pos, 0.2, 300, 10, 1.2).link_pos(self.pos)
 		self.light2 = pygbase.Light(self.pos, 0.5, 500, 20, 1.2).link_pos(self.pos)
+		self.shadow = pygbase.Shadow(self.pos, 22).link_pos(self.pos)
 
 		self.interaction_controller = InteractionController(250, self)
 
 		self.health = Health(10000)
 		self.damage_timer = pygbase.Timer(0.6, True, False)
 
-		self.item_slot = ItemSlot(self.pos, (25, -42), entity_manager, True)
+		self.item_slot = ItemSlot(self.character_model.body_part.pos, (25, 30), entity_manager, True)
 		self.item_slot.equip_item(EnergySword(entity_manager, level))
 
 	def added(self):
 		self.lighting_manager.add_light(self.light)
 		self.lighting_manager.add_light(self.light2)
+		self.lighting_manager.add_shadow(self.shadow)
 
 	def removed(self):
 		self.lighting_manager.remove_light(self.light)
 		self.lighting_manager.remove_light(self.light2)
+		self.lighting_manager.remove_shadow(self.shadow)
 
 	def damaged(self):
 		pass
@@ -64,8 +73,12 @@ class Player(Entity, tags=("player",)):
 		if self.input.length() != 0:
 			self.input.normalize_ip()
 			self.animations.switch_state("run")
+			self.character_model.switch_state("run")
+			self.run_start_time = pygame.time.get_ticks()
+
 		else:
 			self.animations.switch_state("idle")
+			self.character_model.switch_state("idle")
 
 	def check_damaged(self):
 		if self.damage_timer.done():
@@ -118,7 +131,16 @@ class Player(Entity, tags=("player",)):
 
 		self.movement.move_in_direction(self.pos, self.input, delta)
 
+		self.character_model.update(delta)
 		self.animations.update(delta)
+		if self.animations.current_state == "run":
+			self.y_offset = (math.sin(pygame.time.get_ticks() / 60) + 1) * 5
+		else:
+			self.y_offset = 0
+
+		self.flip_x = pygame.mouse.get_pos()[0] < self.camera.world_to_screen(self.pos)[0]
+		self.item_slot.flip_x = self.flip_x
+		self.character_model.flipped = self.flip_x
 
 		if pygbase.InputManager.get_mouse_just_pressed(0):
 			self.item_slot.use_item()
@@ -130,7 +152,8 @@ class Player(Entity, tags=("player",)):
 		self.check_damaged()
 
 	def draw(self, surface: pygame.Surface, camera: pygbase.Camera):
-		self.animations.draw_at_pos(surface, self.pos, camera, draw_pos="midbottom")
+		# self.animations.draw_at_pos(surface, self.pos + (0, -self.y_offset), camera, flip=(self.flip_x, False), draw_pos="midbottom")
+		self.character_model.draw(surface, camera)
 		self.item_slot.draw(surface, camera)
 
 	def is_alive(self):

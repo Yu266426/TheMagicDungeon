@@ -6,10 +6,11 @@ import pygame
 import pygbase
 
 from data.modules.base.paths import OBJECT_DIR
-from data.modules.base.registry import Registry
+from data.modules.base.registry.registry import Registry
 from data.modules.objects.game_object import GameObject
 
 
+# TODO: Conform to Loader
 class ObjectLoader:
 	# object_name: (object_type, sprite, hitbox, behaviour, tags) for static and animated
 	# object_name: (object_type, object_class, tags) for custom
@@ -56,7 +57,7 @@ class ObjectLoader:
 
 			cls.object_data[object_name] = (
 				object_type,
-				pygbase.ResourceManager.get_resource("sprite_sheet", sprite_sheet_name).get_image(data["image_index"]),
+				pygbase.ResourceManager.get_resource("sprite_sheets", sprite_sheet_name).get_image(data["image_index"]),
 				hitbox,
 				behaviour,
 				tags
@@ -66,7 +67,7 @@ class ObjectLoader:
 
 			cls.object_data[object_name] = (
 				object_type,
-				("sprite_sheet", sprite_sheet_name, data["animation_start_index"], data["animation_length"], data["animation_looping"]),
+				("sprite_sheets", sprite_sheet_name, data["animation_start_index"], data["animation_length"], data["animation_looping"]),
 				hitbox,
 				behaviour,
 				tags

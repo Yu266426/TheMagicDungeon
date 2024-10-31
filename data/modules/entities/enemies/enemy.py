@@ -22,6 +22,7 @@ class Enemy(Entity, tags=("enemy",)):
 			data: dict[str, ...]  # Used by subclasses
 	):
 		super().__init__(pos)
+		print("hi")
 
 		self.collider = BoxCollider(collider_size).link_pos(self.pos)
 		self.movement = Movement(3000, 10, level, self.collider)

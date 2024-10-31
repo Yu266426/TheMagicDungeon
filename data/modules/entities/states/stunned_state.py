@@ -1,7 +1,7 @@
 import pygame
 import pygbase
 
-from data.modules.base.registrable import Registrable
+from data.modules.base.registry.registrable import Registrable
 from data.modules.entities.components.movement import Movement
 from data.modules.entities.states.entity_state import EntityState
 

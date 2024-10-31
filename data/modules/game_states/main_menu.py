@@ -16,7 +16,7 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 		self.title_frame.add_element(pygbase.ImageElement(
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
 			(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
-			"image",
+			"images",
 			"main_title",
 			self.title_frame
 		))
@@ -29,7 +29,7 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
 			(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
-			"image",
+			"images",
 			"button",
 			self.button_frame,
 			self.set_next_state_type,
@@ -41,7 +41,7 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0, False), pygbase.UIValue(0.02, False)),
 			(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
-			"image",
+			"images",
 			"button",
 			self.button_frame,
 			self.set_next_state_type,
@@ -52,7 +52,7 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0, False), pygbase.UIValue(0.02, False)),
 			(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
-			"image",
+			"images",
 			"button",
 			self.button_frame,
 			pygbase.EventManager.post_event,

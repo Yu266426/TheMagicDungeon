@@ -2,7 +2,6 @@ from typing import Optional
 
 import pygame
 import pygbase
-# from pygame.examples.multiplayer_joystick import player
 from pygbase.utils import get_angle_to
 
 from data.modules.entities.items.item import Item
@@ -22,6 +21,7 @@ class ItemSlot:
 		self.offset_pos = self.pos + self.offset
 
 		self.flip_x = False
+		self.item_flip_x = False
 
 		self.item: Optional[Item] = None
 
@@ -51,16 +51,22 @@ class ItemSlot:
 			self.item.use()
 
 	def update(self, target_pos: pygame.Vector2):
-		if target_pos.x < self.pos.x:
-			self.flip_x = True
+		# Update offsets if we are flipped (set externally)
+		if self.flip_x:
 			self.offset_pos.update(self.pos.x - self.offset.x, self.pos.y + self.offset.y)
 		else:
-			self.flip_x = False
 			self.offset_pos.update(self.pos + self.offset)
 
+		# Flip item depending on target
+		if target_pos.x < self.pos.x:
+			self.item_flip_x = True
+		else:
+			self.item_flip_x = False
+
+		# Update item
 		if self.item is not None:
 			self.item.angle = get_angle_to(self.offset_pos, target_pos) % 360
-			self.item.flip_x = self.flip_x
+			self.item.flip_x = self.item_flip_x
 
 			if not self.item.check_durability():
 				self.entity_manager.add_entity_to_remove(self.item)

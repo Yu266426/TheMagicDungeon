@@ -1,19 +1,23 @@
 import pygame
 import pygbase
 
-from data.modules.entities.attacks.fireball import Fireball
+from data.modules.base.registry.registrable import Registrable
 from data.modules.entities.attacks.sword_swing import SwordSwing
-from data.modules.entities.items.item import Item
 from data.modules.entities.entity_manager import EntityManager
+from data.modules.entities.items.item import Item
 from data.modules.level.level import Level
 
 
-class EnergySword(Item):
-	def __init__(self, entities: EntityManager, level: Level):
+class EnergySword(Item, Registrable):
+	@staticmethod
+	def get_name() -> str:
+		return "energy_sword"
+
+	def __init__(self, entity_manager: EntityManager, level: Level):
 		super().__init__(100)
 
 		self.animations = pygbase.AnimationManager([
-			("active", pygbase.Animation("sprite_sheet", "energy_sword", 0, 1), 1)
+			("active", pygbase.Animation("sprite_sheets", "energy_sword", 0, 1), 1)
 		], "active")
 
 		self.starting_angle_offset = -60
@@ -28,24 +32,15 @@ class EnergySword(Item):
 		self.attack_damage = 5
 
 		self.level = level
-		self.entity_manager: EntityManager = entities
+		self.entity_manager: EntityManager = entity_manager
 		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
 		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
 
 		self.attack_cooldown = pygbase.Timer(0.5, True, False)
 
-	def added_to_slot(self, pos: pygame.Vector2):
-		super().added_to_slot(pos)
-
 	def use(self):
 		if self.attack_cooldown.done():
 			self.entity_manager.add_entity(SwordSwing(self.pos, self.angle + (180 if self.flip_x else 0), self.attack_length, self.attack_damage, self.convert_flip()), tags=self.entity_tags)
-			# self.entity_manager.add_entity(Fireball(self.pos, self.angle, 800, 400, 30, 70, 10, self.level, self.entity_manager))
-			# self.entity_manager.add_entity(Fireball(self.pos, self.angle + 10, 800, 400, 30, 70, 10, self.level, self.entity_manager))
-			# self.entity_manager.add_entity(Fireball(self.pos, self.angle - 10, 800, 400, 30, 70, 10, self.level, self.entity_manager))
-			# self.entity_manager.add_entity(Fireball(self.pos, self.angle + 20, 800, 400, 30, 70, 10, self.level, self.entity_manager))
-			# self.entity_manager.add_entity(Fireball(self.pos, self.angle - 20, 800, 400, 30, 70, 10, self.level, self.entity_manager))
-
 			self.attack_cooldown.start()
 
 			self.swinging_down = True
