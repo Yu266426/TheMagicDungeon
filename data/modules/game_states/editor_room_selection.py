@@ -112,8 +112,9 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 	def exit(self):
 		if self.selected_room is not None:
 			self.selected_room.remove_objects()
+		self.entity_manager.clear_entities()
 
-	def select_room(self, index, room_name):
+	def select_room(self, _index, room_name):
 		if self.selected_room is not None:
 			self.selected_room.remove_objects()
 

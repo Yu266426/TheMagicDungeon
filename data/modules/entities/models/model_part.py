@@ -1,7 +1,7 @@
 import pygame.typing
-import pygbase
 
-from data.modules.base.constants import TILE_SIZE, PIXEL_SCALE
+import pygbase
+from data.modules.base.constants import PIXEL_SCALE
 from data.modules.base.registry.registrable import Registrable
 
 

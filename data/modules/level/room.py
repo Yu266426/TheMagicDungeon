@@ -63,9 +63,7 @@ class BaseRoom:
 
 	def remove_objects(self):
 		for game_object in self.objects:
-			self.entity_manager.add_entity_to_remove(game_object)
-
-		self.objects.clear()
+			self.remove_object(game_object)
 
 
 class LevelRoom(BaseRoom):

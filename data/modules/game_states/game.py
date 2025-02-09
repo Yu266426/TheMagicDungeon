@@ -55,10 +55,10 @@ class Game(pygbase.GameState, name="game"):
 		self.level.update(delta, self.player.pos)
 
 		if pygbase.Input.key_just_pressed(pygame.K_ESCAPE):
-			# from data.modules.game_states.main_menu import MainMenu
-			# self.set_next_state(MainMenu())
+			from data.modules.game_states.main_menu import MainMenu
+			self.set_next_state(MainMenu())
 
-			pygbase.Events.post_event(pygame.QUIT)
+		# pygbase.Events.post_event(pygame.QUIT)
 
 	def draw(self, surface: pygame.Surface):
 		surface.fill((0, 0, 0))
