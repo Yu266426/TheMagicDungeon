@@ -57,7 +57,7 @@ class ObjectLoader:
 
 			cls.object_data[object_name] = (
 				object_type,
-				pygbase.ResourceManager.get_resource("sprite_sheets", sprite_sheet_name).get_image(data["image_index"]),
+				pygbase.Resources.get_resource("sprite_sheets", sprite_sheet_name).get_image(data["image_index"]),
 				hitbox,
 				behaviour,
 				tags

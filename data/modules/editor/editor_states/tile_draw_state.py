@@ -5,7 +5,6 @@ import pygbase
 import pygbase.ui.text
 
 from data.modules.base.constants import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
-from data.modules.level.room import EditorRoom
 from data.modules.base.utils import get_tile_pos, draw_rect_outline
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo
@@ -14,6 +13,7 @@ from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
 from data.modules.editor.tools.tile_tools.tile_draw_tool import TileDrawTool
 from data.modules.editor.tools.tile_tools.tile_fill_tool import TileFillTool
+from data.modules.level.room import EditorRoom
 
 
 class TileTools(enum.Enum):
@@ -45,13 +45,13 @@ class TileDrawState(EditorState):
 		self.button_size = self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(10), pygbase.UIValue(10)),
 			(pygbase.UIValue(0), pygbase.UIValue(70)),
-			"image", "draw_tool_button",
+			"images", "draw_tool_button",
 			self.button_frame, self.set_tool, callback_args=(TileTools.DRAW, 0)
 		)).size
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(10), pygbase.UIValue(0)),
 			(pygbase.UIValue(0), pygbase.UIValue(70)),
-			"image", "draw_tool_button",
+			"images", "draw_tool_button",
 			self.button_frame, self.set_tool, callback_args=(TileTools.FILL, 1)
 		), add_on_to_previous=(True, False), align_with_previous=(False, True))
 
@@ -63,13 +63,13 @@ class TileDrawState(EditorState):
 
 	def check_draw_layer(self):
 		# Change draw layer
-		if pygbase.InputManager.get_key_just_pressed(pygame.K_1):
+		if pygbase.Input.key_just_pressed(pygame.K_1):
 			self.tile_selection_info.layer = 0
 			self.layer_text.set_text("1")
-		elif pygbase.InputManager.get_key_just_pressed(pygame.K_2):
+		elif pygbase.Input.key_just_pressed(pygame.K_2):
 			self.tile_selection_info.layer = 1
 			self.layer_text.set_text("2")
-		elif pygbase.InputManager.get_key_just_pressed(pygame.K_3):
+		elif pygbase.Input.key_just_pressed(pygame.K_3):
 			self.tile_selection_info.layer = 2
 			self.layer_text.set_text("3")
 
@@ -101,7 +101,7 @@ class TileDrawState(EditorState):
 
 	def next_state(self, mode_index: int):
 		if mode_index == 0:
-			if pygbase.InputManager.get_key_pressed(pygame.K_SPACE):
+			if pygbase.Input.key_pressed(pygame.K_SPACE):
 				return EditorStates.TILE_SELECTION_STATE
 			else:
 				return EditorStates.TILE_DRAW_STATE

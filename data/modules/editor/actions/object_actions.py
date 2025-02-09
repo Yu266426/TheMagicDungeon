@@ -10,7 +10,7 @@ class PlaceObjectAction(EditorAction):
 		self.game_object = game_object
 
 	def execute(self):
-		self._room.add_object(self.game_object)
+		self._room.add_object(self.game_object, ())
 
 	def undo(self):
 		self._room.remove_object(self.game_object)
@@ -26,4 +26,4 @@ class RemoveObjectAction(EditorAction):
 		self._room.remove_object(self.game_object)
 
 	def undo(self):
-		self._room.add_object(self.game_object)
+		self._room.add_object(self.game_object, ())

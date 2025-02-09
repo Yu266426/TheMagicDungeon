@@ -2,12 +2,12 @@ import pygame
 import pygbase
 
 from data.modules.base.constants import SCREEN_HEIGHT
-from data.modules.level.room import EditorRoom
 from data.modules.editor.actions.editor_actions import EditorActionQueue
 from data.modules.editor.editor_selection_info import TileSelectionInfo
 from data.modules.editor.editor_states.editor_state import EditorState, EditorStates
 from data.modules.editor.screens.sprite_sheet_screen import SpriteSheetScreen
 from data.modules.editor.shared_editor_state import SharedEditorState
+from data.modules.level.room import EditorRoom
 
 
 class TileSelectionState(EditorState):
@@ -32,7 +32,7 @@ class TileSelectionState(EditorState):
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(10), pygbase.UIValue(10)),
 			(pygbase.UIValue(0), pygbase.UIValue(70)),
-			"image",
+			"images",
 			"tile_set_button",
 			self.button_frame,
 			self.switch_screen,
@@ -42,7 +42,7 @@ class TileSelectionState(EditorState):
 			self.button_frame.add_element(pygbase.Button(
 				(pygbase.UIValue(10), pygbase.UIValue(10)),
 				(pygbase.UIValue(0), pygbase.UIValue(70)),
-				"image",
+				"images",
 				"tile_set_button",
 				self.button_frame,
 				self.switch_screen,
@@ -73,7 +73,7 @@ class TileSelectionState(EditorState):
 
 	def next_state(self, mode_index: int):
 		if mode_index == 0:
-			if pygbase.InputManager.get_key_pressed(pygame.K_SPACE):
+			if pygbase.Input.key_pressed(pygame.K_SPACE):
 				return EditorStates.TILE_SELECTION_STATE
 			else:
 				self.sprite_sheets[self.sprite_sheet_index].update_state()

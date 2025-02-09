@@ -37,7 +37,7 @@ class InteractionController:
 				self.interactable_entity = None
 
 		if self.has_interactable():
-			if pygbase.InputManager.get_key_just_pressed(pygame.K_e):
+			if pygbase.Input.pressed("interact"):
 				self.get_interactable().interact(self.parent)
 
 	def draw(self, surface: pygame.Surface, camera: pygbase.Camera):

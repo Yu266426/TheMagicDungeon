@@ -91,4 +91,4 @@ class MeleeEnemy(Enemy, Registrable):
 		self.animations.draw_at_pos(surface, self.pos, camera, flip=(self.flip_x, False), draw_pos="midbottom")
 		self.item_slot.draw(surface, camera)
 
-		pygbase.DebugDisplay.draw_rect(camera.world_to_screen_rect(self.collider.rect), "yellow")
+		pygbase.Debug.draw_rect(camera.world_to_screen_rect(self.collider.rect), "yellow")

@@ -64,4 +64,4 @@ class GameObject(Entity, tags=("object",)):
 		else:
 			self.sprite.draw(surface, camera.world_to_screen(self.pos), draw_pos="midbottom", flags=flags)
 
-		pygbase.DebugDisplay.draw_rect(camera.world_to_screen_rect(self.hitbox), "dark green", 2)
+		pygbase.Debug.draw_rect(camera.world_to_screen_rect(self.hitbox), "dark green", 2)

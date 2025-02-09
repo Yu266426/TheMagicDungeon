@@ -42,7 +42,7 @@ class Editor(pygbase.GameState, name="editor"):
 			pygbase.TextSelectionMenu(
 				(pygbase.UIValue(0.02, False), pygbase.UIValue(0.02, False)),
 				(pygbase.UIValue(0.35, False), pygbase.UIValue(0.08, False)),
-				"image",
+				"images",
 				["Tile", "Object"],
 				self.ui.base_container
 			)
@@ -62,7 +62,7 @@ class Editor(pygbase.GameState, name="editor"):
 		self.overlay_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0.5, False), pygbase.UIValue(0.02, False)),
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
-			"image", "button",
+			"images", "button",
 			self.overlay_frame,
 			self.back_to_main_menu,
 			text="Menu", alignment="c"
@@ -70,7 +70,7 @@ class Editor(pygbase.GameState, name="editor"):
 		self.overlay_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0.5, False), pygbase.UIValue(0.02, False)),
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
-			"image", "button",
+			"images", "button",
 			self.overlay_frame,
 			self.room.save,
 			text="Save", alignment="c"
@@ -78,9 +78,9 @@ class Editor(pygbase.GameState, name="editor"):
 		self.overlay_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0.5, False), pygbase.UIValue(0.02, False)),
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
-			"image", "button",
+			"images", "button",
 			self.overlay_frame,
-			pygbase.EventManager.post_event, callback_args=(pygame.QUIT,),
+			pygbase.Events.post_event, callback_args=(pygame.QUIT,),
 			text="Quit", alignment="c"
 		), align_with_previous=(True, False), add_on_to_previous=(False, True))
 
@@ -95,7 +95,7 @@ class Editor(pygbase.GameState, name="editor"):
 		self.entity_manager.clear_entities()
 
 	def update(self, delta: float):
-		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
+		if pygbase.Input.key_just_pressed(pygame.K_ESCAPE):
 			self.show_overlay = not self.show_overlay
 			self.shared_state.should_draw_tool = not self.shared_state.should_draw_tool
 
@@ -109,10 +109,10 @@ class Editor(pygbase.GameState, name="editor"):
 			self.states[self.current_state].update(delta)
 
 			# Undo / Redo
-			if pygbase.InputManager.get_key_just_pressed(pygame.K_z):
-				if pygbase.InputManager.check_modifiers(pygame.KMOD_CTRL) and not pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
+			if pygbase.Input.key_just_pressed(pygame.K_z):
+				if pygbase.Input.check_modifiers(pygame.KMOD_CTRL) and not pygbase.Input.check_modifiers(pygame.KMOD_SHIFT):
 					self.action_queue.undo_action()
-				if pygbase.InputManager.check_modifiers(pygame.KMOD_CTRL) and pygbase.InputManager.check_modifiers(pygame.KMOD_SHIFT):
+				if pygbase.Input.check_modifiers(pygame.KMOD_CTRL, pygame.KMOD_SHIFT, use_and=True):
 					self.action_queue.redo_action()
 
 			# Animate objects
@@ -122,8 +122,8 @@ class Editor(pygbase.GameState, name="editor"):
 			self.particle_manager.update(delta)
 
 			# Save
-			if pygbase.InputManager.check_modifiers(pygame.KMOD_LCTRL):
-				if pygbase.InputManager.get_key_just_pressed(pygame.K_s):
+			if pygbase.Input.check_modifiers(pygame.KMOD_LCTRL):
+				if pygbase.Input.key_just_pressed(pygame.K_s):
 					self.room.save()
 		else:
 			self.overlay_ui.update(delta)

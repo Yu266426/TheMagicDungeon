@@ -68,8 +68,8 @@ class Player(Entity, tags=("player",)):
 		pass
 
 	def get_inputs(self):
-		self.input.x = pygbase.InputManager.get_key_pressed(pygame.K_d) - pygbase.InputManager.get_key_pressed(pygame.K_a)
-		self.input.y = pygbase.InputManager.get_key_pressed(pygame.K_s) - pygbase.InputManager.get_key_pressed(pygame.K_w)
+		self.input.x = pygbase.Input.pressed("right") - pygbase.Input.pressed("left")
+		self.input.y = pygbase.Input.pressed("down") - pygbase.Input.pressed("up")
 		if self.input.length() != 0:
 			self.input.normalize_ip()
 			self.animations.switch_state("run")
@@ -111,9 +111,9 @@ class Player(Entity, tags=("player",)):
 		self.get_inputs()
 
 		# Debug
-		if pygbase.InputManager.get_key_just_pressed(pygame.K_SPACE):
+		if pygbase.Input.key_just_pressed(pygame.K_SPACE):
 			self.movement.add_force(self.input, 5000)
-		if pygbase.InputManager.get_mouse_just_pressed(2):
+		if pygbase.Input.mouse_just_pressed(2):
 			mouse_world_pos = self.camera.screen_to_world(pygame.mouse.get_pos())
 			angle = pygbase.utils.get_angle_to(self.pos - (0, 30), mouse_world_pos)
 			self.entity_manager.add_entity(Fireball(
@@ -141,8 +141,9 @@ class Player(Entity, tags=("player",)):
 		self.flip_x = pygame.mouse.get_pos()[0] < self.camera.world_to_screen(self.pos)[0]
 		self.item_slot.flip_x = self.flip_x
 		self.character_model.flipped = self.flip_x
+		self.character_model.direction = math.copysign(1, self.input.x) if self.input.x != 0 else (-1 if self.flip_x else 1)
 
-		if pygbase.InputManager.get_mouse_just_pressed(0):
+		if pygbase.Input.pressed("attack"):
 			self.item_slot.use_item()
 
 		self.item_slot.update(self.camera.screen_to_world(pygame.mouse.get_pos()))

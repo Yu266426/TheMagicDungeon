@@ -1,7 +1,7 @@
 import pygame
 import pygbase
 
-from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SCALE, TILE_SIZE
+from data.modules.base.constants import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.player import Player
 from data.modules.level.level import Level
@@ -25,7 +25,7 @@ class Lobby(pygbase.GameState, name="lobby"):
 		# self.player = Player((150, 150), self.camera, self.entity_manager, self.level)
 		self.entity_manager.add_entity(self.player)
 
-		pygbase.EventManager.add_handler("lobby", "start_game", self.start_game_callback)
+		pygbase.Events.add_handler("lobby", "start_game", self.start_game_callback)
 
 	def enter(self):
 		self.particle_manager.clear()
@@ -34,7 +34,7 @@ class Lobby(pygbase.GameState, name="lobby"):
 		self.level.cleanup()
 		self.entity_manager.clear_entities()
 
-		pygbase.EventManager.remove_handler(self.start_game_callback, "lobby", "start_game")
+		pygbase.Events.remove_handler(self.start_game_callback, "lobby", "start_game")
 
 	def start_game_callback(self, event: pygame.Event):
 		from data.modules.game_states.game import Game
@@ -57,7 +57,7 @@ class Lobby(pygbase.GameState, name="lobby"):
 
 		self.camera.lerp_to_target(self.player.collider.rect.center - pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), delta * 5)
 
-		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
+		if pygbase.Input.key_just_pressed(pygame.K_ESCAPE):
 			# pygbase.EventManager.post_event(pygame.QUIT)
 			from data.modules.game_states.main_menu import MainMenu
 			self.set_next_state(MainMenu())

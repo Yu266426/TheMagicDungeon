@@ -1,3 +1,4 @@
+import gc
 import json
 import logging
 import os
@@ -477,5 +478,7 @@ class LevelGenerator:
 
 		self._generate_hallway_graph()
 		self._generate_hallways_from_graph()
+
+		gc.collect()
 
 		return self.level

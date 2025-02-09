@@ -3,7 +3,7 @@ import logging
 import pygame
 import pygbase
 
-from data.modules.base.constants import TILE_SCALE, SCREEN_WIDTH, SCREEN_HEIGHT
+from data.modules.base.constants import PIXEL_SCALE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import IMAGE_DIR, SPRITE_SHEET_DIR
 from data.modules.base.registry.registry import Registry
 from data.modules.entities.enemies.enemy_loader import EnemyLoader
@@ -48,9 +48,9 @@ def register_types():
 
 def toggle_debug(event: pygame.Event):
 	if event.key == pygame.K_F3:
-		pygbase.DebugDisplay.toggle_fps()
+		pygbase.Debug.toggle_fps()
 	elif event.key == pygame.K_F4:
-		pygbase.DebugDisplay.toggle()
+		pygbase.Debug.toggle()
 
 
 if __name__ == '__main__':
@@ -58,13 +58,24 @@ if __name__ == '__main__':
 	# profiler.enable()
 
 	pygbase.init((SCREEN_WIDTH, SCREEN_HEIGHT), logging_level=logging.DEBUG, rotate_resolution=2, light_radius_interval=3, shadow_ratio=1.6)
-	# pygbase.DebugDisplay.show()
-	pygbase.EventManager.add_handler("all", pygame.KEYDOWN, toggle_debug)
+	# pygbase.Debug.show()
 
-	pygbase.EventManager.create_custom_event("start_game")
+	# Events
+	pygbase.Events.add_handler("all", pygame.KEYDOWN, toggle_debug)
 
-	pygbase.add_image_resource("images", 1, str(IMAGE_DIR), default_scale=TILE_SCALE)
-	pygbase.add_sprite_sheet_resource("sprite_sheets", 2, str(SPRITE_SHEET_DIR), default_scale=TILE_SCALE)
+	pygbase.Events.create_custom_event("start_game")
+
+	# Keybinds
+	pygbase.Input.set_keybind("left", "a")
+	pygbase.Input.set_keybind("right", "d")
+	pygbase.Input.set_keybind("up", "w")
+	pygbase.Input.set_keybind("down", "s")
+	pygbase.Input.set_keybind("attack", pygbase.MouseInput.LEFT_CLICK)
+	pygbase.Input.set_keybind("interact", "e")
+
+	# Resources
+	pygbase.add_image_resource("images", 1, str(IMAGE_DIR), default_scale=PIXEL_SCALE)
+	pygbase.add_sprite_sheet_resource("sprite_sheets", 2, str(SPRITE_SHEET_DIR), default_scale=PIXEL_SCALE)
 
 	pygbase.Common.set_value("particle_manager", pygbase.ParticleManager())
 	pygbase.Common.set_value("lighting_manager", pygbase.LightingManager(0.3, 0.4))

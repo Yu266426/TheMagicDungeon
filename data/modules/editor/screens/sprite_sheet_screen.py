@@ -10,7 +10,7 @@ class SpriteSheetScreen(pygbase.CameraController):
 		self.selection_info = selection_info
 
 		self.sprite_sheet_name: str = sprite_sheet_name
-		self.sprite_sheet: pygbase.SpriteSheet = pygbase.ResourceManager.get_resource("sprite_sheet", sprite_sheet_name)
+		self.sprite_sheet: pygbase.SpriteSheet = pygbase.Resources.get_resource("sprite_sheets", sprite_sheet_name)
 
 		super().__init__(keep_in=(0, 0, self.sprite_sheet.n_cols * self.sprite_sheet.tile_width, self.sprite_sheet.n_rows * self.sprite_sheet.tile_height))
 
@@ -49,7 +49,7 @@ class SpriteSheetScreen(pygbase.CameraController):
 		self._mouse_update()
 		self._get_mouse_pos()
 
-		if pygbase.InputManager.get_mouse_just_pressed(0):
+		if pygbase.Input.mouse_just_pressed(0):
 			if (
 					0 <= self._tiled_mouse_pos[0] < self.sprite_sheet.n_cols and
 					0 <= self._tiled_mouse_pos[1] < self.sprite_sheet.n_rows
@@ -57,14 +57,14 @@ class SpriteSheetScreen(pygbase.CameraController):
 				self.selected_topleft = self._tiled_mouse_pos
 				self.selected_bottomright = self._tiled_mouse_pos
 
-		if pygbase.InputManager.get_mouse_pressed(0):
+		if pygbase.Input.mouse_pressed(0):
 			if (
 					0 <= self._tiled_mouse_pos[0] < self.sprite_sheet.n_cols and
 					0 <= self._tiled_mouse_pos[1] < self.sprite_sheet.n_rows
 			):
 				self.selected_bottomright = self._tiled_mouse_pos
 
-		if pygbase.InputManager.get_mouse_just_released(0):
+		if pygbase.Input.mouse_just_released(0):
 			self.update_state()
 
 		self._keyboard_control(delta)

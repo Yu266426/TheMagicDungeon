@@ -9,7 +9,7 @@ from data.modules.objects.object_loader import GameObject, ObjectLoader
 
 
 class ObjectSelectionScreen(pygbase.CameraController):
-	def __init__(self, object_selection_info: ObjectSelectionInfo, object_names: list, object_size: tuple, n_cols=1):
+	def __init__(self, object_selection_info: ObjectSelectionInfo, object_names: list, object_size: tuple[float, float], n_cols=1):
 		super().__init__(keep_in=(0, 0, min(n_cols, len(object_names)) * object_size[0], math.ceil(len(object_names) / n_cols) * object_size[1]))
 
 		self.object_selection_info = object_selection_info
@@ -37,7 +37,7 @@ class ObjectSelectionScreen(pygbase.CameraController):
 		self._mouse_update()
 		self._get_mouse_pos()
 
-		if pygbase.InputManager.get_mouse_just_pressed(0):
+		if pygbase.Input.mouse_just_pressed(0):
 			if 0 <= self._tiled_mouse_pos[0] < self.n_cols and 0 <= self._tiled_mouse_pos[1] < self.n_rows:
 				index = self._tiled_mouse_pos[1] * self.n_cols + self._tiled_mouse_pos[0]
 				if index < len(self.objects):

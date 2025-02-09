@@ -32,7 +32,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 			self.rooms_frame.add_element(pygbase.Button(
 				(pygbase.UIValue(0), pygbase.UIValue(0)),
 				(pygbase.UIValue(1, False), pygbase.UIValue(0)),
-				"image", "button",
+				"images", "button",
 				self.rooms_frame,
 				self.select_room,
 				callback_args=(0, self.rooms[0][:-5]),
@@ -46,7 +46,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 				self.rooms_frame.add_element(pygbase.Button(
 					(pygbase.UIValue(0), pygbase.UIValue(10)),
 					(pygbase.UIValue(1, False), pygbase.UIValue(0)),
-					"image", "button",
+					"images", "button",
 					self.rooms_frame,
 					self.select_room,
 					callback_args=(index + 1, room_name),
@@ -62,7 +62,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 		self.ui.add_element(pygbase.Button(
 			(pygbase.UIValue(0.03, False), pygbase.UIValue(0.84, False)),
 			(pygbase.UIValue(0), pygbase.UIValue(0.14, False)),
-			"image", "home_button",
+			"images", "home_button",
 			self.ui.base_container,
 			self.set_next_state_type,
 			callback_args=(MainMenu, ())
@@ -71,7 +71,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 		self.ui.add_element(pygbase.Button(
 			(pygbase.UIValue(0.02, False), pygbase.UIValue(0)),
 			(pygbase.UIValue(0), pygbase.UIValue(0.14, False)),
-			"image", "draw_tool_button",
+			"images", "draw_tool_button",
 			self.ui.base_container,
 			self.edit_button_callback,
 		), align_with_previous=(False, True), add_on_to_previous=(True, False))
@@ -79,7 +79,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 		self.ui.add_element(pygbase.Button(
 			(pygbase.UIValue(0.02, False), pygbase.UIValue(0)),
 			(pygbase.UIValue(0), pygbase.UIValue(0.14, False)),
-			"image", "plus_button",
+			"images", "plus_button",
 			self.ui.base_container,
 			self.add_room_button_callback,
 		), align_with_previous=(False, True), add_on_to_previous=(True, False))
@@ -140,7 +140,7 @@ class EditorRoomSelection(pygbase.GameState, name="editor_room_select"):
 		self.ui.update(delta)
 		self.entity_manager.update(delta)
 
-		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
+		if pygbase.Input.key_just_pressed(pygame.K_ESCAPE):
 			self.set_next_state_type(MainMenu, ())
 
 	def draw(self, surface: pygame.Surface):

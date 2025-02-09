@@ -2,7 +2,7 @@ from collections import deque
 from typing import Optional
 
 import pygame
-from pygbase import InputManager, Camera
+import pygbase
 
 from data.modules.base.constants import TILE_SIZE
 from data.modules.level.room import EditorRoom
@@ -86,7 +86,7 @@ class TileFillTool(EditorTool):
 			self.current_batch.add_action(action)
 
 		# Place
-		if InputManager.get_mouse_just_pressed(0):
+		if pygbase.Input.mouse_just_pressed(0):
 			self.current_batch = EditorActionBatch()
 			fill_tiles = self.fill(mouse_tile_pos, selection_info)
 			for pos in fill_tiles:
@@ -96,7 +96,7 @@ class TileFillTool(EditorTool):
 			self.current_batch = None
 
 		# Remove
-		elif InputManager.get_mouse_just_pressed(2):
+		elif pygbase.Input.mouse_just_pressed(2):
 			self.current_batch = EditorActionBatch()
 			fill_tiles = self.fill(mouse_tile_pos, selection_info)
 			for pos in fill_tiles:
@@ -105,8 +105,8 @@ class TileFillTool(EditorTool):
 			self._action_queue.add_action(self.current_batch)
 			self.current_batch = None
 
-	def draw(self, screen: pygame.Surface, camera: Camera, mouse_tile_pos: tuple, selection_info: TileSelectionInfo):
+	def draw(self, surface: pygame.Surface, camera: pygbase.Camera, mouse_tile_pos: tuple[int, int], selection_info: TileSelectionInfo):
 		fill_tiles = self.fill(mouse_tile_pos, selection_info)
 		for pos in fill_tiles:
 			tile_pos = pos[0] * TILE_SIZE, pos[1] * TILE_SIZE
-			screen.blit(self.fill_preview_surface, camera.world_to_screen(tile_pos), special_flags=pygame.BLEND_ADD)
+			surface.blit(self.fill_preview_surface, camera.world_to_screen(tile_pos), special_flags=pygame.BLEND_ADD)

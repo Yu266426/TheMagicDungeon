@@ -6,7 +6,7 @@
       "image": "player_body",
       "offset": [
         0,
-        -0.7
+        -10
       ],
       "pivot": [
         0,
@@ -19,8 +19,8 @@
       "type": "static",
       "image": "player_leg",
       "offset": [
-        0.15,
-        0.55
+        2.4,
+        8
       ],
       "pivot": [
         0,

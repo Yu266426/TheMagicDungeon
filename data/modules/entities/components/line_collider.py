@@ -142,4 +142,4 @@ class LineCollider:
 			return closest_point.distance_to(collider.pos) < collider.radius
 
 	def draw_debug(self, camera: pygbase.Camera):
-		pygbase.DebugDisplay.draw_line(camera.world_to_screen(self.start_pos + self.line.normalize() * self.offset), camera.world_to_screen(self.start_pos + self.line), "yellow", width=4)
+		pygbase.Debug.draw_line(camera.world_to_screen(self.start_pos + self.line.normalize() * self.offset), camera.world_to_screen(self.start_pos + self.line), "yellow", width=4)

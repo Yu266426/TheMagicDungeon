@@ -36,7 +36,7 @@ class ObjectDrawState(EditorState):
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(10), pygbase.UIValue(10)),
 			(pygbase.UIValue(0), pygbase.UIValue(70)),
-			"image", "reload",
+			"images", "reload",
 			self.button_frame, self.reset_object_animations
 		))
 
@@ -70,7 +70,7 @@ class ObjectDrawState(EditorState):
 		if mode_index == 0:
 			return EditorStates.TILE_DRAW_STATE
 		elif mode_index == 1:
-			if pygbase.InputManager.get_key_pressed(pygame.K_SPACE):
+			if pygbase.Input.key_pressed(pygame.K_SPACE):
 				return EditorStates.OBJECT_SELECTION_STATE
 			else:
 				return EditorStates.OBJECT_DRAW_STATE

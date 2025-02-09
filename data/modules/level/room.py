@@ -135,7 +135,7 @@ class Room(LevelRoom):
 		:param connections: Up, Down, Left, Right
 		"""
 
-		wall_sheet = pygbase.ResourceManager.get_resource("sprite_sheets", "walls")
+		wall_sheet = pygbase.Resources.get_resource("sprite_sheets", "walls")
 
 		# Horizontal
 		y_mid_point = self.n_rows // 2 - one_if_even(self.n_rows)  # Slightly different midpoints for odd vs even sized rooms
@@ -259,7 +259,7 @@ class Room(LevelRoom):
 				)
 
 	def generate_floor(self):
-		tiles_sheet = pygbase.ResourceManager.get_resource("sprite_sheets", "tiles")
+		tiles_sheet = pygbase.Resources.get_resource("sprite_sheets", "tiles")
 		for row in range(self.n_rows):
 			for col in range(self.n_cols):
 				self.add_tile(0, (col, row), Tile(
@@ -312,7 +312,7 @@ class Room(LevelRoom):
 				return (col + 0.5) * TILE_SIZE + self.offset[0], (row + 0.8) * TILE_SIZE + self.offset[1]
 
 	def activate_walls(self):
-		wall_sheet = pygbase.ResourceManager.get_resource("sprite_sheets", "walls")
+		wall_sheet = pygbase.Resources.get_resource("sprite_sheets", "walls")
 
 		for tile_pos in self.hallway_connection_tiles:
 			self.add_tile(1, tile_pos, Tile("walls", random.randrange(0, wall_sheet.length), (tile_pos[0] * TILE_SIZE + self.offset[0], (tile_pos[1] + 1) * TILE_SIZE + self.offset[1])))
@@ -485,8 +485,8 @@ class Hallway(LevelRoom):
 		self.create()
 
 	def create(self):
-		tiles_sheet = pygbase.ResourceManager.get_resource("sprite_sheets", "tiles")
-		walls_sheet = pygbase.ResourceManager.get_resource("sprite_sheets", "walls")
+		tiles_sheet = pygbase.Resources.get_resource("sprite_sheets", "tiles")
+		walls_sheet = pygbase.Resources.get_resource("sprite_sheets", "walls")
 
 		if self.horizontal:
 			# Create floor

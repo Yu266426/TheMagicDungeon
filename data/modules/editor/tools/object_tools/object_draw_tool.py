@@ -1,5 +1,5 @@
 import pygame
-from pygbase import InputManager, Camera
+import pygbase
 
 from data.modules.base.constants import TILE_SIZE
 from data.modules.base.utils import draw_rect_outline
@@ -21,7 +21,7 @@ class ObjectDrawTool(EditorTool):
 		self.current_batch: EditorActionBatch | None = None
 
 	def update(self, mouse_tile_pos: tuple[int, int], selection_info: ObjectSelectionInfo):
-		if InputManager.get_mouse_pressed(0):
+		if pygbase.Input.mouse_pressed(0):
 			self._shared_state.show_global_ui = False
 
 			x_pos = (mouse_tile_pos[0] + 0.5) * TILE_SIZE
@@ -36,7 +36,7 @@ class ObjectDrawTool(EditorTool):
 
 				self.current_batch.add_action(action)
 
-		if InputManager.get_mouse_pressed(2):
+		if pygbase.Input.mouse_pressed(2):
 			self._shared_state.show_global_ui = False
 
 			x_pos = (mouse_tile_pos[0] + 0.5) * TILE_SIZE
@@ -51,24 +51,24 @@ class ObjectDrawTool(EditorTool):
 
 				self.current_batch.add_action(action)
 
-		if InputManager.get_mouse_just_released(0) or InputManager.get_mouse_just_released(2):
+		if pygbase.Input.mouse_just_released(0) or pygbase.Input.mouse_just_released(2):
 			self._shared_state.show_global_ui = True
 
 			if self.current_batch is not None:
 				self._action_queue.add_action(self.current_batch)
 				self.current_batch = None
 
-	def draw(self, screen: pygame.Surface, camera: Camera, mouse_tile_pos: tuple, selection_info: ObjectSelectionInfo):
+	def draw(self, surface: pygame.Surface, camera: pygbase.Camera, mouse_tile_pos: tuple, selection_info: ObjectSelectionInfo):
 		draw_rect_outline(
-			screen, (255, 255, 255),
-			(mouse_tile_pos[0] * TILE_SIZE - camera.pos.x, mouse_tile_pos[1] * TILE_SIZE - camera.pos.y),
+			surface, (255, 255, 255),
+			camera.world_to_screen((mouse_tile_pos[0] * TILE_SIZE, mouse_tile_pos[1] * TILE_SIZE)),
 			(TILE_SIZE, TILE_SIZE),
 			2
 		)
 
 		# Draw selected object if not deleting
-		if not InputManager.get_mouse_pressed(2):
+		if not pygbase.Input.mouse_pressed(2):
 			if selection_info.has_object():
 				temp_object = ObjectLoader.create_object(selection_info.get_object_name(), mouse_tile_pos)[0]
 				temp_object.removed()
-				temp_object.draw(screen, camera, flags=pygame.BLEND_ADD)
+				temp_object.draw(surface, camera, flags=pygame.BLEND_ADD)

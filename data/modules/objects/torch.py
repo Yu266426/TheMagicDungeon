@@ -13,7 +13,7 @@ class Torch(GameObject, Registrable):
 		return "torch"
 
 	def __init__(self, pos: tuple, use_pixel: bool):
-		GameObject.__init__(self, "torch", pos, use_pixel, pygbase.ResourceManager.get_resource("sprite_sheets", "objects").get_image(1))
+		GameObject.__init__(self, "torch", pos, use_pixel, pygbase.Resources.get_resource("sprite_sheets", "objects").get_image(1))
 
 		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
 		self.fire = pygbase.CircleSpawner(self.pos + pygame.Vector2(0, -92), 0.05, 3, 20, True, "fire", self.particle_manager)

@@ -22,7 +22,6 @@ class Enemy(Entity, tags=("enemy",)):
 			data: dict[str, ...]  # Used by subclasses
 	):
 		super().__init__(pos)
-		print("hi")
 
 		self.collider = BoxCollider(collider_size).link_pos(self.pos)
 		self.movement = Movement(3000, 10, level, self.collider)
@@ -44,9 +43,9 @@ class Enemy(Entity, tags=("enemy",)):
 				if "from_enemy" in entity.entity_tags:
 					continue
 
-				if self.collider.collides_with(entity.collider):
+				if self.collider.collides_with(entity.collider):  # NoQA
 					# print(entity)
-					self.health.damage(entity.damage)
+					self.health.damage(entity.damage)  # NoQA
 
 					dir_vec = entity.pos - self.pos
 					if dir_vec.length() != 0:

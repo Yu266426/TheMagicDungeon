@@ -47,7 +47,7 @@ def sort_tuple(tup1: tuple[int, int], tup2: tuple[int, int]):
 	return new_tup1, new_tup2
 
 
-def draw_rect_outline(display: pygame.Surface, colour, pos: tuple[int | float, int | float] | pygame.Vector2, size: tuple[int | float, int | float] | pygame.Vector2, width: int):
+def draw_rect_outline(display: pygame.Surface, colour: pygame.typing.ColorLike, pos: pygame.typing.Point, size: tuple[int | float, int | float] | pygame.Vector2, width: int):
 	pygame.draw.rect(
 		display, colour,
 		(pos, size),

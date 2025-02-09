@@ -22,9 +22,9 @@ class TestState(pygbase.GameState, name="testing"):
 	def update(self, delta: float):
 		self.mouse_pos.update(pygame.mouse.get_pos())
 
-		if pygbase.InputManager.get_key_pressed(pygame.K_a):
+		if pygbase.Inputs.get_key_pressed(pygame.K_a):
 			self.line.set_angle(self.line.angle - 30 * delta)
-		if pygbase.InputManager.get_key_pressed(pygame.K_d):
+		if pygbase.Inputs.get_key_pressed(pygame.K_d):
 			self.line.set_angle(self.line.angle + 30 * delta)
 
 		# print(self.line.collides_with(self.box_lines[0]))
@@ -40,8 +40,8 @@ class TestState(pygbase.GameState, name="testing"):
 			self.box.collides_with(self.circle)
 		)
 
-		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
-			pygbase.EventManager.post_event(pygame.QUIT)
+		if pygbase.Inputs.get_key_just_pressed(pygame.K_ESCAPE):
+			pygbase.Events.post_event(pygame.QUIT)
 
 	def draw(self, surface: pygame.Surface):
 		surface.fill((0, 0, 0))

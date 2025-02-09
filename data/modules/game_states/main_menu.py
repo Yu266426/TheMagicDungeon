@@ -21,10 +21,13 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 			self.title_frame
 		))
 
-		self.button_frame = self.ui.add_frame(pygbase.Frame((pygbase.UIValue(0.25, False), pygbase.UIValue(0.4, False)), (pygbase.UIValue(0.5, False), pygbase.UIValue(0.6, False))))
+		self.button_frame = self.ui.add_frame(
+			pygbase.Frame(
+				(pygbase.UIValue(0.25, False), pygbase.UIValue(0.4, False)),
+				(pygbase.UIValue(0.5, False), pygbase.UIValue(0.6, False))
+			)
+		)
 
-		from data.modules.game_states.game import Game
-		from data.modules.game_states.test_state import TestState
 		from data.modules.game_states.lobby import Lobby
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
@@ -55,7 +58,7 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 			"images",
 			"button",
 			self.button_frame,
-			pygbase.EventManager.post_event,
+			pygbase.Events.post_event,
 			callback_args=(pygame.QUIT,),
 			text="Quit"
 		), add_on_to_previous=(False, True))
@@ -63,8 +66,8 @@ class MainMenu(pygbase.GameState, name="main_menu"):
 	def update(self, delta: float):
 		self.ui.update(delta)
 
-		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
-			pygbase.EventManager.run_handlers("all", pygame.QUIT)
+		if pygbase.Input.key_just_pressed(pygame.K_ESCAPE):
+			pygbase.Events.run_handlers("all", pygame.QUIT)
 
 	def draw(self, surface: pygame.Surface):
 		surface.fill((30, 30, 30))

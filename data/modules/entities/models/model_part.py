@@ -1,7 +1,7 @@
 import pygame.typing
 import pygbase
 
-from data.modules.base.constants import TILE_SIZE
+from data.modules.base.constants import TILE_SIZE, PIXEL_SCALE
 from data.modules.base.registry.registrable import Registrable
 
 
@@ -19,7 +19,7 @@ class ImageModelPart(ModelPart, Registrable):
 		return ("type", "static"), ("image", str), ("offset", "point"), ("pivot", "point"), ("parent", str), ("layer", int)
 
 	def __init__(self, parent_pos: pygame.Vector2, data: dict):
-		self._image: pygbase.Image = pygbase.ResourceManager.get_resource("images", data["image"])
+		self._image: pygbase.Image = pygbase.Resources.get_resource("images", data["image"])
 
 		self.offset = pygame.Vector2(data["offset"])
 		self._pivot = pygame.Vector2(data["pivot"])
@@ -36,7 +36,7 @@ class ImageModelPart(ModelPart, Registrable):
 		self.part_offset = pygame.Vector2()
 
 	def update(self):
-		self.pos.update(self._parent_pos + self.offset * TILE_SIZE)
+		self.pos.update(self._parent_pos + self.offset * PIXEL_SCALE)
 
 	def draw(self, surface: pygame.Surface, camera: pygbase.Camera):
-		self._image.draw(surface, camera.world_to_screen(self._parent_pos + (self.offset + self.part_offset) * TILE_SIZE), self.angle, flip=(self.flipped, False), draw_pos="center")
+		self._image.draw(surface, camera.world_to_screen(self._parent_pos + (self.offset + self.part_offset) * PIXEL_SCALE), self.angle, flip=(self.flipped, False), draw_pos="center")

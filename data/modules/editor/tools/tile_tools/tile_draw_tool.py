@@ -1,16 +1,16 @@
 from typing import Optional
 
 import pygame
-from pygbase import InputManager, Camera
+import pygbase
 
 from data.modules.base.constants import TILE_SIZE
-from data.modules.level.room import EditorRoom
 from data.modules.base.utils import draw_rect_outline
 from data.modules.editor.actions.editor_actions import EditorActionBatch, EditorActionQueue
 from data.modules.editor.actions.tile_actions import RemoveTileAction, PlaceTileAction
 from data.modules.editor.editor_selection_info import TileSelectionInfo
 from data.modules.editor.shared_editor_state import SharedEditorState
 from data.modules.editor.tools.editor_tool import EditorTool
+from data.modules.level.room import EditorRoom
 from data.modules.level.tile import Tile
 
 
@@ -63,16 +63,16 @@ class TileDrawTool(EditorTool):
 
 	def update(self, mouse_tile_pos: tuple[int, int], selection_info: TileSelectionInfo):
 		# Draw
-		if InputManager.get_mouse_pressed(0):
+		if pygbase.Input.mouse_pressed(0):
 			self._shared_state.show_global_ui = False
 			self.draw_tiles(mouse_tile_pos, selection_info)
 
 		# Erase
-		elif InputManager.get_mouse_pressed(2):
+		elif pygbase.Input.mouse_pressed(2):
 			self._shared_state.show_global_ui = False
 			self.erase_tiles(mouse_tile_pos, selection_info)
 
-		if InputManager.get_mouse_just_released(0) or InputManager.get_mouse_just_released(2):
+		if pygbase.Input.mouse_just_released(0) or pygbase.Input.mouse_just_released(2):
 			self._shared_state.show_global_ui = True
 
 			if self.current_batch is not None:
@@ -82,17 +82,17 @@ class TileDrawTool(EditorTool):
 			self.current_place_tile = None
 			self.current_erase_tile = None
 
-	def draw(self, screen: pygame.Surface, camera: Camera, mouse_tile_pos: tuple, selection_info: TileSelectionInfo):
+	def draw(self, surface: pygame.Surface, camera: pygbase.Camera, mouse_tile_pos: tuple, selection_info: TileSelectionInfo):
 		# Tile outline rect
 		draw_rect_outline(
-			screen, (255, 255, 255),
-			(mouse_tile_pos[0] * TILE_SIZE - camera.pos.x, mouse_tile_pos[1] * TILE_SIZE - camera.pos.y),
+			surface, (255, 255, 255),
+			camera.world_to_screen((mouse_tile_pos[0] * TILE_SIZE, mouse_tile_pos[1] * TILE_SIZE)),
 			(TILE_SIZE * (selection_info.selected_bottomright[0] - selection_info.selected_topleft[0] + 1), TILE_SIZE * (selection_info.selected_bottomright[1] - selection_info.selected_topleft[1] + 1)),
 			2
 		)
 
 		# If not deleting tiles, draw ghost tile
-		if not InputManager.get_mouse_pressed(2):
+		if not pygbase.Input.mouse_pressed(2):
 			for row, row_data in selection_info.ids.items():
 				for col, image_id in row_data.items():
 					tile_x = mouse_tile_pos[0] + col - selection_info.selected_topleft[0]
@@ -102,4 +102,4 @@ class TileDrawTool(EditorTool):
 						selection_info.sprite_sheet_name,
 						image_id,
 						(tile_x * TILE_SIZE, (tile_y + 1) * TILE_SIZE)
-					).draw(screen, camera, flag=pygame.BLEND_ADD)
+					).draw(surface, camera, flag=pygame.BLEND_ADD)
