@@ -22,16 +22,10 @@ class Torch(GameObject, Registrable):
 		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
 		self.light = pygbase.Light(self.pos + pygame.Vector2(0, -92), 0.3, 50, 5, random.uniform(1.7, 2.3), tint=(255, 225, 53))
 
-		logging.debug("New Torch")
-
 	def added(self):
 		self.particle_manager.add_spawner(self.fire)
 		self.lighting_manager.add_light(self.light)
 
-		logging.debug("Adding Torch stuff")
-
 	def removed(self):
 		self.particle_manager.remove_spawner(self.fire)
 		self.lighting_manager.remove_light(self.light)
-
-		logging.debug("Removing Torch stuff")
