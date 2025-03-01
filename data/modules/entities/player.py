@@ -30,10 +30,6 @@ class Player(Entity, tags=("player",)):
 		self.run_start_time = 0
 
 		self.character_model: HumanoidModel = ModelLoader.create_model("player", self.pos)
-		# self.animations = pygbase.AnimationManager([
-		# 	("idle", pygbase.Animation("sprite_sheets", "player_idle", 0, 2), 4),
-		# 	("run", pygbase.Animation("sprite_sheets", "player_run", 0, 2), 4)
-		# ], "idle")
 
 		self.collider = BoxCollider(to_scaled_sequence((11.2, 8))).link_pos(self.pos)
 
@@ -73,12 +69,10 @@ class Player(Entity, tags=("player",)):
 		self.input.y = pygbase.Input.pressed("down") - pygbase.Input.pressed("up")
 		if self.input.length() != 0:
 			self.input.normalize_ip()
-			# self.animations.switch_state("run")
 			self.character_model.switch_state("run")
 			self.run_start_time = pygame.time.get_ticks()
 
 		else:
-			# self.animations.switch_state("idle")
 			self.character_model.switch_state("idle")
 
 	def check_damaged(self):
@@ -133,7 +127,6 @@ class Player(Entity, tags=("player",)):
 		self.movement.move_in_direction(self.pos, self.input, delta)
 
 		self.character_model.update(delta)
-		# self.animations.update(delta)
 		if self.character_model.state == "run":
 			self.y_offset = (math.sin(pygame.time.get_ticks() / 60) + 1) * 5
 		else:
@@ -154,7 +147,6 @@ class Player(Entity, tags=("player",)):
 		self.check_damaged()
 
 	def draw(self, surface: pygame.Surface, camera: pygbase.Camera):
-		# self.animations.draw_at_pos(surface, self.pos + (0, -self.y_offset), camera, flip=(self.flip_x, False), draw_pos="midbottom")
 		self.character_model.draw(surface, camera)
 		self.item_slot.draw(surface, camera)
 
