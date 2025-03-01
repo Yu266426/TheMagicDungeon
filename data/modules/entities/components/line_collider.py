@@ -3,7 +3,6 @@ import math
 import pygame
 import pygbase
 
-
 class LineCollider:
 	def __init__(self, start_pos: pygame.Vector2 | tuple[float, float], angle: float, length: float, start_offset: float = 0):
 		self.start_pos: pygame.Vector2 = pygame.Vector2(start_pos)

@@ -3,6 +3,7 @@ import pygbase
 
 from data.modules.base.registry.animation_data import AnimationData
 from data.modules.base.registry.registrable import Registrable
+from data.modules.base.utils import to_scaled_sequence, to_scaled
 from data.modules.entities.components.item_slot import ItemSlot
 from data.modules.entities.enemies.enemy import Enemy
 from data.modules.entities.entity_manager import EntityManager
@@ -49,7 +50,7 @@ class MeleeEnemy(Enemy, Registrable):
 
 		self.offset = self.animations.get_current_image().get_image().get_height() / 2
 
-		self.item_slot = ItemSlot(self.pos, (25, -42), entity_manager, False)
+		self.item_slot = ItemSlot(self.pos, (4, -6.72), entity_manager, False)
 		self.item_slot.equip_item(data["weapon"])
 
 		state_data = data["states"]
@@ -62,7 +63,7 @@ class MeleeEnemy(Enemy, Registrable):
 		self.player_pos = entity_manager.get_entities_of_tag("player")[0].pos
 
 		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
-		self.shadow = pygbase.Shadow(self.pos, 22).link_pos(self.pos)
+		self.shadow = pygbase.Shadow(self.pos, to_scaled(3.5)).link_pos(self.pos)
 
 	def added(self):
 		self.lighting_manager.add_shadow(self.shadow)

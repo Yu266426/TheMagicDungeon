@@ -1,4 +1,17 @@
+from typing import Sequence
+
 import pygame
+
+from data.modules.base.constants import PIXEL_SCALE
+
+
+def to_scaled[T: float | pygame.Vector2](value: T) -> T:
+	return value * PIXEL_SCALE
+
+
+def to_scaled_sequence[T: tuple | list](value: T) -> T:
+	scaled = (e * PIXEL_SCALE for e in value)
+	return type(value)(scaled)
 
 
 def get_tile_pos(pos: tuple | pygame.Vector2, tile_size: tuple[int | float, int | float]):

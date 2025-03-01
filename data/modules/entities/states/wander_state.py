@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import pygame
 import pygbase
 
-from data.modules.base.constants import TILE_SIZE
+from data.modules.base.constants import TILE_SIZE, PIXEL_SCALE
 from data.modules.base.registry.registrable import Registrable
 from data.modules.entities.components.movement import Movement
 from data.modules.entities.entity_manager import EntityManager
@@ -37,8 +37,8 @@ class WanderState(EntityState, Registrable):
 
 		self.movement = movement
 
-		self.wander_range = (int(-data["range"] * TILE_SIZE), int(data["range"] * TILE_SIZE))
-		self.player_detection_radius = data["detection_radius"] * TILE_SIZE
+		self.wander_range = (int(-data["range"] * PIXEL_SCALE), int(data["range"] * PIXEL_SCALE))
+		self.player_detection_radius = data["detection_radius"] * PIXEL_SCALE
 
 		self.target = None
 		self.find_target()

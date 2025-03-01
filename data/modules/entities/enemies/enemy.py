@@ -2,6 +2,7 @@ import math
 
 import pygame
 import pygbase
+from data.modules.base.utils import to_scaled
 
 from data.modules.entities.components.box_collider import BoxCollider
 from data.modules.entities.components.health import Health
@@ -24,7 +25,7 @@ class Enemy(Entity, tags=("enemy",)):
 		super().__init__(pos)
 
 		self.collider = BoxCollider(collider_size).link_pos(self.pos)
-		self.movement = Movement(3000, 10, level, self.collider)
+		self.movement = Movement(480, 10, level, self.collider)
 
 		self.health = Health(health)
 		self.damage_timer = pygbase.Timer(0.6, True, False)
@@ -51,7 +52,7 @@ class Enemy(Entity, tags=("enemy",)):
 					if dir_vec.length() != 0:
 						dir_vec.normalize_ip()
 
-					self.movement.velocity -= dir_vec * 2000
+					self.movement.velocity -= dir_vec * to_scaled(320)
 
 					self.damage_timer.start()
 

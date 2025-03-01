@@ -1,5 +1,6 @@
 import pygame
 import pygbase
+from data.modules.base.utils import to_scaled
 
 from data.modules.entities.entity import Entity
 from data.modules.entities.entity_manager import EntityManager
@@ -7,7 +8,7 @@ from data.modules.entities.entity_manager import EntityManager
 
 class InteractionController:
 	def __init__(self, interaction_distance: float, parent: Entity):
-		self.interaction_distance = interaction_distance
+		self.interaction_distance = to_scaled(interaction_distance)
 		self.parent = parent
 
 		self.interactable_entity: Entity | None = None

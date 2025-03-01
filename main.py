@@ -6,6 +6,7 @@ import pygbase
 from data.modules.base.constants import PIXEL_SCALE, SCREEN_WIDTH, SCREEN_HEIGHT
 from data.modules.base.paths import IMAGE_DIR, SPRITE_SHEET_DIR
 from data.modules.base.registry.registry import Registry
+from data.modules.base.utils import to_scaled_sequence
 from data.modules.entities.enemies.enemy_loader import EnemyLoader
 from data.modules.entities.enemies.melee_enemy import MeleeEnemy
 from data.modules.entities.items.energy_sword import EnergySword
@@ -84,10 +85,10 @@ if __name__ == '__main__':
 	pygbase.add_particle_setting(
 		"fire",
 		[(255, 40, 30), (255, 90, 0), (255, 154, 0)],
-		(5, 11),
-		(6, 10),
-		(0, 2),
-		(0, -100),
+		to_scaled_sequence((0.8, 1.76)),
+		to_scaled_sequence((0.96, 1.6)),
+		to_scaled_sequence((0, 0.32)),
+		to_scaled_sequence((0, -16)),
 		False,
 		((0, 0), (0, 0))
 	)
@@ -95,10 +96,10 @@ if __name__ == '__main__':
 	pygbase.add_particle_setting(
 		"rune_altar",
 		[(143, 186, 255), (102, 237, 255), (82, 154, 255)],
-		(5, 11),
-		(6, 10),
-		(0, 2),
-		(0, -100),
+		to_scaled_sequence((0.8, 1.76)),
+		to_scaled_sequence((0.96, 1.6)),
+		to_scaled_sequence((0, 0.32)),
+		to_scaled_sequence((0, -16)),
 		False,
 		((0, 0), (0, 0))
 	)
@@ -108,7 +109,6 @@ if __name__ == '__main__':
 		MainMenu,
 		# Game,,
 		"Catacombs of Time",
-		flags=pygame.SCALED,
 		run_on_load_complete=(
 			Registry.init,
 			register_types,

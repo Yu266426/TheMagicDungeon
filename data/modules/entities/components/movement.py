@@ -2,8 +2,8 @@ from typing import TYPE_CHECKING
 
 import pygame
 
-from data.modules.base.constants import TILE_SIZE
-from data.modules.base.utils import get_1d_tile_pos
+from data.modules.base.constants import TILE_SIZE, PIXEL_SCALE
+from data.modules.base.utils import get_1d_tile_pos, to_scaled
 from data.modules.entities.components.box_collider import BoxCollider
 
 if TYPE_CHECKING:
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class Movement:
 	def __init__(self, speed: float, drag: float, level: "Level", hitbox: BoxCollider):
-		self.speed = speed
+		self.speed = to_scaled(speed)
 		self.drag = drag
 
 		self.velocity = pygame.Vector2()

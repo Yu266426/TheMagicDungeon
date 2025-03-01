@@ -2,6 +2,7 @@ import math
 
 import pygame
 import pygbase
+from data.modules.base.utils import to_scaled_sequence, to_scaled
 
 from data.modules.entities.attacks.fireball import Fireball
 from data.modules.entities.components.box_collider import BoxCollider
@@ -29,29 +30,29 @@ class Player(Entity, tags=("player",)):
 		self.run_start_time = 0
 
 		self.character_model: HumanoidModel = ModelLoader.create_model("player", self.pos)
-		self.animations = pygbase.AnimationManager([
-			("idle", pygbase.Animation("sprite_sheets", "player_idle", 0, 2), 4),
-			("run", pygbase.Animation("sprite_sheets", "player_run", 0, 2), 4)
-		], "idle")
+		# self.animations = pygbase.AnimationManager([
+		# 	("idle", pygbase.Animation("sprite_sheets", "player_idle", 0, 2), 4),
+		# 	("run", pygbase.Animation("sprite_sheets", "player_run", 0, 2), 4)
+		# ], "idle")
 
-		self.collider = BoxCollider((70, 50)).link_pos(self.pos)
+		self.collider = BoxCollider(to_scaled_sequence((11.2, 8))).link_pos(self.pos)
 
 		self.input = pygame.Vector2()
-		self.movement = Movement(5000, 10, level, self.collider)
+		self.movement = Movement(800, 10, level, self.collider)
 
 		self.camera = camera
 
 		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
 		self.light = pygbase.Light(self.pos, 0.2, 300, 10, 1.2).link_pos(self.pos)
 		self.light2 = pygbase.Light(self.pos, 0.5, 500, 20, 1.2).link_pos(self.pos)
-		self.shadow = pygbase.Shadow(self.pos, 22).link_pos(self.pos)
+		self.shadow = pygbase.Shadow(self.pos, to_scaled(3.26)).link_pos(self.pos)
 
-		self.interaction_controller = InteractionController(250, self)
+		self.interaction_controller = InteractionController(40, self)
 
 		self.health = Health(10000)
 		self.damage_timer = pygbase.Timer(0.6, True, False)
 
-		self.item_slot = ItemSlot(self.character_model.body_part.pos, (25, 30), entity_manager, True)
+		self.item_slot = ItemSlot(self.character_model.body_part.pos, (4, 4.8), entity_manager, True)
 		self.item_slot.equip_item(EnergySword(entity_manager, level))
 
 	def added(self):
@@ -72,12 +73,12 @@ class Player(Entity, tags=("player",)):
 		self.input.y = pygbase.Input.pressed("down") - pygbase.Input.pressed("up")
 		if self.input.length() != 0:
 			self.input.normalize_ip()
-			self.animations.switch_state("run")
+			# self.animations.switch_state("run")
 			self.character_model.switch_state("run")
 			self.run_start_time = pygame.time.get_ticks()
 
 		else:
-			self.animations.switch_state("idle")
+			# self.animations.switch_state("idle")
 			self.character_model.switch_state("idle")
 
 	def check_damaged(self):
@@ -119,7 +120,7 @@ class Player(Entity, tags=("player",)):
 			self.entity_manager.add_entity(Fireball(
 				self.pos - (0, 30),
 				angle,
-				800,
+				to_scaled(128),
 				min(400, self.pos.distance_to(mouse_world_pos)),
 				30,
 				70,
@@ -132,8 +133,8 @@ class Player(Entity, tags=("player",)):
 		self.movement.move_in_direction(self.pos, self.input, delta)
 
 		self.character_model.update(delta)
-		self.animations.update(delta)
-		if self.animations.current_state == "run":
+		# self.animations.update(delta)
+		if self.character_model.state == "run":
 			self.y_offset = (math.sin(pygame.time.get_ticks() / 60) + 1) * 5
 		else:
 			self.y_offset = 0
@@ -156,6 +157,8 @@ class Player(Entity, tags=("player",)):
 		# self.animations.draw_at_pos(surface, self.pos + (0, -self.y_offset), camera, flip=(self.flip_x, False), draw_pos="midbottom")
 		self.character_model.draw(surface, camera)
 		self.item_slot.draw(surface, camera)
+
+		pygbase.Debug.draw_rect(camera.world_to_screen_rect(self.collider.rect), "yellow")
 
 	def is_alive(self):
 		return self.health.is_alive()

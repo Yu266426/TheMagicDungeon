@@ -2,6 +2,8 @@ from typing import Optional
 
 import pygame
 import pygbase
+from data.modules.base.constants import PIXEL_SCALE
+from data.modules.base.utils import to_scaled
 from pygbase.utils import get_angle_to
 
 from data.modules.entities.items.item import Item
@@ -17,7 +19,7 @@ class ItemSlot:
 			is_player: bool
 	):
 		self.pos = pos
-		self.offset = pygame.Vector2(offset)
+		self.offset = to_scaled(pygame.Vector2(offset))
 		self.offset_pos = self.pos + self.offset
 
 		self.flip_x = False

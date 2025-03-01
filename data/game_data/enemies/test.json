@@ -2,8 +2,8 @@
   "type": "melee",
   "health": 10,
   "hitbox": [
-    70,
-    50
+    11.2,
+    8
   ],
   "animations": {
     "idle": {
@@ -21,16 +21,16 @@
   },
   "states": {
     "wander": {
-      "range": 5,
-      "detection_radius": 3
+      "range": 80,
+      "detection_radius": 48
     },
     "stunned": {
       "time": 2
     },
     "melee_attack": {
-      "max_radius": 5,
+      "max_radius": 80,
       "attack_cooldown": 3.0,
-      "attack_range": 1
+      "attack_range": 16
     }
   },
   "weapon": "energy_sword"

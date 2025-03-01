@@ -2,6 +2,7 @@ import pygame
 import pygbase
 
 from data.modules.base.registry.registrable import Registrable
+from data.modules.base.utils import to_scaled
 from data.modules.entities.attacks.sword_swing import SwordSwing
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.items.item import Item
@@ -28,7 +29,7 @@ class EnergySword(Item, Registrable):
 		self.angle_offset = 0
 		self.swinging_down = True
 
-		self.attack_length = 140
+		self.attack_length = to_scaled(23)
 		self.attack_damage = 5
 
 		self.level = level

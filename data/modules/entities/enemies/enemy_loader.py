@@ -6,6 +6,7 @@ import pygame
 from data.modules.base.paths import ENEMY_DIR
 from data.modules.base.registry.loader import Loader
 from data.modules.base.registry.registry import Registry
+from data.modules.base.utils import to_scaled_sequence
 from data.modules.entities.enemies.enemy import Enemy
 from data.modules.entities.entity_manager import EntityManager
 from data.modules.entities.items.item import Item
@@ -47,7 +48,7 @@ class EnemyLoader(Loader):
 
 		enemy_type = data["type"]
 		health = data["health"]
-		hitbox = data["hitbox"]
+		hitbox = to_scaled_sequence(data["hitbox"])
 		enemy_data = {}
 
 		if "animations" in data:
