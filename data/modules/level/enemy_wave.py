@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from data.modules.entities.entity_manager import EntityManager
+from data.modules.entities.entity_spawn import EntitySpawn
 
 if TYPE_CHECKING:
 	from data.modules.level.level import Level
@@ -21,10 +22,12 @@ class EnemyWave:
 
 		for enemy_type, num_enemies in self.wave_data.items():
 			for _ in range(num_enemies):
-				enemy = EnemyLoader.create_enemy(enemy_type, room.generate_spawn_pos(), level, self.entity_manager)
+				spawn_pos = room.generate_spawn_pos()
+				enemy = EnemyLoader.create_enemy(enemy_type, spawn_pos, level, self.entity_manager)
+				spawn = EntitySpawn(spawn_pos, self.entity_manager, 1, enemy)
 
 				self.enemies.append(enemy)
-				self.entity_manager.add_entity(enemy)
+				self.entity_manager.add_entity(spawn)
 
 		self.wave_in_progress = True
 

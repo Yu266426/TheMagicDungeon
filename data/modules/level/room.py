@@ -301,13 +301,27 @@ class Room(LevelRoom):
 		return not self.level.check_is_tile(1, (tile_pos[0] + self.offset[0], tile_pos[1] + self.offset[1]))
 
 	def generate_spawn_pos(self) -> tuple[float, float]:
-		for _ in range(10):
-			row = random.randrange(1, self.n_rows - 1)
-			col = random.randrange(1, self.n_cols - 1)
+		# Generate initial guess for spawn position
+		spawn_pos = random.randrange(1, self.n_cols - 1), random.randrange(1, self.n_rows - 1)
+		found = self.is_valid_spawn(spawn_pos)
 
-			if self.is_valid_spawn((col, row)):
-				# Find location close to middle of tile
-				return (col + 0.5) * TILE_SIZE + self.offset[0], (row + 0.8) * TILE_SIZE + self.offset[1]
+		directions = ((0, 1), (1, 0), (0, -1), (-1, 0))
+		steps_taken = 0
+		step_size = 1
+
+		# Find the nearest valid position
+		while not found:
+			for _ in range(2):  # Increase step size every 2 steps
+				direction = directions[steps_taken % 4]
+				spawn_pos = spawn_pos[0] + direction[0], spawn_pos[1] + direction[1]
+
+				if self.is_valid_spawn(spawn_pos):
+					found = True
+					break
+
+			step_size += 1
+
+		return (spawn_pos[0] + random.uniform(0.3, 0.7)) * TILE_SIZE + self.offset[0], (spawn_pos[1] + random.uniform(0.2, 0.8)) * TILE_SIZE + self.offset[1]
 
 	def activate_walls(self):
 		wall_sheet = pygbase.Resources.get_resource("sprite_sheets", "walls")

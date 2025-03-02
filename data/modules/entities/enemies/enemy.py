@@ -31,6 +31,7 @@ class Enemy(Entity, tags=("enemy",)):
 		self.damage_timer = pygbase.Timer(0.6, True, False)
 
 		self.entity_manager = entity_manager
+		self._data = data
 
 	def damaged(self):
 		pass

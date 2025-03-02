@@ -31,9 +31,7 @@ class ItemSlot:
 		self.is_player = is_player
 
 	def removed(self):
-		if self.item is not None:
-			self.entity_manager.add_entity_to_remove(self.item)
-			self.item = None
+		self.unequip_item()
 
 	def equip_item(self, item: Item):
 		self.item = item
@@ -46,6 +44,11 @@ class ItemSlot:
 			tags += ("from_enemy",)
 
 		self.entity_manager.add_entity(self.item, tags=tags)
+
+	def unequip_item(self):
+		if self.item is not None:
+			self.entity_manager.add_entity_to_remove(self.item)
+			self.item = None
 
 	def use_item(self):
 		if self.item is not None:
@@ -70,8 +73,7 @@ class ItemSlot:
 			self.item.flip_x = self.item_flip_x
 
 			if not self.item.check_durability():
-				self.entity_manager.add_entity_to_remove(self.item)
-				self.item = None
+				self.unequip_item()
 
 	def draw(self, surface: pygame.Surface, camera: pygbase.Camera):
 		if self.item is not None:

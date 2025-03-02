@@ -320,7 +320,7 @@ class LevelGenerator:
 					self.rooms[name] = room_data
 
 				# Ignore special rooms
-				if name not in ("lobby", "start", "start2"):
+				if name not in ("lobby", "start", "start2", "room1"):
 					self.room_names.append(name)
 
 	def _load_battle_data(self):

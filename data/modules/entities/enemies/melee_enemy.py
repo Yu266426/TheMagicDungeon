@@ -45,7 +45,6 @@ class MeleeEnemy(Enemy, Registrable):
 		self.model: HumanoidModel = ModelLoader.create_model(data["model"], self.pos)
 
 		self.item_slot = ItemSlot(self.model.body_part.pos, data["item_offset"], entity_manager, False)
-		self.item_slot.equip_item(data["weapon"])
 
 		state_data = data["states"]
 		self.state_manager = EntityStateManager({
@@ -61,10 +60,13 @@ class MeleeEnemy(Enemy, Registrable):
 
 	def added(self):
 		self.lighting_manager.add_shadow(self.shadow)
+		self.item_slot.equip_item(self._data["weapon"])
 
 	def removed(self):
-		self.item_slot.removed()
+		Enemy.removed(self)
+
 		self.lighting_manager.remove_shadow(self.shadow)
+		self.item_slot.removed()
 
 	def damaged(self):
 		self.state_manager.change_state("stunned")
