@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import pygame
 import pygbase.utils
 
-from data.modules.base.constants import TILE_SIZE, PIXEL_SCALE
+from data.modules.base.constants import PIXEL_SCALE
 from data.modules.base.registry.registrable import Registrable
 from data.modules.entities.attacks.sword_swing import SwordSwing
 from data.modules.entities.states.entity_state import EntityState
@@ -30,7 +30,6 @@ class MeleeAttackState(EntityState, Registrable):
 			movement: "Movement",
 			entity_manager: "EntityManager",
 			item_slot: "ItemSlot",
-			y_offset: float,
 			data: dict[str, ...]
 	):
 		self.pos = pos
@@ -39,8 +38,6 @@ class MeleeAttackState(EntityState, Registrable):
 		self.entity_manger = entity_manager
 
 		self.item_slot = item_slot
-
-		self.y_offset = y_offset
 
 		self.player_pos = entity_manager.get_entities_of_tag("player")[0].pos
 

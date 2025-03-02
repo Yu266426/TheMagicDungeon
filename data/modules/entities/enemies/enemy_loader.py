@@ -51,21 +51,27 @@ class EnemyLoader(Loader):
 		hitbox = to_scaled_sequence(data["hitbox"])
 		enemy_data = {}
 
-		if "animations" in data:
-			animations_data = data["animations"]
-			animation_data = {}
-			for animation_name, animation in animations_data.items():
-				animation_data[animation_name] = (
-					animation["sprite_sheet"],
-					animation["start_index"],
-					animation["length"],
-					animation["speed"]
-				)
+		# if "animations" in data:
+		# 	animations_data = data["animations"]
+		# 	animation_data = {}
+		# 	for animation_name, animation in animations_data.items():
+		# 		animation_data[animation_name] = (
+		# 			animation["sprite_sheet"],
+		# 			animation["start_index"],
+		# 			animation["length"],
+		# 			animation["speed"]
+		# 		)
+		#
+		# 	enemy_data["animations"] = animation_data
 
-			enemy_data["animations"] = animation_data
+		if "model" in data:
+			enemy_data["model"] = data["model"]
 
 		if "states" in data:
 			enemy_data["states"] = data["states"]
+
+		if "item_offset":
+			enemy_data["item_offset"] = data["item_offset"]
 
 		if "weapon" in data:
 			enemy_data["weapon"] = data["weapon"]

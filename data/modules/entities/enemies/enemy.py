@@ -20,7 +20,7 @@ class Enemy(Entity, tags=("enemy",)):
 			entity_manager: EntityManager,
 			collider_size: tuple[int, int],
 			health: int,
-			data: dict[str, ...]  # Used by subclasses
+			data: dict[str, ...]  # NoQA: Used by subclasses
 	):
 		super().__init__(pos)
 

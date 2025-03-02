@@ -7,6 +7,14 @@
     "rotatable": false,
     "scale": 5
   },
+  "goblin_body": {
+    "scale": 0,
+    "rotatable": false
+  },
+  "goblin_leg": {
+    "scale": 0,
+    "rotatable": true
+  },
   "home_button": {
     "rotatable": false,
     "scale": 5

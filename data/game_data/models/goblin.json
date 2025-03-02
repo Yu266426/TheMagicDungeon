@@ -3,7 +3,7 @@
   "parts": {
     "body": {
       "type": "static",
-      "image": "player_body",
+      "image": "goblin_body",
       "offset": [
         0,
         -10
@@ -17,10 +17,10 @@
     },
     "leg": {
       "type": "static",
-      "image": "player_leg",
+      "image": "goblin_leg",
       "offset": [
         2.4,
-        8
+        9
       ],
       "pivot": [
         0,

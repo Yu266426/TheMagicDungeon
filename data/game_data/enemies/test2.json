@@ -5,20 +5,7 @@
     11.2,
     8
   ],
-  "animations": {
-    "idle": {
-      "sprite_sheet": "goblin_idle",
-      "start_index": 0,
-      "length": 1,
-      "speed": 8
-    },
-    "run": {
-      "sprite_sheet": "goblin_idle",
-      "start_index": 0,
-      "length": 1,
-      "speed": 8
-    }
-  },
+  "model": "goblin",
   "states": {
     "wander": {
       "range": 80,
@@ -33,5 +20,9 @@
       "attack_range": 16
     }
   },
+  "item_offset": [
+    4,
+    3
+  ],
   "weapon": "energy_sword"
 }

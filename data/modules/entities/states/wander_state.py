@@ -4,10 +4,11 @@ from typing import TYPE_CHECKING
 import pygame
 import pygbase
 
-from data.modules.base.constants import TILE_SIZE, PIXEL_SCALE
+from data.modules.base.constants import PIXEL_SCALE
 from data.modules.base.registry.registrable import Registrable
 from data.modules.entities.components.movement import Movement
 from data.modules.entities.entity_manager import EntityManager
+from data.modules.entities.models.humanoid_model import HumanoidModel
 from data.modules.entities.states.entity_state import EntityState
 
 if TYPE_CHECKING:
@@ -29,7 +30,7 @@ class WanderState(EntityState, Registrable):
 			movement: Movement,
 			level: "Level",
 			entity_manager: EntityManager,
-			animations: pygbase.AnimationManager,
+			model: HumanoidModel,
 			data: dict[str, ...]
 	):
 		self.pos = pos
@@ -46,7 +47,7 @@ class WanderState(EntityState, Registrable):
 		self.time_since_target = 0.0
 		self.time_to_new_target = 2.0
 
-		self.animations = animations
+		self.model = model
 
 		self.player_pos = entity_manager.get_entities_of_tag("player")[0].pos
 
@@ -69,8 +70,8 @@ class WanderState(EntityState, Registrable):
 	def update(self, delta: float):
 		if self.target is not None:
 			self.movement.move_in_direction(self.pos, self.target - self.pos, delta)
-			self.animations.reset_animation_on_switch = False
-			self.animations.switch_state("run")
+			# self.animations.reset_animation_on_switch = False
+			self.model.switch_state("run")
 
 			if self.pos.distance_to(self.target) < 20 or self.time_since_target > self.time_to_new_target:
 				self.find_target()

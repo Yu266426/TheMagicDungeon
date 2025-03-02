@@ -5,20 +5,7 @@
     11.2,
     8
   ],
-  "animations": {
-    "idle": {
-      "sprite_sheet": "player_idle",
-      "start_index": 0,
-      "length": 2,
-      "speed": 4
-    },
-    "run": {
-      "sprite_sheet": "player_run",
-      "start_index": 0,
-      "length": 2,
-      "speed": 4
-    }
-  },
+  "model": "player",
   "states": {
     "wander": {
       "range": 80,
@@ -33,5 +20,9 @@
       "attack_range": 16
     }
   },
+  "item_offset": [
+    4,
+    4.8
+  ],
   "weapon": "energy_sword"
 }

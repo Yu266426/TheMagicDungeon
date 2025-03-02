@@ -3,6 +3,7 @@ import pygame.typing
 import pygbase
 from data.modules.base.constants import PIXEL_SCALE
 from data.modules.base.registry.registrable import Registrable
+from data.modules.base.utils import to_scaled_sequence
 
 
 class ModelPart:
@@ -22,7 +23,7 @@ class ImageModelPart(ModelPart, Registrable):
 		self._image: pygbase.Image = pygbase.Resources.get_resource("images", data["image"])
 
 		self.offset = pygame.Vector2(data["offset"])
-		self._pivot = pygame.Vector2(data["pivot"])
+		self._pivot = to_scaled_sequence(data["pivot"])
 
 		self.layer = data["layer"]
 
@@ -39,4 +40,4 @@ class ImageModelPart(ModelPart, Registrable):
 		self.pos.update(self._parent_pos + self.offset * PIXEL_SCALE)
 
 	def draw(self, surface: pygame.Surface, camera: pygbase.Camera):
-		self._image.draw(surface, camera.world_to_screen(self._parent_pos + (self.offset + self.part_offset) * PIXEL_SCALE), self.angle, flip=(self.flipped, False), draw_pos="center")
+		self._image.draw(surface, camera.world_to_screen(self._parent_pos + (self.offset + self.part_offset) * PIXEL_SCALE), self.angle, pivot_point=self._pivot, flip=(self.flipped, False), draw_pos="center")

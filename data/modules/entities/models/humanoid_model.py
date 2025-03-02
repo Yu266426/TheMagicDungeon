@@ -1,4 +1,5 @@
 import math
+from typing import Literal
 
 import pygame
 import pygbase
@@ -54,7 +55,7 @@ class HumanoidModel(CharacterModel, Registrable):
 		self.right_tween = pygbase.LinearTween((-self.max_leg_angle, 0, self.max_leg_angle, -self.max_leg_angle), 2 * (2 * math.pi) / self.run_anim_speed)
 		self.left_tween = pygbase.LinearTween((-self.max_leg_angle, 0, self.max_leg_angle, -self.max_leg_angle), 2 * (2 * math.pi) / self.run_anim_speed)
 
-	def switch_state(self, new_state: str):
+	def switch_state(self, new_state: Literal["idle", "run"]):
 		if new_state != self.state:
 			self.state = new_state
 			self.state_switch_time = pygame.time.get_ticks()

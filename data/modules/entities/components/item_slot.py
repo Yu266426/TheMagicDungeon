@@ -2,12 +2,11 @@ from typing import Optional
 
 import pygame
 import pygbase
-from data.modules.base.constants import PIXEL_SCALE
-from data.modules.base.utils import to_scaled
 from pygbase.utils import get_angle_to
 
-from data.modules.entities.items.item import Item
+from data.modules.base.utils import to_scaled
 from data.modules.entities.entity_manager import EntityManager
+from data.modules.entities.items.item import Item
 
 
 class ItemSlot:

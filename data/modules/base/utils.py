@@ -1,5 +1,3 @@
-from typing import Sequence
-
 import pygame
 
 from data.modules.base.constants import PIXEL_SCALE
