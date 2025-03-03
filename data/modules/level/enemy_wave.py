@@ -24,7 +24,7 @@ class EnemyWave:
 			for _ in range(num_enemies):
 				spawn_pos = room.generate_spawn_pos()
 				enemy = EnemyLoader.create_enemy(enemy_type, spawn_pos, level, self.entity_manager)
-				spawn = EntitySpawn(spawn_pos, self.entity_manager, 1, enemy)
+				spawn = EntitySpawn(spawn_pos, self.entity_manager, 0.7, enemy)
 
 				self.enemies.append(enemy)
 				self.entity_manager.add_entity(spawn)

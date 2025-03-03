@@ -321,7 +321,7 @@ class Room(LevelRoom):
 
 			step_size += 1
 
-		return (spawn_pos[0] + random.uniform(0.3, 0.7)) * TILE_SIZE + self.offset[0], (spawn_pos[1] + random.uniform(0.2, 0.8)) * TILE_SIZE + self.offset[1]
+		return (spawn_pos[0] + random.uniform(0.45, 0.55)) * TILE_SIZE + self.offset[0], (spawn_pos[1] + random.uniform(0.5, 0.7)) * TILE_SIZE + self.offset[1]
 
 	def activate_walls(self):
 		wall_sheet = pygbase.Resources.get_resource("sprite_sheets", "walls")

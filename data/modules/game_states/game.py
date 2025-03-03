@@ -15,12 +15,12 @@ class Game(pygbase.GameState, name="game"):
 		self.particle_manager: pygbase.ParticleManager = pygbase.Common.get_value("particle_manager")
 		self.lighting_manager: pygbase.LightingManager = pygbase.Common.get_value("lighting_manager")
 
+		self.camera = pygbase.Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
+
 		room_separation = 21
 		self.level: Level = LevelGenerator(20, self.entity_manager, room_separation, 1).generate_level()
 
-		self.camera = pygbase.Camera(pos=(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
-
-		self.player = Player(((room_separation / 2 - 0.5) * TILE_SIZE, room_separation / 2 * TILE_SIZE), self.camera, self.entity_manager, self.level)
+		self.player = Player(((int(room_separation / 2) + 0.5) * TILE_SIZE, room_separation / 2 * TILE_SIZE), self.camera, self.entity_manager, self.level)
 		self.entity_manager.add_entity(self.player)
 
 		self.camera.set_pos(self.player.pos + (-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2))
@@ -64,5 +64,4 @@ class Game(pygbase.GameState, name="game"):
 		surface.fill((0, 0, 0))
 
 		self.level.draw(surface, self.camera)
-
 		self.particle_manager.draw(surface, self.camera)

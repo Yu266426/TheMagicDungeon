@@ -22,7 +22,6 @@ class Lobby(pygbase.GameState, name="lobby"):
 		self.level.add_room((0, 0), "lobby")
 
 		self.player = Player((4.5 * TILE_SIZE, 6 * TILE_SIZE), self.camera, self.entity_manager, self.level)
-		# self.player = Player((150, 150), self.camera, self.entity_manager, self.level)
 		self.entity_manager.add_entity(self.player)
 
 		pygbase.Events.add_handler("lobby", "start_game", self.start_game_callback)
@@ -38,8 +37,6 @@ class Lobby(pygbase.GameState, name="lobby"):
 
 	def start_game_callback(self, event: pygame.Event):
 		from data.modules.game_states.game import Game
-
-		# self.level.cleanup()
 		self.set_next_state(Game())
 
 	def update(self, delta: float):
@@ -58,7 +55,6 @@ class Lobby(pygbase.GameState, name="lobby"):
 		self.camera.lerp_to_target(self.player.collider.rect.center - pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), delta * 5)
 
 		if pygbase.Input.key_just_pressed(pygame.K_ESCAPE):
-			# pygbase.EventManager.post_event(pygame.QUIT)
 			from data.modules.game_states.main_menu import MainMenu
 			self.set_next_state(MainMenu())
 
@@ -68,5 +64,4 @@ class Lobby(pygbase.GameState, name="lobby"):
 		self.level.draw(surface, self.camera)
 
 		self.particle_manager.draw(surface, self.camera)
-
 		self.dialogue_manager.draw(surface)
