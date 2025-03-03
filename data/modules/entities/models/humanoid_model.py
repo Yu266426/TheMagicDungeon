@@ -45,7 +45,7 @@ class HumanoidModel(CharacterModel, Registrable):
 		self.height_offset = self.body_part.offset.y
 
 		self.flipped = False
-		self.direction = 0
+		self.direction = 1
 
 		self.state = "idle"
 		self.state_switch_time = pygame.time.get_ticks()

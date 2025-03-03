@@ -1,10 +1,10 @@
 {
   "waves": [
     {
-      "test": 5
+      "goblin": 5
     },
     {
-      "test2": 5
+      "goblin": 5
     }
   ]
 }

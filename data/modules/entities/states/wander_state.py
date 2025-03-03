@@ -70,7 +70,6 @@ class WanderState(EntityState, Registrable):
 	def update(self, delta: float):
 		if self.target is not None:
 			self.movement.move_in_direction(self.pos, self.target - self.pos, delta)
-			# self.animations.reset_animation_on_switch = False
 			self.model.switch_state("run")
 
 			if self.pos.distance_to(self.target) < 20 or self.time_since_target > self.time_to_new_target:
